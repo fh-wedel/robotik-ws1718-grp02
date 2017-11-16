@@ -72,6 +72,26 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
     SetPropertyInt("Algorithm::Image Binarization Threshold" NSSUBPROP_MIN, 1);
     SetPropertyInt("Algorithm::Image Binarization Threshold" NSSUBPROP_MAX, 255);
 
+//eigene
+    SetPropertyInt("Algorithm::HueLow", 90);
+    SetPropertyStr("Algorithm::HueLow" NSSUBPROP_DESCRIPTION, "q");
+    SetPropertyBool("Algorithm::HueLow" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    
+    SetPropertyInt("Algorithm::HueHigh", 120);
+    SetPropertyStr("Algorithm::HueHigh" NSSUBPROP_DESCRIPTION, "q");
+    SetPropertyBool("Algorithm::HueHigh" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    
+    SetPropertyInt("Algorithm::Saturation", 120);
+    SetPropertyStr("Algorithm::Saturation" NSSUBPROP_DESCRIPTION, "q");
+    SetPropertyBool("Algorithm::Saturation" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    
+    SetPropertyInt("Algorithm::Value", 120);
+    SetPropertyStr("Algorithm::Value" NSSUBPROP_DESCRIPTION, "q");
+    SetPropertyBool("Algorithm::Value" NSSUBPROP_ISCHANGEABLE, tTrue);
+
 
 }
 
@@ -195,7 +215,16 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
         m_filterProperties.minLineContrast = GetPropertyInt("Algorithm::Minimum Line Contrast");
     else if (cString::IsEqual(strName, "Algorithm::Image Binarization Threshold"))
         m_filterProperties.thresholdImageBinarization = GetPropertyInt("Algorithm::Image Binarization Threshold");
-
+        
+        //eigene properties
+    else if (cString::IsEqual(strName, "Algorithm::HueLow"))
+        m_filterProperties.HueLow = GetPropertyInt("Algorithm::HueLow");   
+    else if (cString::IsEqual(strName, "Algorithm::HueHigh"))
+        m_filterProperties.HueHigh = GetPropertyInt("Algorithm::HueHigh");   
+    else if (cString::IsEqual(strName, "Algorithm::Saturation"))
+        m_filterProperties.Saturation = GetPropertyInt("Algorithm::Saturation");   
+    else if (cString::IsEqual(strName, "Algorithm::Value"))
+        m_filterProperties.Value = GetPropertyInt("Algorithm::Value");
     RETURN_NOERROR;
 }
 
@@ -228,11 +257,21 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
             vw.write(resizedImage);
             std::cerr << "Wrote frame." << vw.isOpened() << std::endl;
             
-            cv::Mat rgb[3];
-            cv::split(m_inputImage,rgb);
+            //cv::Mat rgb[3];
+            //cv::split(m_inputImage,rgb);
+            //threshold(rgb[2], outputImage, m_filterProperties.thresholdImageBinarization, 255, THRESH_BINARY_INV);// Generate Binary Image
+			
+			//filter Red pixels	
 
-            threshold(rgb[2], outputImage, m_filterProperties.thresholdImageBinarization, 255, THRESH_BINARY_INV);// Generate Binary Image
+			Mat hsv;
+			cvtColor(m_inputImage,hsv,CV_BGR2HSV);
+			inRange(hsv,Scalar(m_filterProperties.HueLow,
+								m_filterProperties.Saturation,
+								m_filterProperties.Value)
+								,Scalar(m_filterProperties.HueHigh,255,255),outputImage);//detects blue; farbbereich: 90-120; Saettigung 120
+			
 
+			
             //calculate the detectionlines in image
             getDetectionLines(detectionLines);
 

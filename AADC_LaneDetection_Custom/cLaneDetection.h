@@ -272,6 +272,13 @@ private: // private methods
         int minLineContrast;
         /*! Threshold for image binarization */
         int thresholdImageBinarization;
+        
+        //eigene
+           int HueLow; 
+           int HueHigh;   
+           int Saturation;   
+           int Value;
+        
     }
     /*! the filter properties of this class */
     m_filterProperties;
