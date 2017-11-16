@@ -1,0 +1,28 @@
+<adtf:export xmlns:adtf="adtf">
+ <folder name="Wheel_Converter">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="188" Visible="true" Width="304" name="Scope_Display" />
+   <folder Height="188" PosX="107" PosY="240" Visible="true" Width="304" name="Scope_Display2" />
+  </folder>
+ </folder>
+ <folder name="Marker_Detection">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="214" Visible="true" Width="312" name="AADC_Marker_Evaluator" />
+   <folder Height="1054" Visible="true" Width="1912" name="Basler_RGB_Marker_Display" />
+  </folder>
+ </folder>
+ <folder name="Lane_Detection">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="640" Maximized="true" PosX="0" PosY="0" Visible="true" Width="857" name="Lane_Detection_Display" />
+  </folder>
+ </folder>
+</adtf:export>
