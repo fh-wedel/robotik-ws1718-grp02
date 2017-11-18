@@ -11,13 +11,18 @@ Teilnehmer:
 
 ### Unsere Aufgabenstellung
 
+- Motor- und Lenkregelung + Nothalt
+- Fahrbahnerkennung (gerade und kurve)
+- Einer Wand folgen
 
+- gegebenfalls Kreuzungen erkennen und anhalten
+
+----
 
 ## Tagebuch
 
 ### Mittwoch, 15.11.
-**14 bis 17 Uhr - Alle:**
-
+**14 bis 17 Uhr - Alle:**  
 Heute haben wir uns die Demos zu Lane- und Markerdetection angesehen.
 
 Wir verwenden ab jetzt in unserer sample Lanedetection nur den Blau-Kanal, um das blaue klebeband gut zu erkennen. Dies hat Hermann uns gegeben, um die Fahrbahnmarkierung zu erstellen.
@@ -37,8 +42,7 @@ Wir sind in der Lage die Demo zum laufen zu bringen und es erscheinen einige Dia
 
 
 ### Donnerstag, 16.11.
-**17 bis 18 Uhr - Franz, Frauke, Jan, Felix:**
-
+**17 bis 18 Uhr - Franz, Frauke, Jan, Felix:**  
 Heute wollten wir für Franz einmal richtige Werte des Autos aufnehmen, dass heißt Spannungen, USS, Lenkwinkel, etc..., sodass er sie zuhause abspielen kann.
 
 Leider war es uns nicht möglich, die Motoren zum laufen zu bringen. Wir haben versucht, die Fernbedienung neu zu koppeln. Dies verlief einwandfrei, **jedoch tat sich nichts**.
@@ -71,5 +75,34 @@ Auf solch ein Problem fällt man wohl nur einmal rein ;-)
 19:45 haben wir dann schließlich das Licht ausgeschalten können.
 
 
+
+----
+
+
+#### Freitag, 17.11.
+**11:00 bis 11:35 Uhr - Hermann, Franz, Felix:**  
+Heute wieder ans Auto gesetzt und uns auf Fehlersuche begeben. Diesmal war Hermann dabei. Wir haben ihm die Probleme erneut geschildert. Wir haben die Kontakte der Einspeisung, der Sicherung und die des Abnehmers geprüft.
+Zwischen den Polen von Sicherung und Abnehmer war kein wirklicher Durchgang zu messen (60kOhm).
+
+**12 bis 12:30 Uhr - Timm Bostelmann, Hermann, Franz, Frauke, Felix:**  
+Nach dem Essen holten wir uns Timm, den Modellbauexperten hinzu. Wir haben den Akku direkt mit dem Motorsteuergerät verbunden und es leuchtete auf. **Bingo! Es lag nicht an einem frittierten Steuergerät.**
+
+Insofern gingen wir davon aus, dass das PCB einen Schlag weg hatte, aber tatsächlich stellte sich nach einem **Anruf beim Hersteller**, als dieser die Teilenummer des Boards wissen wollte, **zufälliger Weise** heraus, dass der Arduino nicht richtig saß und Hermann ihn nur wieder richtig in den Sockel drücken musste, damit alles wieder lief.
+
+**15:00 bis 15:30 Uhr - Franz, Frauke, Felix (+ Lukas und Hendrik):**  
+Wir haben Lukas und Hendrik, zwei Interessierte, bei Vortägen zu KI aufgeschnappt. Wir erklärten ihnen, wie das Modell in Zusammenspiel mit dem Fahrzeug funktioniert oder halt eben nicht funktinoiert ;-).
+Außerdem haben wir unsere gwewünschte Aufgabenstellung ein Mal etwas konkreter formuliert.
+
+**15:30 bis 17:45 Uhr - Franz, Felix (+ Lukas):**  
+
+Letztendlich haben Franz und ich an der Motorsteuerung gebastelt. Wir fanden heraus, dass die `USSStructs` und `USSStructPlaus` keine Unterschiede aufweisen und auch nie im Code referenziert werden. **Das dann zu Plausibilätsprüfung ;-)**
+
+Des Weiteren ist uns aufgefallen, dass die Anzahl an Ticks (Rad-Encoder) bei **konstanter** Geschwindigkeit **exponentiell wächst**.
+
+Wir haben den Durchmesser der Reifen neu bestimmt und die konstanten des Umfangs im Code abgeändert.
+
+Felix konzentrierte sich nebenbei auf die Bedienung und **Kommunikation mit dem Auto via VNC**. Wir können einen der anderen Robotik-PCs verwenden und dort `TigerVNC` installieren. Für den Host (das Auto) können wir `x11vnc` verwenden.
+
+Ein Test auf Felix' virtuellen Maschiene war erfolgreich :).
 
 ----
