@@ -45,4 +45,5 @@ include_directories(${AADC_DIR}/include)
 #add_subdirectory(AADC_FirstOpenCV)
 add_subdirectory(AADC_grp2)
 add_subdirectory(AADC_LaneDetection_Custom)
+add_subdirectory(AADC_ConverterWheels_Custom)
 
