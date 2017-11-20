@@ -72,7 +72,7 @@ Letztendlich haben wir diese Dateien gelöscht und siehe da: Unsere `.gitignore`
 
 Auf solch ein Problem fällt man wohl nur einmal rein ;-)
 
-19:45 haben wir dann schließlich das Licht ausgeschalten können.
+19:45 haben wir dann schließlich das Licht ausschalten können.
 
 
 
@@ -90,19 +90,19 @@ Nach dem Essen holten wir uns Timm, den Modellbauexperten hinzu. Wir haben den A
 Insofern gingen wir davon aus, dass das PCB einen Schlag weg hatte, aber tatsächlich stellte sich nach einem **Anruf beim Hersteller**, als dieser die Teilenummer des Boards wissen wollte, **zufälliger Weise** heraus, dass der Arduino nicht richtig saß und Hermann ihn nur wieder richtig in den Sockel drücken musste, damit alles wieder lief.
 
 **15:00 bis 15:30 Uhr - Franz, Frauke, Felix (+ Lukas und Hendrik):**  
-Wir haben Lukas und Hendrik, zwei Interessierte, bei Vortägen zu KI aufgeschnappt. Wir erklärten ihnen, wie das Modell in Zusammenspiel mit dem Fahrzeug funktioniert oder halt eben nicht funktinoiert ;-).
+Wir haben Lukas und Hendrik, zwei Interessierte, bei Vorträgen zu KI aufgeschnappt. Wir erklärten ihnen, wie das Modell in Zusammenspiel mit dem Fahrzeug funktioniert oder halt eben nicht funktinoiert ;-).
 Außerdem haben wir unsere gwewünschte Aufgabenstellung ein Mal etwas konkreter formuliert.
 
 **15:30 bis 17:45 Uhr - Franz, Felix (+ Lukas):**  
 
 Letztendlich haben Franz und ich an der Motorsteuerung gebastelt. Wir fanden heraus, dass die `USSStructs` und `USSStructPlaus` keine Unterschiede aufweisen und auch nie im Code referenziert werden. **Das dann zu Plausibilätsprüfung ;-)**
 
-Des Weiteren ist uns aufgefallen, dass die Anzahl an Ticks (Rad-Encoder) bei **konstanter** Geschwindigkeit **exponentiell wächst**.
+Des Weiteren ist uns aufgefallen, dass die Werte die aus dem `Wheel Converter` kommen **exponentiell wachsen**, die Geschwindigkeit zur Raddrehzahl und die zurückgelegte Distanz bei konstanter Geschwindigkeit.
 
 Wir haben den Durchmesser der Reifen neu bestimmt und die konstanten des Umfangs im Code abgeändert.
 
 Felix konzentrierte sich nebenbei auf die Bedienung und **Kommunikation mit dem Auto via VNC**. Wir können einen der anderen Robotik-PCs verwenden und dort `TigerVNC` installieren. Für den Host (das Auto) können wir `x11vnc` verwenden.
 
-Ein Test auf Felix' virtuellen Maschiene war erfolgreich :).
+Ein Test auf Felix' virtueller Maschiene war erfolgreich :).
 
 ----
