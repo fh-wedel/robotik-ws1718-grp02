@@ -106,3 +106,45 @@ Felix konzentrierte sich nebenbei auf die Bedienung und **Kommunikation mit dem 
 Ein Test auf Felix' virtueller Maschiene war erfolgreich :).
 
 ----
+
+
+### Montag, 20.11.
+**14:00 bis 17:30 Uhr - Frauke, Franz, Felix, Thorger:**  
+Codecs - OpenCV wurde nicht mit FFMPEG Support gebuilded, deswegen kein `HFYU`-Codec. In Zukunft verwenden wir also `MJPG`.
+
+Franz hat uns Zugriff über SSH Keys zu Github verschafft. Dafür muss noch ein Whitelisting für SSH des Robolabs erfolgen. Temporär verwenden wir ein Handy als Hotspot oder klinken uns per LAN ins Mitarbeiter-Netzwerk ein.
+
+Wir verwenden nun `TightVNC` als Client und `x11vnc` als Server.
+Ein Problem ist noch, dass beim Ausstöpseln der Monitore der VNC Client auf einen Bildschirm limitiert wird.
+
+Rückfahrkamera war kurzzeitig nicht verfügbar. **Reboot tut gut**.
+
+
+**17:30 bis 18:00 Uhr - Frauke, Franz, Felix:**  
+Wir sind am Abend noch ein wenig mit dem Auto per Fernbedienung rumgefahren. Dabei hatten wir über WLAN/VNC die Kontrolle über Aufnahmen, etc.
+
+
+**18:00 bis 19:10 Uhr - Franz, Felix:**  
+Als wir dies nun alles zum Laufen gebracht hatten, klebten einigen blaue Streifen auf den Boden. Diese repräsentieren nun unsere Straße. Die Fahrbahn ist nach Augenmaß **einen Meter** breit.
+
+Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
+
+----
+
+### Dienstag, 21.11.
+**09:30 bis 10:55 Uhr - Frauke, Franz, Felix:**  
+
+- Depth-Image-Processing
+- bitwise_not (schwarz ist nah, weiß ist fern)
+- Median-Filter (not working with radius of 7 and 16bit images)
+
+**14:00 bis 15:30 Uhr - Alle:**  
+
+- Position der RealSense Kamera + Halter Design
+- Gedanken über Zeitplanung
+- Thorger's VM zum Laufen bringen
+- Scope-Displays zeigen falsche Werte an: exponentielles Verhalten -> Konsole zeigt lineares Verhalten
+
+
+
+----
