@@ -145,6 +145,10 @@ Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
 - Thorger's VM zum Laufen bringen
 - Scope-Displays zeigen falsche Werte an: exponentielles Verhalten -> Konsole zeigt lineares Verhalten
 
+**15:30 bis 17:15 Uhr - Jan:**
+
+Jan hat ein Model für eine Halterung der RealSense Kamera in TinkerCAD gebaut, und mit kurzer Hilfe von Timm Bostelmann gedruckt. Leider ist die Passform etwas zu eng. Ein weiterer versuch, mit angepasstem Modell erfolgt warscheinlich morgen. 
+
 
 
 ----
