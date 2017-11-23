@@ -148,6 +148,10 @@ Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
 
 Jan hat ein Model für eine Halterung der RealSense Kamera in TinkerCAD gebaut, und mit kurzer Hilfe von Timm Bostelmann gedruckt. Leider ist die Passform etwas zu eng. Ein weiterer versuch, mit angepasstem Modell erfolgt warscheinlich morgen. 
 
+### Mittwoch, 22.11.
+**14:00 bis 15:30 Uhr - Jan, Franz, Felix:**  
+
+- Erneuter 3D-Druck mit angepasstem Model. Dieses mal passte es gut und wurde am Auto angebracht. Bei Bedarf kann man die RealSense Kamera nun hier anbringen und kann somit mehr von der Straße vor dem Auto sehen. 
 
 ----
 
