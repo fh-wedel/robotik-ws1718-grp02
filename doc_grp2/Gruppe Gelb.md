@@ -151,15 +151,7 @@ Jan hat ein Model für eine Halterung der RealSense Kamera in TinkerCAD gebaut, 
 ### Mittwoch, 22.11.
 **14:00 bis 15:30 Uhr - Jan, Franz, Felix:**  
 
-- Erneuter 3D-Druck mit angepasstem Model. Dieses mal passte es gut und wurde am Auto angebracht. Bei Bedarf kann man die RealSense Kamera nun hier anbringen und kann somit mehr von der Straße vor dem Auto sehen. 
-
-----
-
-
-### Mittwoch, 22.11.
-**14:00 bis 16:30 Uhr - Jan, Franz, Felix:**  
-
-Wir haben eine weitere Version der Halterung für die Kamera gedruckt. Diesmal können wir erfreut von einem **'Snug-Fit'** sprechen. :-)
+Erneuter 3D-Druck mit angepasstem Model. Diesmal können wir erfreut von einem **'Snug-Fit'** sprechen. :-). Bei Bedarf kann man die RealSense Kamera nun hier anbringen und kann somit mehr von der Straße vor dem Auto sehen. 
 
 Jan hat begonnen sich mit der **Hough-Transformation** zu beschäftigen und sie auf 'Edges' im Kamerabild angewendet.
 Erste Ergebnisse sind bereits erstaunlich gut.
@@ -169,7 +161,7 @@ Leider meckert der Grafiktreiber etwas rum, was dazu führt, dass der Desktop ni
 
 Felix schaut sich die Doku einzelner Filter an und macht sich weitere Gedanken zum Lenkregler.
 
-**16:30 bis 17:30 Uhr - Franz, Felix:**  
+**15:30 bis 17:30 Uhr - Franz, Felix:**  
 
 Franz schraubt an einem Filter, der einfach nur einen Float-Wert ausgibt.
 Diese Aufgabe klingt total trivial, ist aber alles andere als leicht zu lösen: **Ein Hoch auf ADTF!**  
