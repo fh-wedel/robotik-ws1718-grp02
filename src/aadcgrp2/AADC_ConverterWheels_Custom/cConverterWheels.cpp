@@ -19,6 +19,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR
 
 #include "stdafx.h"
 #include "cConverterWheels.h"
+#include <iostream>
 
 
 #define CW_SLOT_COUNT 60.f
@@ -409,6 +410,8 @@ tResult cConverterWheels::TransmitSamples()
                       /(2*static_cast<tFloat32>(1e6))*fabs(f32speed);
         m_f32OverallDistance = m_f32OverallDistance + f32distance;
     }
+    
+    std::cout << "Total Distance: " << m_f32OverallDistance << "Speed: " << f32distance << "\n";
 
     //calculate the average of the arduino timestamp
     tUInt32 ui32arduinoTimestamp =(m_tLastStructLeft.ui32ArduinoTimestamp + m_tLastStructRight.ui32ArduinoTimestamp)/2;
