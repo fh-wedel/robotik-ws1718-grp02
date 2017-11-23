@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Live2" />
+  <property name="active_configuration" type="String" value="Lane_Detection" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -14,28 +14,20 @@
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="2">
      <settings />
     </filter>
-    <filter alias="AADC_Realsense_Camera" idref="adtf.aadc.aadc_realsense" priority="3">
-     <settings>
-      <property name="active" type="Bool" value="true" />
-      <property name="Enable Infrared 1 Stream" type="Bool" value="true" />
-      <property name="Enable Infrared 2 Stream" type="Bool" value="true" />
-     </settings>
-    </filter>
-    <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="12">
+    <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="11">
      <settings>
       <property name="active" type="Bool" value="true" />
      </settings>
     </filter>
-    <filter alias="Realsense_Depth_Display" idref="adtf.visual.video_display" priority="12">
+    <filter alias="Realsense_Depth_Display" idref="adtf.visual.video_display" priority="11">
      <settings>
       <property name="active" type="Bool" value="true" />
      </settings>
     </filter>
-    <connection connection_priority="50" dest="Realsense_Depth_Display.input" interface="" source="AADC_Realsense_Camera.outputDepthVisualization" />
-    <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="8">
+    <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="7">
      <settings />
     </filter>
-    <filter alias="AADC_Car_Controller" idref="adtf.aadc.CarController" priority="5">
+    <filter alias="AADC_Car_Controller" idref="adtf.aadc.CarController" priority="4">
      <settings>
       <property name="active" type="Bool" value="true" />
      </settings>
@@ -54,7 +46,7 @@
     <connection connection_priority="50" dest="Base_Config.hazzardLightEnabled" interface="" source="AADC_Car_Controller.hazzardLightEnabled" />
     <connection connection_priority="50" dest="Base_Config.USSFrontEnabled" interface="" source="AADC_Car_Controller.USSFrontEnabled" />
     <connection connection_priority="50" dest="Base_Config.USSRearEnabled" interface="" source="AADC_Car_Controller.USSRearEnabled" />
-    <filter alias="RearCam" idref="adtf.io.linux_video_capture_device" priority="4">
+    <filter alias="RearCam" idref="adtf.io.linux_video_capture_device" priority="3">
      <settings>
       <property name="active" type="Bool" value="true" />
       <property name="BitsPerPixel" type="Int" value="24" />
@@ -66,19 +58,19 @@
       <property name="Width" type="Int" value="640" />
      </settings>
     </filter>
-    <filter alias="RearCam_Display" idref="adtf.visual.video_display" priority="13">
+    <filter alias="RearCam_Display" idref="adtf.visual.video_display" priority="12">
      <settings>
       <property name="active" type="Bool" value="true" />
      </settings>
     </filter>
-    <filter alias="AADC_Driver_Module" idref="adtf.aadc.driverModule" priority="7">
+    <filter alias="AADC_Driver_Module" idref="adtf.aadc.driverModule" priority="6">
      <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Driver_Module.Jury_Struct" interface="" source="Base_Config.Jury_Struct" />
     <connection connection_priority="50" dest="AADC_Driver_Module.Maneuver_List" interface="" source="Base_Config.Jury_ManeuverList" />
     <connection connection_priority="50" dest="Base_Config.Driver_Struct" interface="" source="AADC_Driver_Module.Driver_Struct" />
     <connection connection_priority="50" dest="Base_Config.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
-    <filter alias="AADC_AHRS_Calculator" idref="adtf.aadc.AHRSCalculator" priority="11" />
+    <filter alias="AADC_AHRS_Calculator" idref="adtf.aadc.AHRSCalculator" priority="10" />
     <outport alias="UltrasonicStruct" />
     <outport alias="InerMeasUnitStruct" />
     <outport alias="WheelLeftStruct" />
@@ -87,8 +79,6 @@
     <outport alias="Realsense_outputRGB" />
     <outport alias="RearView_outputRGB" />
     <outport alias="Realsense_DepthRaw" />
-    <connection connection_priority="50" dest="Realsense_outputRGB" interface="" source="AADC_Realsense_Camera.outputRGB" />
-    <connection connection_priority="50" dest="Realsense_DepthRaw" interface="" source="AADC_Realsense_Camera.outputDepthRaw" />
     <connection connection_priority="50" dest="RearView_outputRGB" interface="" source="RearCam.output" />
     <connection connection_priority="50" dest="VoltageStruct" interface="" source="Base_Config.VoltageStruct" />
     <connection connection_priority="50" dest="WheelRightStruct" interface="" source="Base_Config.WheelRightStruct" />
@@ -97,15 +87,12 @@
     <connection connection_priority="50" dest="AADC_AHRS_Calculator.InerMeasUnit_Struct" interface="" source="Base_Config.InerMeasUnitStruct" />
     <connection connection_priority="50" dest="AADC_Sensor_Visualization.InerMeasUnitStruct" interface="" source="AADC_AHRS_Calculator.InerMeasUnit_Struct_Updated" />
     <connection connection_priority="50" dest="UltrasonicStruct" interface="" source="Base_Config.UltrasonicStruct" />
-    <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="AADC_Realsense_Camera.outputRGB" />
-    <filter alias="GRP2_Test_Filter" idref="adtf.user_grp2" priority="12" />
+    <filter alias="GRP2_Test_Filter" idref="adtf.user_grp2" priority="11" />
     <connection connection_priority="50" dest="GRP2_Test_Filter.Video_Input" interface="" source="RearCam" />
     <connection connection_priority="50" dest="GRP2_Test_Filter.UltrasonicStruct" interface="" source="Base_Config.UltrasonicStruct" />
     <connection connection_priority="50" dest="RearCam_Display.input" interface="" source="GRP2_Test_Filter.Video_Output" />
-    <filter alias="Video_Display" idref="adtf.visual.video_display" priority="13" />
-    <connection connection_priority="50" dest="Video_Display.input" interface="" source="AADC_Realsense_Camera.outputInfraRed1" />
-    <filter alias="Video_Display2" idref="adtf.visual.video_display" priority="14" />
-    <connection connection_priority="50" dest="Video_Display2.input" interface="" source="AADC_Realsense_Camera.outputInfraRed2" />
+    <filter alias="Video_Display" idref="adtf.visual.video_display" priority="12" />
+    <filter alias="Video_Display2" idref="adtf.visual.video_display" priority="13" />
    </graph>
    <settings>
     <property name="connection_priority" type="Int" value="50" />
@@ -115,7 +102,7 @@
    <graph>
     <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="1">
      <settings>
-      <property name="filename" type="String" value="../files/firstrecord_split_000.dat" />
+      <property name="filename" type="String" value="/media/aadc/Samsung_T5/AADC/links_abbiegen_split_000.dat" />
      </settings>
     </filter>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="1">
@@ -189,13 +176,17 @@
       <property name="ROI::Width" type="Int" value="1920" />
       <property name="ROI::XOffset" type="Int" value="1" />
       <property name="Algorithm::Image Binarization Threshold" type="Int" value="2" />
-      <property name="Algorithm::Maximum Line Width" type="Int" value="300" />
+      <property name="Algorithm::Maximum Line Width" type="Int" value="400" />
+      <property name="Algorithm::Saturation" type="Int" value="50" />
+      <property name="Algorithm::Value" type="Int" value="50" />
+      <property name="Algorithm::HueHigh" type="Int" value="10" />
+      <property name="Algorithm::HueLow" type="Int" value="0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Lane_Detection_Display.gcl_input" interface="" source="AADC_Lane_Detection_Custom.GCL" />
     <filter alias="RearCam" idref="adtf.io.linux_video_capture_device" priority="4">
      <settings>
-      <property name="active" type="Bool" value="true" />
+      <property name="active" type="Bool" value="false" />
       <property name="BitsPerPixel" type="Int" value="24" />
       <property name="captureheight" type="Int" value="480" />
       <property name="capturewidth" type="Int" value="640" />
@@ -210,9 +201,8 @@
     <filter alias="Video_Display" idref="adtf.visual.video_display" priority="5" />
     <connection connection_priority="50" dest="Video_Display.input" interface="" source="AADC_Realsense_Camera.outputRGB" />
     <filter alias="Video_Display2" idref="adtf.visual.video_display" priority="6" />
-    <connection connection_priority="50" dest="Video_Display2.input" interface="" source="AADC_Realsense_Camera.outputInfraRed1" />
     <filter alias="Video_Display3" idref="adtf.visual.video_display" priority="7" />
-    <connection connection_priority="50" dest="Video_Display3" interface="" source="RearCam" />
+    <connection active="false" connection_priority="50" dest="Video_Display3" interface="" source="RearCam" />
    </graph>
   </configuration>
   <configuration description="" name="Marker_Detection">
@@ -282,13 +272,7 @@
     <filter alias="Scope_Display" idref="adtf.visual.scope_display" priority="4" />
     <connection connection_priority="50" dest="Scope_Display.car_speed" interface="" source="AADC_Converter_Wheels_Custom_.car_speed" />
     <filter alias="Scope_Display2" idref="adtf.visual.scope_display" priority="5" />
-    <filter alias="Scope_Display3" idref="adtf.visual.scope_display" priority="6" />
     <connection connection_priority="50" dest="Scope_Display2.distance_overall" interface="" source="AADC_Converter_Wheels_Custom_.distance_overall" />
-    <connection connection_priority="50" dest="Scope_Display3.distance_lastSample" interface="" source="AADC_Converter_Wheels_Custom_.distance_lastSample" />
-    <filter alias="Table_Display" idref="adtf.visual.table_display" priority="7" />
-    <filter alias="Table_Display2" idref="adtf.visual.table_display" priority="8" />
-    <connection connection_priority="50" dest="Table_Display.WheelLeft_StructPlaus" interface="" source="AADC_Converter_Wheels_Custom_.WheelLeft_StructPlaus" />
-    <connection connection_priority="50" dest="Table_Display2.WheelLeftStruct" interface="" source="AADC_Arduino_Communication.WheelLeftStruct" />
    </graph>
   </configuration>
   <configuration description="" name="Live2">

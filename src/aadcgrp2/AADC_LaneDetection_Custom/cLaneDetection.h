@@ -203,6 +203,12 @@ private: // private methods
 	VideoWriter vw;
 
     /*!
+     * Searches for the lanes.(eigene Version)
+     */
+	cv::Mat findLinePointsNew(cv::Mat& image);
+
+
+    /*!
      * Searches for the lanes.
      *
      * \param           detectionLines      The detection lines.
