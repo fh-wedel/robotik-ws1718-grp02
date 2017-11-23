@@ -21,7 +21,13 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define OID_ADTF_STEERINGCONTROLLER "adtf.aadc.felixSteeringController"
 
 /*! this is the main class for the steering controller filter */
-class Controller : public adtf::cFilter {
+class cController : public adtf::cFilter {
+
+    
+    /*! This macro does all the plugin setup stuff
+    * Warning: This macro opens a "protected" scope see UCOM_IMPLEMENT_OBJECT_INFO(...) in object.h
+    */
+    ADTF_DECLARE_FILTER_VERSION(OID_ADTF_STEERINGCONTROLLER, "Felix RadiusToAngle Controller", OBJCAT_DataFilter, "RadiusToAngle Controller", 1, 0, 0, "");
 
     /* the radius */
     cInputPin m_InputRadius;
@@ -33,10 +39,10 @@ public:
     /*! constructor for template class
     *    \param __info   [in] This is the name of the filter instance.
     */
-    Controller(const tChar* __info);
+    cController(const tChar* __info);
 
     /*! Destructor. */
-    virtual ~Controller();
+    virtual ~cController();
 
 protected: // overwrites cFilter
     /*! Implements the default cFilter state machine call. It will be
@@ -85,7 +91,7 @@ private:
     /*! the id for the f32value of the media description for input pin for the radius */
     tBufferID m_RadiusDescriptionID;
     /*! the id for the arduino timestamp of the media description for input pin for the radius */
-    tBufferID m_buIDCurvatureArduinoTimestamp;
+    tBufferID m_RadiusTimestampID;
     /*! indicates of bufferIDs were set */
     tBool m_RadiusDescriptionIsInitialized;
 

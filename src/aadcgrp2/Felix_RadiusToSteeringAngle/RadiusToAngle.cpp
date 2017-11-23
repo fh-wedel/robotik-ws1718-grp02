@@ -23,17 +23,17 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #define SC_PROP_DEBUG_MODE "Debug Mode"
 
-ADTF_FILTER_PLUGIN("RadiusToAngle", OID_ADTF_STEERINGCONTROLLER, Controller)
+ADTF_FILTER_PLUGIN("RadiusToAngle", OID_ADTF_STEERINGCONTROLLER, cController)
 
-Controller::Controller(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
+cController::cController(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
 }
 
-Controller::~Controller() {}
+cController::~cController() {}
 
 
-tResult Controller::CreateInputPins(__exception) {
+tResult cController::CreateInputPins(__exception) {
     // create description manager
     cObjectPtr<IMediaDescriptionManager> pDescManager;
     RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
@@ -53,7 +53,7 @@ tResult Controller::CreateInputPins(__exception) {
     RETURN_NOERROR;
 }
 
-tResult Controller::CreateOutputPins(__exception) {
+tResult cController::CreateOutputPins(__exception) {
     // create description manager
     cObjectPtr<IMediaDescriptionManager> pDescManager;
     RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
@@ -64,7 +64,7 @@ tResult Controller::CreateOutputPins(__exception) {
     cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //TODO: Soll angeblich ein "deprecated constructor" sein !!
 
     // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescriptionServoAngle));
+    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_AngleDescription));
 
     // create pin
     RETURN_IF_FAILED(m_OutputAngle.Create("angle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
@@ -73,7 +73,7 @@ tResult Controller::CreateOutputPins(__exception) {
     RETURN_NOERROR;
 }
 
-tResult Controller::Init(tInitStage eStage, __exception) {
+tResult cController::Init(tInitStage eStage, __exception) {
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
 
     if (eStage == StageFirst)
@@ -100,7 +100,7 @@ tResult Controller::Init(tInitStage eStage, __exception) {
 
 // FELIX MODIFICATIONS BELOW
 
-tResult Controller::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample) {
+tResult cController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample) {
     if (nEventCode == IPinEventSink::PE_MediaSampleReceived && pMediaSample != NULL) {
         RETURN_IF_POINTER_NULL(pMediaSample);
 
@@ -121,7 +121,7 @@ tResult Controller::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tIn
 }
 
 
-tFloat32 Controller::readRadius(IMediaSample* pMediaSample) {
+tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
     tFloat32 radius = 0;
     tUInt32 timestamp = 0;
 
@@ -146,12 +146,12 @@ tFloat32 Controller::readRadius(IMediaSample* pMediaSample) {
     return radius;
 }
 
-tFloat32 Controller::convertToAngle(tFloat32 radius) {
+tFloat32 cController::convertToAngle(tFloat32 radius) {
 
     return 0;
 }
 
-tResult Controller::transmitAngle(tFloat32 angle) {
+tResult cController::transmitAngle(tFloat32 angle) {
 
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_AngleDescription);
     {
@@ -178,7 +178,7 @@ tResult Controller::transmitAngle(tFloat32 angle) {
     RETURN_NOERROR;
 }
 
-cObjectPtr<IMediaSample> Controller::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
+cObjectPtr<IMediaSample> cController::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
 
     // determine size in memory using the type descriptor
     cObjectPtr<IMediaSerializer> pSerializer;
