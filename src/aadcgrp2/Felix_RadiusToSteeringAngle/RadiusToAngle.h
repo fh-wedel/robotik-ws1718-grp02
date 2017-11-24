@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 /*! this is the main class for the steering controller filter */
 class cController : public adtf::cFilter {
 
-    
+
     /*! This macro does all the plugin setup stuff
     * Warning: This macro opens a "protected" scope see UCOM_IMPLEMENT_OBJECT_INFO(...) in object.h
     */
@@ -70,6 +70,27 @@ protected: // overwrites cFilter
     *   You need to synchronize this call by your own. Have a look to adtf_util::__synchronized , adtf_util::__synchronized_obj .
     */
     tResult OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample);
+
+
+// PROPERTIES which can be set in the configuration editor
+
+    tResult PropertyChanged(const tChar* strName);
+
+    /*! the struct with all the properties*/
+    struct filterProperties {
+        /*! the distance between axles (Radstand). */
+        tFloat32 wheelbase;
+
+        /*! the distance between the middle of left and right tires (Spurweite). */
+        tFloat32 tread;
+
+        /*! maximum deflection of front tires */
+        tFloat32 maxLeftAngle;
+        tFloat32 maxRightAngle;
+
+    }
+    /*! the filter properties*/
+    m_filterProperties;
 
 private:
     /*! creates all the input Pins

@@ -31,4 +31,9 @@
    <folder Height="574" Visible="true" Width="792" name="Lane_Detection_Display" />
   </folder>
  </folder>
+ <folder name="Live2">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+ </folder>
 </adtf:export>
