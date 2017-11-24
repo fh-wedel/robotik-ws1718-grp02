@@ -12,4 +12,29 @@
    <folder Height="510" Minimized="true" Visible="true" Width="304" name="AADC_Driver_Module" />
   </folder>
  </folder>
+ <folder name="Playback">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="366" PosX="34" PosY="27" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="480" PosX="195" PosY="198" Visible="true" Width="640" name="Realsense_RGB_Proc_Display" />
+   <folder Height="480" PosX="156" PosY="171" Visible="true" Width="640" name="RearCam_Display" />
+  </folder>
+ </folder>
+ <folder name="Wheel_Converter">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="422" PosX="337" PosY="136" Visible="true" Width="312" name="AADC_Car_Controller" />
+   <folder Height="366" PosX="72" PosY="129" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="240" PosX="31" PosY="70" Visible="true" Width="320" name="Scope_Display" />
+   <folder Height="240" PosX="24" PosY="66" Visible="true" Width="320" name="Scope_Display2" />
+   <folder Height="240" PosX="33" PosY="80" Visible="true" Width="320" name="Scope_Display3" />
+   <folder Height="214" PosX="31" PosY="71" Visible="true" Width="312" name="Table_Display" />
+   <folder Height="214" PosX="39" PosY="95" Visible="true" Width="312" name="Table_Display2" />
+   <folder Height="487" PosX="205" PosY="19" Visible="true" Width="312" name="AADC_Signal_Value_Generator" />
+  </folder>
+ </folder>
 </adtf:export>
