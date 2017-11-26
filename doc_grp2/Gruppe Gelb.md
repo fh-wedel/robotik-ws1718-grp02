@@ -202,6 +202,7 @@ Letztendlich ist es nur ein *"Nimm mal diese Daten (Void\*) und baller sie in de
 **17:00 bis 18:30 Uhr - Felix:**  
 
 **17:00 bis 19:15 - Franz und Frauke**
+
 Da wir heute aufgrund des anstehenden Besuchs der Ministerin im Projektraum gearbeitet haben und wir unsere blaue Straße nicht mitgenommen haben, mussten wir rot/orange Riesen-Steckerleisten zum Testen gewählt. Für die Erkennung der Farben mussten wir nur an den Parametern `hueLow` und `hueHigh` schrauben. Wir haben den Bereich zwischen 0 und 10° gewählt.
 
 Wir haben uns mit der GPU-Implementierung der Hough-Transformation beschäftigt. Es stellte sich heraus, dass das gar nicht so schwierig ist, man muss nur die richtigen Header (gute Kandidaten sind `<opencv2/cudaarithm.hpp>`, `<opencv2/core/cuda.hpp>` und `<opencv2/cudaimgproc.hpp>`) kennen und in vielen Fällen nur die `cv::Mat`'s per `upload` auf die GPU laden. Ergebnis ist eine `cv::cuda::GpuMat`. Ist man fertig mit allen GPU-Operationen, muss die `cv::cuda::GpuMat` wieder heruntergeladen werden und auf eine `cv::Mat` geschrieben werden. Vor viele Funktionen muss man auch nur `cv::cuda::` + `Funktionsname` schreiben. Fies wird es, wenn das gerade nicht reicht, und sich die komplette Signatur ändert! So ist das zum Beispiel bei der Funktion `cv::HoughLines`. Die wird in der GPU-Implementierung durch einen Pointer auf eine abstrakte Klasse repräsentiert. Eine Variable dieses Typs sieht dann so aus: `cv::Ptr<cv::cuda::HoughLinesDetector> hough`. Auf diesen Pointer kann man dann beispielsweise die Funktion `detect` aufrufen. Beide Operationen zusammen haben eine ähnliche Signatur wie die CPU-Implementierung von `cv::HoughLines`. Einige Funktionen gibt es auch nicht mit Hardware-Unterstützung, zum Beispiel `cv::line`.
@@ -212,6 +213,7 @@ Jetzt steht nur noch die Frage im Raum, wie man damit arbeiten kann, wenn man ke
 
 ### Freitag, 24.11.
 **16:00 bis - Felix, Franz Frauke**
+
 Wir haben Franz die GPU-Implementierung gezeigt, die Farbwerte wieder an Blau angepasst.
 
 Unsere neuen Werte sind:
