@@ -98,22 +98,12 @@ tResult cController::CreateOutputPins(__exception) {
 tResult cController::Init(tInitStage eStage, __exception) {
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
 
-    if (eStage == StageFirst)
-    {
+    if (eStage == StageFirst) {
         RETURN_IF_FAILED(CreateInputPins(__exception_ptr));
         RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
-    }
-    else if (eStage == StageNormal)
-    {
+    } else if (eStage == StageNormal) {
         m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
-    }
-    else if(eStage == StageGraphReady)
-    {
-        // set the flags which indicate if the
-        // media descriptions strings were set to NO
-        m_AngleDescriptionIsInitialized = false;
-        m_RadiusDescriptionIsInitialized = false;
-    }
+    } else if(eStage == StageGraphReady) {}
 
 
     RETURN_NOERROR;
@@ -162,6 +152,8 @@ tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
     tFloat32 radius = 0;
     tUInt32 timestamp = 0;
 
+    //TODO: Use statics
+
     {
         // focus for sample read lock
         // read data from the media sample with the coder of the descriptor
@@ -198,6 +190,14 @@ tResult cController::transmitAngle(tFloat32 angle) {
         // focus for sample write lock
         // read data from the media sample with the coder of the descriptor
         __adtf_sample_write_lock_mediadescription(m_AngleDescription, pMediaSample, pCoder);
+
+        /*! indicates of bufferIDs were set */
+        static tBool m_AngleDescriptionIsInitialized = false;
+        /*! the id for the f32value of the media description for input pin for the set speed */
+        static tBufferID m_AngleDescriptionID;
+        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
+        static tBufferID m_AngleTimestampID;
+
 
         if(!m_AngleDescriptionIsInitialized)
         {

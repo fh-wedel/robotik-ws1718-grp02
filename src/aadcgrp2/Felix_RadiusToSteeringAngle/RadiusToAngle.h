@@ -120,12 +120,6 @@ private:
 
     /*! media description for the Angle output pin  */
     cObjectPtr<IMediaTypeDescription> m_AngleDescription;
-    /*! the id for the f32value of the media description for input pin for the set speed */
-    tBufferID m_AngleDescriptionID;
-    /*! the id for the arduino time stamp of the media description for input pin for the set speed */
-    tBufferID m_AngleTimestampID;
-    /*! indicates of bufferIDs were set */
-    tBool m_AngleDescriptionIsInitialized;
 
 // Debug
 
