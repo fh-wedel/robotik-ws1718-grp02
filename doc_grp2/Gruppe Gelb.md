@@ -13,9 +13,7 @@ Teilnehmer:
 
 - Motor- und Lenkregelung + Nothalt
 - Fahrbahnerkennung (Gerade und Kurve)
-- Einer Wand folgen
-
-- gegebenfalls Kreuzungen erkennen und anhalten
+- Kreuzungen erkennen und anhalten
 
 ----
 
@@ -37,6 +35,7 @@ Frauke möchte sich gern eine Testaufnahme mal mit diskretem OpenCV Code (ohne A
 Darüber hinaus hat Franz sich einmal die Konfiguration der Radsensoren bzw. der Motorsteuerung genauer angeschaut.
 
 Wir sind in der Lage die Demo zum Laufen zu bringen und es erscheinen einige Diagramme. Darunter unter anderem auch der zurückgelegte Fahrtweg. Leider hat die Ordinate keine Einheit und 4000m/s sind dann doch etwas viel ;-)
+
 
 ----
 
@@ -75,7 +74,6 @@ Auf solch ein Problem fällt man wohl nur einmal rein ;-)
 19:45 haben wir dann schließlich das Licht ausschalten können.
 
 
-
 ----
 
 
@@ -104,6 +102,7 @@ Wir haben den Durchmesser der Reifen neu bestimmt und die Konstanten des Umfangs
 Felix konzentrierte sich nebenbei auf die Bedienung und **Kommunikation mit dem Auto via VNC**. Wir können einen der anderen Robotik-PCs verwenden und dort `TigerVNC` installieren. Für den Host (das Auto) können wir `x11vnc` verwenden.
 
 Ein Test auf Felix' virtueller Maschiene war erfolgreich :).
+
 
 ----
 
@@ -149,6 +148,55 @@ Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
 
 Jan hat ein Model für eine Halterung der RealSense Kamera in TinkerCAD gebaut, und mit kurzer Hilfe von Timm Bostelmann gedruckt. Leider ist die Passform etwas zu eng. Ein weiterer versuch, mit angepasstem Modell erfolgt warscheinlich morgen. 
 
+### Mittwoch, 22.11.
+**14:00 bis 15:30 Uhr - Jan, Franz, Felix:**  
+
+Erneuter 3D-Druck mit angepasstem Model. Diesmal können wir erfreut von einem **'Snug-Fit'** sprechen. :-). Bei Bedarf kann man die RealSense Kamera nun hier anbringen und kann somit mehr von der Straße vor dem Auto sehen. 
+
+Jan hat begonnen sich mit der **Hough-Transformation** zu beschäftigen und sie auf 'Edges' im Kamerabild angewendet.
+Erste Ergebnisse sind bereits erstaunlich gut.
+
+Franz hat seine SSD an den Robotik-PC angeschlossen und kann dort mit Hardwarebeschleunigung die Aufnahmen auch flüssig abspielen.
+Leider meckert der Grafiktreiber etwas rum, was dazu führt, dass der Desktop nicht erweitert sondern nur gespiegelt werden kann. **#NichtSoGeil :-(**
+
+Felix schaut sich die Doku einzelner Filter an und macht sich weitere Gedanken zum Lenkregler.
+
+**15:30 bis 17:30 Uhr - Franz, Felix:**  
+
+Franz schraubt an einem Filter, der einfach nur einen Float-Wert ausgibt.
+Diese Aufgabe klingt total trivial, ist aber alles andere als leicht zu lösen: **Ein Hoch auf ADTF!**  
+Die Dokumentationen von existieren Dateien ist zwar existent, leider entspricht sie jedoch nicht dem Code (Kopierpastete).  
+**Merke:** *"Keine Doku ist immer noch besser als falsche Doku!"*
+
+Felix hat sich währenddessen mit dem Lenkregler und dessen Outputs beschäftigt. Er stieß auf die selben Probleme.
+Wir setzten uns also zunächst das Ziel, die Struktur der Filter überhaupt erst einmal zu verstehen.
+
+**17:30 bis 19:10 Uhr - Felix:**  
+Als Franz dann verzweifelt das Weite gesucht hatte, warf Felix einen Blick in Hermann's Doku-Ordner zur Software. Tatsächlich gab es einen Eintrag 'Schreib deinen ersten Filter'. Dieser bestand aber mehr oder weniger aus diesen Punkten:
+
+1. Kopiere den Demo-Ordner
+2. Bennenne ihn um
+3. Benenne die enthaltenen Dateien um
+4. Passe die CMake an
+5. Viel Glück!
+
+Insofern -> **Nicht sehr hilfreich :-(**  
+Felix musste als noch etwas weiter an seinem Filter verzweifeln. Schließlich ist ihm aufgefallen, dass die Datenübertragung zwischen zwei Filtern sich einer Art komplizierter `Dictionaries` bedient.
+
+Letztendlich ist es nur ein *"Nimm mal diese Daten (Void\*) und baller sie in den Eimer dort drüben!"*. Formal sieht das dann wie folgt aus:
+
+1. Größe der Daten mittels `IMediaSerializer` berechnen.
+2. Speicher für ein `IMediaSample` alloziieren.
+3. Einen `Write-Lock` holen. Man bekommt einen `IMediaCoderExt`
+ zurück.
+4. Eine ID für den *'Eimer'*, in den die Daten geschrieben werden können, vom `IMediaCoderExt` besorgen.
+5. Schreibe **diesen Wert** in **diesen Eimer**.
+6. Setze die aktuelle Zeit in das `IMediaSample` ein, damit jeder weiß, wann das Paket zugeschnürt wurde.
+7. Übertrage das `IMediaSample`.
 
 
 ----
+
+
+### Donnerstag, 23.11.
+**17:00 bis 18:30 Uhr - Felix:**  
