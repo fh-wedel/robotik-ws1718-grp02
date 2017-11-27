@@ -212,7 +212,7 @@ Nachdem alle Komplier- und Laufzeitfehler behoben wurden, funktionierte es auch!
 Jetzt steht nur noch die Frage im Raum, wie man damit arbeiten kann, wenn man keine nVidia-Grafikkarte, oder keinen stationären PC hat (wie Frauke). Implementiert man erst für die CPU, und muss man dann alles ändern? Oder implementiert man "blind" in der GPU-API und testet dann Live am Auto? Vielleicht haben wir uns damit doch selbst ins Bein geschossen...
 
 ### Freitag, 24.11.
-**16:00 bis - Felix, Franz Frauke**
+**16:00 bis - Felix, Franz und Frauke:**
 
 Wir haben Franz die GPU-Implementierung gezeigt, die Farbwerte wieder an Blau angepasst.
 
@@ -224,3 +224,20 @@ Saturation: 80
 Value:      2
 ```
 Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...
+
+
+
+### Montag, 26.11.
+**10:00 bis 14:00 Uhr - Felix und Franz:**  
+Fertigstellung des `FloatValueGenerator` und Fehlersuche für den `RadiusToAngleConverter`. Es lag letztendlich an einer nicht initialisierten Variablen :]
+
+**14:00 bis 15:30 Uhr - Felix, Franz, Frauke und Jan:**  
+Mapping von Angle auf ServoValue im `RadiusToAngleConverter` erstellt.
+
+**15:30 bis ... Uhr - Frauke und Jan:**  
+
+**18:30 bis 19:00 Uhr - Felix:**  
+Test des `RadiusToAngleConverter`.
+Inbetriebnahme des Fahrzeugs war geplant. Jedoch hat die Hardware versagt. Erst wollte Ubuntu nich mehr booten (im Recovery-Mode gings :]), danach klappte VNC nicht mehr.
+
+Insofern muss der Test auf morgen verschoben werden.
