@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #define SC_PROP_DEBUG_MODE "Debug Mode"
 
-#define IfDebug(x) if(m_bDebugModeEnabled){x}
+#define IfDebug(x) std::cout << x << endl;
 
 
 ADTF_FILTER_PLUGIN("RadiusToAngleConverter", OID_ADTF_STEERINGCONTROLLER, cController)
@@ -135,16 +135,16 @@ tResult cController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tI
         RETURN_IF_POINTER_NULL(pMediaSample);
 
         if (pSource == &m_InputRadius) {
-            //IfDebug(std:cout << "Received Radius | Reading..." << endl;)
+            IfDebug("Received Radius | Reading...")
 
             tFloat32 radius = readRadius(pMediaSample);
-            //IfDebug(std:cout << cString::Format("Read Radius: %lf | Converting...", radius) << endl;)
+            IfDebug(cString::Format("Read Radius: %lf | Converting...", radius))
 
             tFloat32 angle = convertRadiusToAngle(radius);
-            //IfDebug(std:cout << cString::Format("Converted to Angle: %lf | Transmitting...", angle) << endl;)
+            IfDebug(cString::Format("Converted to Angle: %lf | Transmitting...", angle))
 
             tFloat32 servoValue = convertAngleToServoValue(angle);
-            //IfDebug(std:cout << cString::Format("Converted to servoValue: %lf | Transmitting...", servoValue) << endl;)
+            IfDebug(cString::Format("Converted to servoValue: %lf | Transmitting...", servoValue))
 
             return transmitAngle(servoValue);
 

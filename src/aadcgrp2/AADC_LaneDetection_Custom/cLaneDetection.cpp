@@ -19,6 +19,11 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include "cLaneDetection.h"
 #include <iostream>
 
+#define rad2deg(x) (x) * 180.0f / CV_PI
+
+
+int houghVote = 200;
+
 // define the ADTF property names to avoid errors
 ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
     OID_ADTF_FILTER_DEF,
@@ -272,7 +277,7 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			//mit gauss (nicht so gut)
 			//cv::GaussianBlur(out, outputImage, Size( 5, 5 ), 0, 0 );
 			//mit median
-			cv::medianBlur(out, outputImage, 7);
+			cv::medianBlur(out, outputImage, 3);
 
 
             //calculate the detectionlines in image
@@ -308,6 +313,34 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
     RETURN_NOERROR;
 }
 
+static bool isEqual(Vec2f a, Vec2f b) {
+  float angle = abs(a[1] - b[1]);
+  float dist = abs(a[0] - b[0]);
+
+  return rad2deg(angle) < 10.0f && dist < 50.0f;
+}
+
+static void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec2f>& clusteredLines) {
+  std::vector<int> labels;
+  int classes;
+  classes = cv::partition(lines, labels, isEqual);
+
+  for (int i = 0; i < classes; i++) {
+    float sumAngle = 0;
+    float sumDist = 0;
+    for (int label = 0; label < (int)labels.size(); label++) {
+      if (labels.at(label) == i) {
+        sumDist  += lines.at(i)[0];
+        sumAngle += lines.at(i)[1];
+      }
+    }
+    Vec3f mean = Vec3f();
+    clusteredLines.push_back(Vec2f(sumDist / labels.size(), sumAngle / labels.size()));
+  }
+
+  printf("Klassen: %d\n", classes);
+}
+
 //own implementation of line detection
 cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
 {
@@ -316,14 +349,12 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
 
 		cv::cuda::GpuMat contours;
 
-		cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(100, 200, 3, false);
+		cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(100, 150, 3, false);
 		canny->detect(image, contours);
-		//cv::cuda::CannyEdgeDetector(image,contours,100,200);
 
 		cv::cuda::GpuMat contoursInv;
         cv::cuda::threshold(contours,contoursInv,128,255,THRESH_BINARY_INV);
 
-		int houghVote = 200;
         /*
          Hough tranform for line detection with feedback
          Increase by 25 for the next frame if we found some lines.
@@ -331,56 +362,40 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
          but at the same time we don't want to start the feed back loop from scratch.
          */
         cv::cuda::GpuMat GpuMatLines;
-        vector<Vec4i> vecLines;
-        /*if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
+        vector<Vec2f> lines;
+        if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
             houghVote = 300;
         }
-        else{ houghVote += 25;}*/
-        //while(lines.size() < 4 && houghVote > 0){
+        else {
+          houghVote += 25;
+        }
 
-    			//cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, 3.1415/180, houghVote);
+        while(lines.size() < 10 && houghVote > 0){
 
-          #define MinLength 50
-          #define MaxGap 200
-    			cv::Ptr<cv::cuda::HoughSegmentDetector> hough = cv::cuda::createHoughSegmentDetector(1, 3.1415/180, MinLength,MaxGap);
+    			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI/180, houghVote);
 
     			hough->detect(contours, GpuMatLines);
-    			//hough->downloadResults(matLines, lines);
-          if (!GpuMatLines.empty()) {
-            vecLines.resize(GpuMatLines.cols);
-            cv::Mat matLines(1, GpuMatLines.cols, CV_32SC4, &vecLines[0]);
-            GpuMatLines.download(matLines);
-          }
-
-          cv::Mat output = src.clone();
-          for (size_t i = 0; i < vecLines.size(); i++) {
-            Vec4i l = vecLines[i];
-            printf("%d %d %d %d\n",l[0], l[1], l[2], l[3]);
-            line(output, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(255,255,255), 2, LINE_AA);
-          }
-          //matLines.download(lines);
-
-                //cv::cuda::HoughLines(contours,lines,1,3.1415/180, houghVote);
-                houghVote -= 5;
-
-
-        //}
-        /*std::cout << houghVote << "\n";
+    			hough->downloadResults(GpuMatLines, lines);
+          houghVote -= 5;
+        }
+        std::cout << houghVote << "\n";
         cv::cuda::GpuMat result(image.size(),CV_8U,Scalar(255));
-        image.copyTo(result);
+        contours.copyTo(result);
+
+        std::vector<Vec2f> clusteredLines;
+        clusterLines(lines, clusteredLines);
 
         // Draw the lines
-        std::vector<Vec2f>::const_iterator it = lines.begin();
-        //cv::cuda::GpuMat hough(image.size(),CV_8U,Scalar(0));
-
+        std::vector<Vec2f>::const_iterator it = clusteredLines.begin();
+        cv::Mat output;
         result.download(output);
 
-        while (it!=lines.end()) {
+        while (it!=clusteredLines.end()) {
 
             float rho= (*it)[0];   // first element is distance rho
             float theta= (*it)[1]; // second element is angle theta
 
-            if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) ) { // filter to remove vertical and horizontal lines
+            if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) || (theta > 1.5 && theta < 1.6)) { // filter to remove vertical and horizontal lines
 
                 // point of intersection of the line with first row
                 Point pt1(rho/cos(theta),0);
@@ -388,12 +403,10 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
                 Point pt2((rho-result.rows*sin(theta))/cos(theta),result.rows);
                 // draw a line: Color = Scalar(R, G, B), thickness
                 cv::line( output, pt1, pt2, Scalar(255,255,255), 1);
-                //cv::line( hough, pt1, pt2, Scalar(255,255,255), 1);
             }
 
-            //std::cout << "line: (" << rho << "," << theta << ")\n";
             ++it;
-        }*/
+        }
 
 
 
