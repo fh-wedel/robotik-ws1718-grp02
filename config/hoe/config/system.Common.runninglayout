@@ -33,8 +33,8 @@
    <folder filter_tree_expanded_list="//Float_Value_Generator" name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
-   <folder Height="548" PosX="12" PosY="36" Visible="true" Width="784" name="Realsense_RGB_Proc_Display" />
+   <folder Height="366" PosX="-6" PosY="-2" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="548" PosX="9" PosY="24" Visible="true" Width="784" name="Realsense_RGB_Proc_Display" />
    <folder Height="214" PosX="371" PosY="138" Visible="true" Width="312" name="Scope_Display" />
   </folder>
  </folder>

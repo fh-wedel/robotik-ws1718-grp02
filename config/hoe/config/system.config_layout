@@ -13,7 +13,7 @@
     <input_pin name="WatchdogAlive" />
     <output_pin name="floatValue" />
    </component>
-   <component height="74" name="Scope_Display" width="172" x="952" y="539">
+   <component height="74" name="Scope_Display" width="172" x="967" y="534">
     <input_pin name="servoAngle" />
    </component>
    <component height="98" name="AADC_Lane_Detection_Custom" width="201" x="481" y="251">
@@ -71,7 +71,7 @@
     <property name="send_forward_seek_reset_events" type="bool" value="true" />
     <property name="start_paused" type="bool" value="false" />
    </component>
-   <connection dest="Scope_Display" dest_pin="servoAngle" reldiff="0" shape_type="3" source="Felix_RadiusToAngle_Controller" source_pin="angle" x_p2="879" x_p3="879" x_p4="940" x_p5="940" y_p2="0" y_p3="581" y_p4="581" y_p5="0" />
+   <connection dest="Scope_Display" dest_pin="servoAngle" reldiff="0" shape_type="4" source="Felix_RadiusToAngle_Controller" source_pin="angle" x_p2="879" x_p3="879" x_p4="940" x_p5="940" y_p2="0" y_p3="576" y_p4="576" y_p5="0" />
    <connection dest="Felix_RadiusToAngle_Controller" dest_pin="radius" reldiff="0" shape_type="4" source="Float_Value_Generator" source_pin="floatValue" x_p2="568" x_p3="568" x_p4="629" x_p5="629" y_p2="0" y_p3="578" y_p4="578" y_p5="0" />
    <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="293" x_p3="293" x_p4="371" x_p5="371" y_p2="0" y_p3="579" y_p4="579" y_p5="0" />
    <connection dest="Realsense_RGB_Proc_Display" dest_pin="gcl_input" reldiff="0" shape_type="4" source="AADC_Lane_Detection_Custom" source_pin="GCL" x_p2="698" x_p3="698" x_p4="857" x_p5="857" y_p2="0" y_p3="298" y_p4="298" y_p5="0" />

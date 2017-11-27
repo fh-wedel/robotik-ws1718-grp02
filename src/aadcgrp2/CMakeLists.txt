@@ -17,7 +17,7 @@ if(NOT AADC_BUILD_ALL_IN_ONE)
                 "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
                 FORCE)
     endif(UNIX AND NOT CMAKE_BUILD_TYPE)
-    
+
 
 endif(NOT AADC_BUILD_ALL_IN_ONE)
 
@@ -49,4 +49,4 @@ add_subdirectory(AADC_ConverterWheels_Custom)
 add_subdirectory(AADC_Realsense_Felix)
 add_subdirectory(Felix_RadiusToSteeringAngle)
 add_subdirectory(FloatValueGenerator)
-
+add_subdirectory(Franz_WheelSpeedController)
