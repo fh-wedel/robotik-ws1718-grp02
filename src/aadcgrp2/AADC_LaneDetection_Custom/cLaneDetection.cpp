@@ -339,7 +339,6 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
         else{ houghVote += 25;}
         while(lines.size() < 4 && houghVote > 0){
 			
-			
 			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, 3.1415/180, houghVote);
 			hough->detect(contours, tmpLines);
 			hough->downloadResults(tmpLines, lines);
@@ -354,7 +353,7 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
         image.copyTo(result);
 
         // Draw the lines
-        std::vector<Vec2f>::const_iterator it= lines.begin();
+        std::vector<Vec2f>::const_iterator it = lines.begin();
         //cv::cuda::GpuMat hough(image.size(),CV_8U,Scalar(0));
         
         Mat output;

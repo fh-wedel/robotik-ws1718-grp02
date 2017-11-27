@@ -70,7 +70,7 @@ tResult cFloatValueGenerator::CreateOutputPins(__exception) {
     RETURN_IF_FAILED(m_outputPin.Create("floatValue", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(&m_outputPin));
 
-    RETURN_NOERROR; 
+    RETURN_NOERROR;
 }
 
 tResult cFloatValueGenerator::Init(tInitStage eStage, __exception) {
@@ -100,20 +100,24 @@ tResult cFloatValueGenerator::Init(tInitStage eStage, __exception) {
 tResult cFloatValueGenerator::PropertyChanged(const tChar* strName) {
     RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
     //associate the properties to the member
-    
+
     if (cString::IsEqual(strName, "outputValue")) {
         m_filterProperties.outputValue = GetPropertyFloat("outputValue");
+
+        if (m_bDebugModeEnabled) {
+			std::cout << "Property changed! - " << m_filterProperties.outputValue << endl;
+		}
 	}
-    
+
 	RETURN_NOERROR;
 }
 
 tResult cFloatValueGenerator::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample) {
     if (nEventCode == IPinEventSink::PE_MediaSampleReceived && pMediaSample != NULL) {
         RETURN_IF_POINTER_NULL(pMediaSample);
-		
+
 		transmitValue(m_filterProperties.outputValue);
-        
+
     }
     RETURN_NOERROR;
 }
@@ -122,13 +126,13 @@ tResult cFloatValueGenerator::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nP
 tResult cFloatValueGenerator::transmitValue(tFloat32 angle) {
 
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_FloatDescription);
-    
+
     static bool hasID = false;
     /*! the id for the f32value of the media description for input pin for the set speed */
     static tBufferID m_FloatDescriptionID;
     /*! the id for the arduino time stamp of the media description for input pin for the set speed */
     static tBufferID m_FloatTimestampID;
-    
+
     {
         // focus for sample write lock
         // read data from the media sample with the coder of the descriptor

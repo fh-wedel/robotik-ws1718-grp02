@@ -1,10 +1,10 @@
-set(FILTER_NAME RadiusToAngle)
-
+set(FILTER_NAME franz_wheelSpeedController)
+ 
 # Specify the filter module target
 adtf_add_filter(${FILTER_NAME}
                 stdafx.h
-                RadiusToAngle.h
-                RadiusToAngle.cpp
+                cWheelSpeedController.h
+                cWheelSpeedController.cpp
 )
 
 # set folder (only needed and available for MSVC)
