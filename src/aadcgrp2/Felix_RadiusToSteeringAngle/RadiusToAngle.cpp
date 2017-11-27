@@ -210,7 +210,7 @@ tFloat32 cController::convertAngleToServoValue(tFloat32 angle) {
 
         angle = fabs(angle);
         if (angle > m_filterProperties.maxRightAngle) {
-            angle = -100;
+            servoValue = -1;
         } else {
             servoValue = -(angle / m_filterProperties.maxRightAngle);
         }
@@ -219,14 +219,14 @@ tFloat32 cController::convertAngleToServoValue(tFloat32 angle) {
         // go right
 
         if (angle > m_filterProperties.maxLeftAngle) {
-            servoValue = 100;
+            servoValue = 1;
         } else {
             servoValue = angle / m_filterProperties.maxLeftAngle;
         }
 
     }
 
-    return servoValue;
+    return servoValue * 100.0f;
 }
 
 

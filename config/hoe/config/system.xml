@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Playback" />
+  <property name="active_configuration" type="String" value="Wheel_Converter" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -262,7 +262,9 @@
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="AADC_Arduino_Communication.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="AADC_Arduino_Communication.WheelRightStruct" />
     <filter alias="Felix_RadiusToAngle_Controller" idref="adtf.aadc.felixSteeringController" priority="2">
-     <settings />
+     <settings>
+      <property name="Debug Mode" type="Bool" value="true" />
+     </settings>
     </filter>
     <connection connection_priority="50" dest="AADC_Arduino_Communication.SteeringController" interface="" source="Felix_RadiusToAngle_Controller.angle" />
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="3">
@@ -277,7 +279,11 @@
     </filter>
     <filter alias="AADC_Watchdog_Trigger3" idref="adtf.aadc.watchdogTrigger" priority="2" />
     <connection connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger3.WatchdogAliveSignal" />
-    <filter alias="Float_Value_Generator2" idref="adtf.aadc.FloatValueGenerator" priority="5" />
+    <filter alias="Float_Value_Generator2" idref="adtf.aadc.FloatValueGenerator" priority="5">
+     <settings>
+      <property name="outputValue" type="Float" value="500.0" />
+     </settings>
+    </filter>
     <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="6" />
     <connection connection_priority="50" dest="Felix_RadiusToAngle_Controller.radius" interface="" source="Float_Value_Generator2.floatValue" />
     <connection connection_priority="50" dest="Float_Value_Generator2.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger2.WatchdogAliveSignal" />
