@@ -23,7 +23,10 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #define SC_PROP_DEBUG_MODE "Debug Mode"
 
-ADTF_FILTER_PLUGIN("RadiusToAngle", OID_ADTF_STEERINGCONTROLLER, cController)
+#define IfDebug(x) std::cout << x << endl;
+
+
+ADTF_FILTER_PLUGIN("RadiusToAngleConverter", OID_ADTF_STEERINGCONTROLLER, cController)
 
 cController::cController(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
@@ -31,12 +34,12 @@ cController::cController(const tChar* __info) : cFilter(__info), m_bDebugModeEna
 
 
     /*! the distance between axles (Radstand). */
-    SetPropertyFloat("Algorithm::WheelBase", 43.5);
+    SetPropertyFloat("Algorithm::WheelBase", 360.0);
     SetPropertyStr("Algorithm::WheelBase" NSSUBPROP_DESCRIPTION, "the distance between axles (Radstand).");
     SetPropertyBool("Algorithm::WheelBase" NSSUBPROP_ISCHANGEABLE, tTrue);
 
     /*! the distance between the middle of left and right tires (Spurweite). */
-    SetPropertyFloat("Algorithm::Tread", 43.5);
+    SetPropertyFloat("Algorithm::Tread", 260.0);
     SetPropertyStr("Algorithm::Tread" NSSUBPROP_DESCRIPTION, "the distance between the middle of left and right tires (Spurweite).");
     SetPropertyBool("Algorithm::Tread" NSSUBPROP_ISCHANGEABLE, tTrue);
 
@@ -132,15 +135,18 @@ tResult cController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tI
         RETURN_IF_POINTER_NULL(pMediaSample);
 
         if (pSource == &m_InputRadius) {
-            LOG_INFO("Received Radius | Reading...");
+            IfDebug("Received Radius | Reading...")
 
             tFloat32 radius = readRadius(pMediaSample);
-            LOG_INFO(cString::Format("Read Radius: %lf | Converting...", radius));
+            IfDebug(cString::Format("Read Radius: %lf | Converting...", radius))
 
-            tFloat32 angle = convertToAngle(radius);
-            LOG_INFO(cString::Format("Converted to Angle: %lf | Transmitting...", angle));
+            tFloat32 angle = convertRadiusToAngle(radius);
+            IfDebug(cString::Format("Converted to Angle: %lf | Transmitting...", angle))
 
-            return transmitAngle(angle);
+            tFloat32 servoValue = convertAngleToServoValue(angle);
+            IfDebug(cString::Format("Converted to servoValue: %lf | Transmitting...", servoValue))
+
+            return transmitAngle(servoValue);
 
         }
     }
@@ -152,18 +158,23 @@ tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
     tFloat32 radius = 0;
     tUInt32 timestamp = 0;
 
-    //TODO: Use statics
-
     {
         // focus for sample read lock
         // read data from the media sample with the coder of the descriptor
         __adtf_sample_read_lock_mediadescription(m_RadiusDescription, pMediaSample, pCoder);
 
+        /*! indicates of bufferIDs were set */
+        static tBool m_RadiusDescriptionIsInitialized = false;
+        /*! the id for the f32value of the media description for input pin for the radius input */
+        static tBufferID m_RadiusDescriptionID;
+        /*! the id for the arduino time stamp of the media description for input pin for the timestamp */
+        static tBufferID m_RadiusTimestampID;
+
         if(!m_RadiusDescriptionIsInitialized) {
 
             pCoder->GetID("f32Value", m_RadiusDescriptionID);
             pCoder->GetID("ui32ArduinoTimestamp", m_RadiusTimestampID);
-            m_RadiusDescriptionIsInitialized = true;
+            m_RadiusDescriptionIsInitialized = tTrue;
 
         }
 
@@ -175,13 +186,49 @@ tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
     return radius;
 }
 
-tFloat32 cController::convertToAngle(tFloat32 radius) {
+tFloat32 cController::convertRadiusToAngle(tFloat32 radius) {
 
     /* angle = inverse tangens (wheelbase / radius) */
-    //if abs(radius) <= 0.1;
+    if (fabs(radius) <= 0.1f) {
+        return 0;
+    }
 
     return (tFloat32) atan(m_filterProperties.wheelbase / radius) * 180 / 3.14159265;
 }
+
+
+tFloat32 cController::convertAngleToServoValue(tFloat32 angle) {
+
+    tFloat32 servoValue = 0;
+
+    if (fabs(angle) <= 0.1f) {
+        return 0;
+    }
+
+    if (angle < 0) {
+        // go left
+
+        angle = fabs(angle);
+        if (angle > m_filterProperties.maxRightAngle) {
+            angle = -100;
+        } else {
+            servoValue = -(angle / m_filterProperties.maxRightAngle);
+        }
+
+    } else {
+        // go right
+
+        if (angle > m_filterProperties.maxLeftAngle) {
+            servoValue = 100;
+        } else {
+            servoValue = angle / m_filterProperties.maxLeftAngle;
+        }
+
+    }
+
+    return servoValue;
+}
+
 
 tResult cController::transmitAngle(tFloat32 angle) {
 
@@ -199,12 +246,11 @@ tResult cController::transmitAngle(tFloat32 angle) {
         static tBufferID m_AngleTimestampID;
 
 
-        if(!m_AngleDescriptionIsInitialized)
-        {
+        if(!m_AngleDescriptionIsInitialized) {
             //TODO: Am I allowed to rename the dictionary entry? (f32Value)
             pCoder->GetID("f32Value", m_AngleDescriptionID);
             pCoder->GetID("ui32ArduinoTimestamp", m_AngleTimestampID);
-            m_AngleDescriptionIsInitialized = true;
+            m_AngleDescriptionIsInitialized = tTrue;
         }
 
         //write values to media sample
