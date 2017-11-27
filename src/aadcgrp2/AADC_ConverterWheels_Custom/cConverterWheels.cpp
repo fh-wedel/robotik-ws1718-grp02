@@ -411,7 +411,8 @@ tResult cConverterWheels::TransmitSamples()
         m_f32OverallDistance = m_f32OverallDistance + f32distance;
     }
     
-    std::cout << "Total Distance: " << m_f32OverallDistance << "Speed: " << f32distance << "\n";
+    
+    //std::cout << "Total Distance: " << m_f32OverallDistance << "Speed: " << f32distance << "\n";
 
     //calculate the average of the arduino timestamp
     tUInt32 ui32arduinoTimestamp =(m_tLastStructLeft.ui32ArduinoTimestamp + m_tLastStructRight.ui32ArduinoTimestamp)/2;

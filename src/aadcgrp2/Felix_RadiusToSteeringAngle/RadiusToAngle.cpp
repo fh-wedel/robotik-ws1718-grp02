@@ -31,12 +31,12 @@ cController::cController(const tChar* __info) : cFilter(__info), m_bDebugModeEna
 
 
     /*! the distance between axles (Radstand). */
-    SetPropertyFloat("Algorithm::WheelBase", 43.5);
+    SetPropertyFloat("Algorithm::WheelBase", 360.0);
     SetPropertyStr("Algorithm::WheelBase" NSSUBPROP_DESCRIPTION, "the distance between axles (Radstand).");
     SetPropertyBool("Algorithm::WheelBase" NSSUBPROP_ISCHANGEABLE, tTrue);
 
     /*! the distance between the middle of left and right tires (Spurweite). */
-    SetPropertyFloat("Algorithm::Tread", 43.5);
+    SetPropertyFloat("Algorithm::Tread", 260.0);
     SetPropertyStr("Algorithm::Tread" NSSUBPROP_DESCRIPTION, "the distance between the middle of left and right tires (Spurweite).");
     SetPropertyBool("Algorithm::Tread" NSSUBPROP_ISCHANGEABLE, tTrue);
 
@@ -103,7 +103,9 @@ tResult cController::Init(tInitStage eStage, __exception) {
         RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
     } else if (eStage == StageNormal) {
         m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
-    } else if(eStage == StageGraphReady) {}
+    } else if(eStage == StageGraphReady) {
+		m_RadiusDescriptionIsInitialized = tFalse;
+	}
 
 
     RETURN_NOERROR;
@@ -132,13 +134,13 @@ tResult cController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tI
         RETURN_IF_POINTER_NULL(pMediaSample);
 
         if (pSource == &m_InputRadius) {
-            LOG_INFO("Received Radius | Reading...");
+            std::cout << "Received Radius | Reading..." << endl;
 
             tFloat32 radius = readRadius(pMediaSample);
-            LOG_INFO(cString::Format("Read Radius: %lf | Converting...", radius));
+            std::cout << "Read Radius: " << radius << " | Converting..." << endl;
 
             tFloat32 angle = convertToAngle(radius);
-            LOG_INFO(cString::Format("Converted to Angle: %lf | Transmitting...", angle));
+            std::cout << cString::Format("Converted to Angle: %lf | Transmitting...", angle) << endl;
 
             return transmitAngle(angle);
 
@@ -166,7 +168,10 @@ tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
             m_RadiusDescriptionIsInitialized = true;
 
         }
-
+		
+		
+		std::cout << "Reading radius ..." << endl;
+		
         // get values from media sample
         pCoder->Get(m_RadiusDescriptionID, (tVoid*)&radius);
         pCoder->Get(m_RadiusTimestampID, (tVoid*)&timestamp);
@@ -178,7 +183,9 @@ tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
 tFloat32 cController::convertToAngle(tFloat32 radius) {
 
     /* angle = inverse tangens (wheelbase / radius) */
-    //if abs(radius) <= 0.1;
+    if (fabs(radius) <= 0.1f) {
+        return 0;
+    }
 
     return (tFloat32) atan(m_filterProperties.wheelbase / radius) * 180 / 3.14159265;
 }

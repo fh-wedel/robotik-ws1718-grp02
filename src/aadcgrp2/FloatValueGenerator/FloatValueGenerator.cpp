@@ -103,6 +103,10 @@ tResult cFloatValueGenerator::PropertyChanged(const tChar* strName) {
     
     if (cString::IsEqual(strName, "outputValue")) {
         m_filterProperties.outputValue = GetPropertyFloat("outputValue");
+        
+        if (m_bDebugModeEnabled) {
+			std::cout << "Property changed! - " << m_filterProperties.outputValue << endl;
+		}
 	}
     
 	RETURN_NOERROR;
