@@ -54,7 +54,7 @@
     <property name="emulate_external_clocks" type="bool" value="true" />
     <property name="enable_loop_mode" type="bool" value="false" />
     <property name="enable_perf_log" type="bool" value="false" />
-    <property name="filename" timestamp="212378007479000000" type="file" value="../files/links_abbiegen_split_000.dat" />
+    <property name="filename" type="file" value="../files/links_abbiegen_split_000.dat" />
     <property name="Identifier" type="string" value="adtf.stg.harddisk_player" />
     <property name="idref" type="string" value="adtf.stg.harddisk_player" />
     <property name="ignore_unkown_classes" type="bool" value="false" />
@@ -201,7 +201,7 @@
    <connection dest="" dest_pin="Jury_Struct" reldiff="0" shape_type="4" source="Jury_Config" source_pin="Jury_Struct_raw" x_p2="510" x_p3="510" x_p4="556" x_p5="556" y_p2="0" y_p3="1374" y_p4="1374" y_p5="0" />
    <connection dest="Jury_Config" dest_pin="Driver_Struct_raw" reldiff="0" shape_type="3" source="" source_pin="Driver_Struct" x_p2="103" x_p3="103" x_p4="110" x_p5="110" y_p2="0" y_p3="1346" y_p4="1346" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Lane_Detection" show="true" tab_pos="3" vertical_scrollbar_value="2" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Lane_Detection" show="true" tab_pos="3" vertical_scrollbar_value="1" zoomfactor="1,000000">
    <component height="98" name="Video_Display3" width="172" x="431" y="553">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -239,10 +239,7 @@
    <connection dest="Lane_Detection_Display" dest_pin="gcl_input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="GCL" x_p2="763" x_p3="763" x_p4="830" x_p5="830" y_p2="0" y_p3="228" y_p4="228" y_p5="0" />
    <connection dest="Lane_Detection_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="Video_Output_Debug" x_p2="759" x_p3="759" x_p4="789" x_p5="789" y_p2="0" y_p3="204" y_p4="204" y_p5="0" />
    <connection dest="Video_Display3" dest_pin="input" reldiff="0" shape_type="3" source="RearCam" source_pin="output" x_p2="220" x_p3="220" x_p4="419" x_p5="419" y_p2="0" y_p3="595" y_p4="595" y_p5="0" />
-   <connection dest="Video_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="191" x_p3="191" x_p4="417" x_p5="417" y_p2="0" y_p3="347" y_p4="347" y_p5="0" />
-   <connection dest="Lane_Detection_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="Video_Output_Debug" x_p2="485" x_p3="485" x_p4="571" x_p5="571" y_p2="0" y_p3="196" y_p4="196" y_p5="0" />
-   <connection dest="AADC_Lane_Detection_Custom" dest_pin="Video_Input" reldiff="0" shape_type="4" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="191" x_p3="191" x_p4="213" x_p5="213" y_p2="0" y_p3="194" y_p4="194" y_p5="0" />
-   <connection dest="Lane_Detection_Display" dest_pin="gcl_input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="GCL" x_p2="489" x_p3="489" x_p4="550" x_p5="550" y_p2="0" y_p3="220" y_p4="220" y_p5="0" />
+   <connection dest="Video_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="255" x_p3="255" x_p4="417" x_p5="417" y_p2="0" y_p3="347" y_p4="347" y_p5="0" />
   </configuration>
   <configuration horizontal_scrollbar_value="7" name="Jury_Config" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="1,000000">
    <component height="50" name="dummy" width="60" x="254" y="387" />

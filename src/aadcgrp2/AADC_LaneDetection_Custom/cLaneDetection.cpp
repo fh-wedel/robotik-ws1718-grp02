@@ -6,10 +6,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-3.  All advertising materials mentioning features or use of this software must display the following acknowledgement: “This product includes software developed by the Audi AG and its contributors for Audi Autonomous Driving Cup.”
+3.  All advertising materials mentioning features or use of this software must display the following acknowledgement: ï¿½This product includes software developed by the Audi AG and its contributors for Audi Autonomous Driving Cup.ï¿½
 4.  Neither the name of Audi nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL AUDI AG OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS ï¿½AS ISï¿½ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL AUDI AG OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 **********************************************************************
@@ -77,21 +77,20 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
     SetPropertyStr("Algorithm::HueLow" NSSUBPROP_DESCRIPTION, "q");
     SetPropertyBool("Algorithm::HueLow" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    
+
     SetPropertyInt("Algorithm::HueHigh", 120);
     SetPropertyStr("Algorithm::HueHigh" NSSUBPROP_DESCRIPTION, "q");
     SetPropertyBool("Algorithm::HueHigh" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    
+
     SetPropertyInt("Algorithm::Saturation", 120);
     SetPropertyStr("Algorithm::Saturation" NSSUBPROP_DESCRIPTION, "q");
     SetPropertyBool("Algorithm::Saturation" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    
+
     SetPropertyInt("Algorithm::Value", 120);
     SetPropertyStr("Algorithm::Value" NSSUBPROP_DESCRIPTION, "q");
     SetPropertyBool("Algorithm::Value" NSSUBPROP_ISCHANGEABLE, tTrue);
-
 
 }
 
@@ -215,14 +214,14 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
         m_filterProperties.minLineContrast = GetPropertyInt("Algorithm::Minimum Line Contrast");
     else if (cString::IsEqual(strName, "Algorithm::Image Binarization Threshold"))
         m_filterProperties.thresholdImageBinarization = GetPropertyInt("Algorithm::Image Binarization Threshold");
-        
+
         //eigene properties
     else if (cString::IsEqual(strName, "Algorithm::HueLow"))
-        m_filterProperties.HueLow = GetPropertyInt("Algorithm::HueLow");   
+        m_filterProperties.HueLow = GetPropertyInt("Algorithm::HueLow");
     else if (cString::IsEqual(strName, "Algorithm::HueHigh"))
-        m_filterProperties.HueHigh = GetPropertyInt("Algorithm::HueHigh");   
+        m_filterProperties.HueHigh = GetPropertyInt("Algorithm::HueHigh");
     else if (cString::IsEqual(strName, "Algorithm::Saturation"))
-        m_filterProperties.Saturation = GetPropertyInt("Algorithm::Saturation");   
+        m_filterProperties.Saturation = GetPropertyInt("Algorithm::Saturation");
     else if (cString::IsEqual(strName, "Algorithm::Value"))
         m_filterProperties.Value = GetPropertyInt("Algorithm::Value");
     RETURN_NOERROR;
@@ -238,9 +237,9 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
     // here we store the pixel lines in the image where we search for lanes
     vector<tInt> detectionLines;
 
-    // here we have all the detected line points 
+    // here we have all the detected line points
     vector<cPoint> detectedLinePoints;
-    
+
     const tVoid* l_pSrcBuffer;
 
     //receiving data from input sample, and saving to TheInputImage
@@ -250,17 +249,17 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
         if (tInt32(m_inputImage.total() * m_inputImage.elemSize()) == m_sInputFormat.nSize)
         {
             m_inputImage.data = (uchar*)(l_pSrcBuffer);
-            
+
             Size size(640, 480);
             Mat resizedImage;
             resize(m_inputImage, resizedImage, size);
             vw.write(resizedImage);
-            
+
             //cv::Mat rgb[3];
             //cv::split(m_inputImage,rgb);
             //threshold(rgb[2], outputImage, m_filterProperties.thresholdImageBinarization, 255, THRESH_BINARY_INV);// Generate Binary Image
-			
-			//filter Red pixels	
+
+			//filter Red pixels
 
 			Mat hsv;
 			Mat out;
@@ -269,15 +268,15 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 								m_filterProperties.Saturation,
 								m_filterProperties.Value)
 								,Scalar(m_filterProperties.HueHigh,255,255),out);//detects blue; farbbereich: 90-120; Saettigung 120
-			
+
 			//mit gauss (nicht so gut)
 			//cv::GaussianBlur(out, outputImage, Size( 5, 5 ), 0, 0 );
 			//mit median
 			cv::medianBlur(out, outputImage, 7);
-			
+
 
             //calculate the detectionlines in image
-            getDetectionLines(detectionLines);
+          //  getDetectionLines(detectionLines);
 
             //findLinePoints(detectionLines, outputImage, detectedLinePoints);
 			outputImage = findLinePointsNew(outputImage);
@@ -314,13 +313,13 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
 {
 		cv::cuda::GpuMat image;
 		image.upload(src);
-		
+
 		cv::cuda::GpuMat contours;
-		
+
 		cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(100, 200, 3, false);
 		canny->detect(image, contours);
 		//cv::cuda::CannyEdgeDetector(image,contours,100,200);
-		
+
 		cv::cuda::GpuMat contoursInv;
         cv::cuda::threshold(contours,contoursInv,128,255,THRESH_BINARY_INV);
 
@@ -331,34 +330,51 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
          This is so we don't miss other lines that may crop up in the next frame
          but at the same time we don't want to start the feed back loop from scratch.
          */
-        cv::cuda::GpuMat tmpLines;
-        vector<Vec2f> lines;
-        if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
+        cv::cuda::GpuMat GpuMatLines;
+        vector<Vec4i> vecLines;
+        /*if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
             houghVote = 300;
         }
-        else{ houghVote += 25;}
-        while(lines.size() < 4 && houghVote > 0){
-			
-			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, 3.1415/180, houghVote);
-			hough->detect(contours, tmpLines);
-			hough->downloadResults(tmpLines, lines);
-			
-            //cv::cuda::HoughLines(contours,lines,1,3.1415/180, houghVote);
-            houghVote -= 5;
-            
-            
-        }
-        std::cout << houghVote << "\n";
+        else{ houghVote += 25;}*/
+        //while(lines.size() < 4 && houghVote > 0){
+
+    			//cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, 3.1415/180, houghVote);
+
+          #define MinLength 50
+          #define MaxGap 200
+    			cv::Ptr<cv::cuda::HoughSegmentDetector> hough = cv::cuda::createHoughSegmentDetector(1, 3.1415/180, MinLength,MaxGap);
+
+    			hough->detect(contours, GpuMatLines);
+    			//hough->downloadResults(matLines, lines);
+          if (!GpuMatLines.empty()) {
+            vecLines.resize(GpuMatLines.cols);
+            cv::Mat matLines(1, GpuMatLines.cols, CV_32SC4, &vecLines[0]);
+            GpuMatLines.download(matLines);
+          }
+
+          cv::Mat output = src.clone();
+          for (size_t i = 0; i < vecLines.size(); i++) {
+            Vec4i l = vecLines[i];
+            printf("%d %d %d %d\n",l[0], l[1], l[2], l[3]);
+            line(output, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(255,255,255), 2, LINE_AA);
+          }
+          //matLines.download(lines);
+
+                //cv::cuda::HoughLines(contours,lines,1,3.1415/180, houghVote);
+                houghVote -= 5;
+
+
+        //}
+        /*std::cout << houghVote << "\n";
         cv::cuda::GpuMat result(image.size(),CV_8U,Scalar(255));
         image.copyTo(result);
 
         // Draw the lines
         std::vector<Vec2f>::const_iterator it = lines.begin();
         //cv::cuda::GpuMat hough(image.size(),CV_8U,Scalar(0));
-        
-        Mat output;
+
         result.download(output);
-        
+
         while (it!=lines.end()) {
 
             float rho= (*it)[0];   // first element is distance rho
@@ -377,9 +393,9 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
 
             //std::cout << "line: (" << rho << "," << theta << ")\n";
             ++it;
-        }
-        
-        
+        }*/
+
+
 
 	return output;
 }
@@ -408,7 +424,7 @@ tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const
             {
                 detectedStartCornerLine = tTrue;
                 columnStartCornerLine = currentIndex;
-            }//look for transition from bright to dark -> end of line 
+            }//look for transition from bright to dark -> end of line
             else if ((ucLastVal - ucCurrentVal) > m_filterProperties.minLineContrast && detectedStartCornerLine)
             {
                 //we already have the start corner of line, so check the width of detected line
@@ -491,7 +507,7 @@ tResult cLaneDetection::transmitGCL(const vector<tInt>& detectionLines, const ve
     }
 
     cGCLWriter::StoreCommand(pGCLCmdDebugInfo, GCL_CMD_FGCOL, cColor::Blue.GetRGBA());
-    //show minimum and maximum line width 
+    //show minimum and maximum line width
     cGCLWriter::StoreCommand(pGCLCmdDebugInfo, GCL_CMD_DRAWRECT, m_filterProperties.ROIOffsetX, m_filterProperties.ROIOffsetY,
         m_filterProperties.ROIOffsetX + m_filterProperties.maxLineWidth, m_filterProperties.ROIOffsetY - 20);
     cGCLWriter::StoreCommand(pGCLCmdDebugInfo, GCL_CMD_DRAWRECT, m_filterProperties.ROIOffsetX + m_filterProperties.ROIWidth - m_filterProperties.maxLineWidth, m_filterProperties.ROIOffsetY,
