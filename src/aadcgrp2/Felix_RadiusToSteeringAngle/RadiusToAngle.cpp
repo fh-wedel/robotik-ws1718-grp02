@@ -28,6 +28,28 @@ ADTF_FILTER_PLUGIN("RadiusToAngle", OID_ADTF_STEERINGCONTROLLER, cController)
 cController::cController(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
+
+
+    /*! the distance between axles (Radstand). */
+    SetPropertyFloat("Algorithm::WheelBase", 43.5);
+    SetPropertyStr("Algorithm::WheelBase" NSSUBPROP_DESCRIPTION, "the distance between axles (Radstand).");
+    SetPropertyBool("Algorithm::WheelBase" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    /*! the distance between the middle of left and right tires (Spurweite). */
+    SetPropertyFloat("Algorithm::Tread", 43.5);
+    SetPropertyStr("Algorithm::Tread" NSSUBPROP_DESCRIPTION, "the distance between the middle of left and right tires (Spurweite).");
+    SetPropertyBool("Algorithm::Tread" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    /*! maximum deflection of front tires */
+    SetPropertyFloat("Algorithm::MaxLeftAngle", 45.0);
+    SetPropertyStr("Algorithm::MaxLeftAngle" NSSUBPROP_DESCRIPTION, "maximum deflection of front left tire");
+    SetPropertyBool("Algorithm::MaxLeftAngle" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    /*! maximum deflection of front right tires */
+    SetPropertyFloat("Algorithm::MaxRightAngle", 45.0);
+    SetPropertyStr("Algorithm::MaxRightAngle" NSSUBPROP_DESCRIPTION, "maximum deflection of front right tire");
+    SetPropertyBool("Algorithm::MaxRightAngle" NSSUBPROP_ISCHANGEABLE, tTrue);
+
 }
 
 cController::~cController() {}
@@ -76,29 +98,34 @@ tResult cController::CreateOutputPins(__exception) {
 tResult cController::Init(tInitStage eStage, __exception) {
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
 
-    if (eStage == StageFirst)
-    {
+    if (eStage == StageFirst) {
         RETURN_IF_FAILED(CreateInputPins(__exception_ptr));
         RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
-    }
-    else if (eStage == StageNormal)
-    {
+    } else if (eStage == StageNormal) {
         m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
-    }
-    else if(eStage == StageGraphReady)
-    {
-        // set the flags which indicate if the
-        // media descriptions strings were set to NO
-        m_AngleDescriptionIsInitialized = false;
-        m_RadiusDescriptionIsInitialized = false;
-    }
+    } else if(eStage == StageGraphReady) {}
 
 
     RETURN_NOERROR;
 }
 
 
-// FELIX MODIFICATIONS BELOW
+// FELIX' MODIFICATIONS BELOW
+
+tResult cController::PropertyChanged(const tChar* strName) {
+    RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
+    //associate the properties to the member
+    if (cString::IsEqual(strName, "Algorithm::WheelBase"))
+        m_filterProperties.wheelbase = GetPropertyFloat("Algorithm::WheelBase");
+    else if (cString::IsEqual(strName, "Algorithm::Tread"))
+        m_filterProperties.tread = GetPropertyFloat("Algorithm::Tread");
+    else if (cString::IsEqual(strName, "Algorithm::MaxLeftAngle"))
+        m_filterProperties.maxLeftAngle = GetPropertyFloat("Algorithm::MaxLeftAngle");
+    else if (cString::IsEqual(strName, "Algorithm::MaxRightAngle"))
+        m_filterProperties.maxRightAngle = GetPropertyFloat("Algorithm::MaxRightAngle");
+
+	RETURN_NOERROR;
+}
 
 tResult cController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample) {
     if (nEventCode == IPinEventSink::PE_MediaSampleReceived && pMediaSample != NULL) {
@@ -125,6 +152,8 @@ tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
     tFloat32 radius = 0;
     tUInt32 timestamp = 0;
 
+    //TODO: Use statics
+
     {
         // focus for sample read lock
         // read data from the media sample with the coder of the descriptor
@@ -148,7 +177,10 @@ tFloat32 cController::readRadius(IMediaSample* pMediaSample) {
 
 tFloat32 cController::convertToAngle(tFloat32 radius) {
 
-    return 0;
+    /* angle = inverse tangens (wheelbase / radius) */
+    //if abs(radius) <= 0.1;
+
+    return (tFloat32) atan(m_filterProperties.wheelbase / radius) * 180 / 3.14159265;
 }
 
 tResult cController::transmitAngle(tFloat32 angle) {
@@ -158,6 +190,14 @@ tResult cController::transmitAngle(tFloat32 angle) {
         // focus for sample write lock
         // read data from the media sample with the coder of the descriptor
         __adtf_sample_write_lock_mediadescription(m_AngleDescription, pMediaSample, pCoder);
+
+        /*! indicates of bufferIDs were set */
+        static tBool m_AngleDescriptionIsInitialized = false;
+        /*! the id for the f32value of the media description for input pin for the set speed */
+        static tBufferID m_AngleDescriptionID;
+        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
+        static tBufferID m_AngleTimestampID;
+
 
         if(!m_AngleDescriptionIsInitialized)
         {
