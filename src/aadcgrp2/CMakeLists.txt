@@ -48,4 +48,5 @@ add_subdirectory(AADC_LaneDetection_Custom)
 add_subdirectory(AADC_ConverterWheels_Custom)
 add_subdirectory(AADC_Realsense_Felix)
 add_subdirectory(Felix_RadiusToSteeringAngle)
+add_subdirectory(FloatValueGenerator)
 
