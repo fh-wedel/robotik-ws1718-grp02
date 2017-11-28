@@ -1,87 +1,57 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="1" zoomfactor="1,000000">
-   <component height="74" name="Felix_RadiusToAngle_Controller" width="194" x="673" y="536">
+  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="77" zoomfactor="1,000000">
+   <component height="74" name="Felix_RadiusToAngle_Controller" width="194" x="246" y="349">
     <input_pin name="radius" />
     <output_pin name="angle" />
    </component>
-   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="109" y="533">
+   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="226" y="329">
     <output_pin name="WatchdogAliveSignal" />
    </component>
-   <component height="74" name="Float_Value_Generator" width="172" x="384" y="537">
+   <component height="74" name="Float_Value_Generator" width="172" x="206" y="309">
     <input_pin name="WatchdogAlive" />
     <output_pin name="floatValue" />
    </component>
-   <component height="74" name="Scope_Display" width="172" x="967" y="534">
+   <component height="74" name="Scope_Display" width="172" x="186" y="289">
     <input_pin name="servoAngle" />
    </component>
-   <component height="98" name="AADC_Lane_Detection_Custom" width="201" x="481" y="251">
+   <component height="98" name="AADC_Lane_Detection_Custom" width="201" x="166" y="269">
     <input_pin name="Video_Input" />
     <output_pin name="Video_Output_Debug" />
     <output_pin name="GCL" />
    </component>
-   <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="873" y="232">
+   <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="697" y="248">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
    </component>
-   <component height="170" name="AADC_Sensor_Visualization" width="172" x="478" y="38">
+   <component height="170" name="AADC_Sensor_Visualization" width="172" x="559" y="702">
     <input_pin name="UltrasonicStruct" />
     <input_pin name="InerMeasUnitStruct" />
     <input_pin name="WheelLeftStruct" />
     <input_pin name="WheelRightStruct" />
     <input_pin name="VoltageStruct" />
    </component>
-   <component height="242" name="Harddisk_Player" width="172" x="86" y="189">
+   <component height="194" name="Harddisk_Player" width="172" x="86" y="189">
     <output_pin name="UltrasonicStruct" />
     <output_pin name="InerMeasUnitStruct" />
     <output_pin name="WheelLeftStruct" />
     <output_pin name="WheelRightStruct" />
     <output_pin name="VoltageStruct" />
     <output_pin name="Realsense_RGB" />
-    <output_pin name="Realsense_DepthRaw" />
-    <output_pin name="RearView_RGB" />
-    <property name="alias" type="string" value="Harddisk_Player" />
-    <property name="ask_for_references" type="bool" value="false" />
-    <property name="cached_sectors" type="int" value="2048" />
-    <property name="Category" type="int" value="14" />
-    <property name="ClassLabel" type="string" value="Harddisk Player" />
-    <property name="config_information" type="bool" value="true" />
-    <property name="ConfigId" type="string" value="CFG_MAIN" />
-    <property name="disable_timing_correction" type="bool" value="false" />
-    <property name="embedded_mode" type="bool" value="false" />
-    <property name="emulate_external_clocks" type="bool" value="true" />
-    <property name="enable_loop_mode" type="bool" value="false" />
-    <property name="enable_perf_log" type="bool" value="false" />
-    <property name="filename" type="file" value="../files/links_abbiegen_split_000.dat" />
-    <property name="Identifier" type="string" value="adtf.stg.harddisk_player" />
-    <property name="idref" type="string" value="adtf.stg.harddisk_player" />
-    <property name="ignore_unkown_classes" type="bool" value="false" />
-    <property name="keep_multiple_files_open" type="bool" value="false" />
-    <property name="load_references" type="bool" value="true" />
-    <property name="NamespaceType" type="string" value="/item/file/filter" />
-    <property name="perf_warning_treshold" type="int" value="500000" />
-    <property name="playback_rate" type="float" value="1" />
-    <property name="PluginDescriptionAvailable" type="bool" value="true" />
-    <property name="priority" type="int" value="1" />
-    <property name="queue_size" type="int" value="0" />
-    <property name="queue_time_span" type="int" value="1000000" />
-    <property name="reset_recording_time_offset" type="bool" value="true" />
-    <property name="send_forward_seek_reset_events" type="bool" value="true" />
-    <property name="start_paused" type="bool" value="false" />
    </component>
-   <connection dest="Scope_Display" dest_pin="servoAngle" reldiff="0" shape_type="4" source="Felix_RadiusToAngle_Controller" source_pin="angle" x_p2="879" x_p3="879" x_p4="940" x_p5="940" y_p2="0" y_p3="576" y_p4="576" y_p5="0" />
-   <connection dest="Felix_RadiusToAngle_Controller" dest_pin="radius" reldiff="0" shape_type="4" source="Float_Value_Generator" source_pin="floatValue" x_p2="568" x_p3="568" x_p4="629" x_p5="629" y_p2="0" y_p3="578" y_p4="578" y_p5="0" />
-   <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="293" x_p3="293" x_p4="371" x_p5="371" y_p2="0" y_p3="579" y_p4="579" y_p5="0" />
-   <connection dest="Realsense_RGB_Proc_Display" dest_pin="gcl_input" reldiff="0" shape_type="4" source="AADC_Lane_Detection_Custom" source_pin="GCL" x_p2="698" x_p3="698" x_p4="857" x_p5="857" y_p2="0" y_p3="298" y_p4="298" y_p5="0" />
-   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="4" source="AADC_Lane_Detection_Custom" source_pin="Video_Output_Debug" x_p2="694" x_p3="694" x_p4="860" x_p5="860" y_p2="0" y_p3="274" y_p4="274" y_p5="0" />
-   <connection dest="AADC_Lane_Detection_Custom" dest_pin="Video_Input" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="Realsense_RGB" x_p2="294" x_p3="294" x_p4="454" x_p5="454" y_p2="0" y_p3="293" y_p4="293" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="VoltageStruct" x_p2="294" x_p3="294" x_p4="357" x_p5="357" y_p2="0" y_p3="176" y_p4="176" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="WheelRightStruct" x_p2="302" x_p3="302" x_p4="361" x_p5="361" y_p2="0" y_p3="152" y_p4="152" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="WheelLeftStruct" x_p2="298" x_p3="298" x_p4="365" x_p5="365" y_p2="0" y_p3="128" y_p4="128" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="InerMeasUnitStruct" x_p2="278" x_p3="278" x_p4="369" x_p5="369" y_p2="0" y_p3="104" y_p4="104" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="UltrasonicStruct" x_p2="290" x_p3="290" x_p4="373" x_p5="373" y_p2="0" y_p3="80" y_p4="80" y_p5="0" />
+   <connection dest="Scope_Display" dest_pin="servoAngle" reldiff="0" shape_type="2" source="Felix_RadiusToAngle_Controller" source_pin="angle" x_p2="452" x_p3="452" x_p4="174" x_p5="174" y_p2="391" y_p3="744" y_p4="744" y_p5="331" />
+   <connection dest="Felix_RadiusToAngle_Controller" dest_pin="radius" reldiff="0" shape_type="1" source="Float_Value_Generator" source_pin="floatValue" x_p2="390" x_p3="390" x_p4="234" x_p5="234" y_p2="351" y_p3="744" y_p4="744" y_p5="391" />
+   <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="2" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="410" x_p3="410" x_p4="194" x_p5="194" y_p2="371" y_p3="744" y_p4="744" y_p5="351" />
+   <connection dest="Realsense_RGB_Proc_Display" dest_pin="gcl_input" reldiff="0" shape_type="4" source="AADC_Lane_Detection_Custom" source_pin="GCL" x_p2="383" x_p3="383" x_p4="681" x_p5="681" y_p2="0" y_p3="314" y_p4="314" y_p5="0" />
+   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="4" source="AADC_Lane_Detection_Custom" source_pin="Video_Output_Debug" x_p2="379" x_p3="379" x_p4="685" x_p5="685" y_p2="0" y_p3="290" y_p4="290" y_p5="0" />
+   <connection dest="AADC_Lane_Detection_Custom" dest_pin="Video_Input" reldiff="0" shape_type="2" source="Harddisk_Player" source_pin="Realsense_RGB" x_p2="290" x_p3="290" x_p4="154" x_p5="154" y_p2="351" y_p3="744" y_p4="744" y_p5="311" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="VoltageStruct" x_p2="294" x_p3="294" x_p4="357" x_p5="357" y_p2="0" y_p3="840" y_p4="840" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelRightStruct" x_p2="302" x_p3="302" x_p4="361" x_p5="361" y_p2="0" y_p3="816" y_p4="816" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelLeftStruct" x_p2="298" x_p3="298" x_p4="365" x_p5="365" y_p2="0" y_p3="792" y_p4="792" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="InerMeasUnitStruct" x_p2="278" x_p3="278" x_p4="369" x_p5="369" y_p2="0" y_p3="768" y_p4="768" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="UltrasonicStruct" x_p2="290" x_p3="290" x_p4="373" x_p5="373" y_p2="0" y_p3="744" y_p4="744" y_p5="0" />
   </configuration>
   <configuration horizontal_scrollbar_value="1" name="Recording" show="true" tab_pos="1" vertical_scrollbar_value="1" zoomfactor="1,000000">
    <component height="242" name="Live" width="172" x="32" y="32" />
@@ -201,13 +171,13 @@
    <connection dest="" dest_pin="Jury_Struct" reldiff="0" shape_type="4" source="Jury_Config" source_pin="Jury_Struct_raw" x_p2="510" x_p3="510" x_p4="556" x_p5="556" y_p2="0" y_p3="1374" y_p4="1374" y_p5="0" />
    <connection dest="Jury_Config" dest_pin="Driver_Struct_raw" reldiff="0" shape_type="3" source="" source_pin="Driver_Struct" x_p2="103" x_p3="103" x_p4="110" x_p5="110" y_p2="0" y_p3="1346" y_p4="1346" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Lane_Detection" show="true" tab_pos="3" vertical_scrollbar_value="1" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Lane_Detection" show="true" tab_pos="3" vertical_scrollbar_value="432" zoomfactor="1,000000">
    <component height="98" name="Video_Display3" width="172" x="431" y="553">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
    </component>
-   <component height="98" name="Video_Display2" width="172" x="773" y="552">
+   <component height="98" name="Video_Display2" width="172" x="426" y="439">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
@@ -220,28 +190,28 @@
    <component height="74" name="RearCam" width="172" x="36" y="444">
     <output_pin name="output" />
    </component>
-   <component height="98" name="AADC_Lane_Detection_Custom" width="201" x="546" y="147">
+   <component height="98" name="AADC_Lane_Detection_Custom" width="201" x="250" y="150">
     <input_pin name="Video_Input" />
     <output_pin name="Video_Output_Debug" />
     <output_pin name="GCL" />
    </component>
-   <component height="122" name="AADC_Realsense_Camera" width="172" x="71" y="172">
+   <component height="122" name="AADC_Realsense_Camera" width="172" x="7" y="185">
     <output_pin name="outputRGB" />
     <output_pin name="outputDepthRaw" />
     <output_pin name="outputDepthVisualization" />
    </component>
-   <component height="98" name="Lane_Detection_Display" width="172" x="863" y="162">
+   <component height="98" name="Lane_Detection_Display" width="172" x="598" y="154">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
    </component>
-   <connection dest="AADC_Lane_Detection_Custom" dest_pin="Video_Input" reldiff="0" shape_type="4" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="255" x_p3="255" x_p4="501" x_p5="501" y_p2="0" y_p3="189" y_p4="189" y_p5="0" />
-   <connection dest="Lane_Detection_Display" dest_pin="gcl_input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="GCL" x_p2="763" x_p3="763" x_p4="830" x_p5="830" y_p2="0" y_p3="228" y_p4="228" y_p5="0" />
-   <connection dest="Lane_Detection_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="Video_Output_Debug" x_p2="759" x_p3="759" x_p4="789" x_p5="789" y_p2="0" y_p3="204" y_p4="204" y_p5="0" />
    <connection dest="Video_Display3" dest_pin="input" reldiff="0" shape_type="3" source="RearCam" source_pin="output" x_p2="220" x_p3="220" x_p4="419" x_p5="419" y_p2="0" y_p3="595" y_p4="595" y_p5="0" />
-   <connection dest="Video_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="255" x_p3="255" x_p4="417" x_p5="417" y_p2="0" y_p3="347" y_p4="347" y_p5="0" />
+   <connection dest="Video_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="191" x_p3="191" x_p4="417" x_p5="417" y_p2="0" y_p3="347" y_p4="347" y_p5="0" />
+   <connection dest="Lane_Detection_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="Video_Output_Debug" x_p2="463" x_p3="463" x_p4="549" x_p5="549" y_p2="0" y_p3="196" y_p4="196" y_p5="0" />
+   <connection dest="AADC_Lane_Detection_Custom" dest_pin="Video_Input" reldiff="0" shape_type="4" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="191" x_p3="191" x_p4="213" x_p5="213" y_p2="0" y_p3="192" y_p4="192" y_p5="0" />
+   <connection dest="Lane_Detection_Display" dest_pin="gcl_input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom" source_pin="GCL" x_p2="467" x_p3="467" x_p4="528" x_p5="528" y_p2="0" y_p3="220" y_p4="220" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="7" name="Jury_Config" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="8" name="Jury_Config" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="1,000000">
    <component height="50" name="dummy" width="60" x="254" y="387" />
    <component height="50" name="Jury_ManeuverList_raw" width="275" x="522" y="158" />
    <component height="50" name="Jury_ManeuverList_Loopback_raw" width="333" x="52" y="164" />
@@ -279,7 +249,7 @@
    <connection dest="AADC_Marker_Detector" dest_pin="Video_RGB_input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="207" x_p3="207" x_p4="306" x_p5="306" y_p2="0" y_p3="141" y_p4="141" y_p5="0" />
    <connection dest="Basler_RGB_Marker_Display" dest_pin="gcl_input" reldiff="0" shape_type="3" source="AADC_Marker_Detector" source_pin="GCL_Markers" x_p2="636" x_p3="636" x_p4="682" x_p5="682" y_p2="0" y_p3="315" y_p4="315" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Live" show="true" tab_pos="6" vertical_scrollbar_value="1" zoomfactor="0,694444">
+  <configuration horizontal_scrollbar_value="1" name="Live" show="true" tab_pos="6" vertical_scrollbar_value="565" zoomfactor="0,694444">
    <component height="50" name="Realsense_DepthRaw" width="135" x="935" y="23" />
    <component height="50" name="RearView_outputRGB" width="133" x="252" y="1172" />
    <component height="50" name="Realsense_outputRGB" width="138" x="935" y="235" />
@@ -390,29 +360,29 @@
    <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="VoltageStruct" x_p2="722" x_p3="722" x_p4="1129" x_p5="1129" y_p2="0" y_p3="174" y_p4="174" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="UltrasonicStruct" x_p2="726" x_p3="726" x_p4="1145" x_p5="1145" y_p2="0" y_p3="78" y_p4="78" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Wheel_Converter" show="true" tab_pos="7" vertical_scrollbar_value="1" zoomfactor="0,833333">
-   <component height="74" name="AADC_Watchdog_Trigger2" width="172" x="24" y="277">
+  <configuration horizontal_scrollbar_value="23" name="Wheel_Converter" show="true" tab_pos="7" vertical_scrollbar_value="1" zoomfactor="1,000000">
+   <component height="74" name="Felix_AngleToServo_Converter" width="189" x="464" y="32">
+    <input_pin name="angle" />
+    <output_pin name="servoValue" />
+   </component>
+   <component height="74" name="AADC_Watchdog_Trigger2" width="172" x="32" y="32">
     <output_pin name="WatchdogAliveSignal" />
    </component>
-   <component height="74" name="Float_Value_Generator2" width="172" x="267" y="276">
+   <component height="74" name="Float_Value_Generator2" width="172" x="244" y="32">
     <input_pin name="WatchdogAlive" />
     <output_pin name="floatValue" />
    </component>
-   <component height="74" name="AADC_Watchdog_Trigger3" width="172" x="464" y="458">
+   <component height="74" name="AADC_Watchdog_Trigger3" width="172" x="464" y="244">
     <output_pin name="WatchdogAliveSignal" />
    </component>
-   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="14" y="124">
+   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="244" y="138">
     <output_pin name="WatchdogAliveSignal" />
    </component>
-   <component height="74" name="Float_Value_Generator" width="172" x="260" y="124">
+   <component height="74" name="Float_Value_Generator" width="172" x="464" y="138">
     <input_pin name="WatchdogAlive" />
     <output_pin name="floatValue" />
    </component>
-   <component height="74" name="Felix_RadiusToAngle_Controller" width="194" x="490" y="276">
-    <input_pin name="radius" />
-    <output_pin name="angle" />
-   </component>
-   <component height="170" name="AADC_Converter_Wheels_Custom_" width="280" x="1219" y="216">
+   <component height="170" name="AADC_Converter_Wheels_Custom_" width="280" x="1099" y="234">
     <input_pin name="SpeedController_Struct" />
     <input_pin name="WheelLeft_Struct" />
     <input_pin name="WheelRight_Struct" />
@@ -422,14 +392,14 @@
     <output_pin name="distance_lastSample" />
     <output_pin name="distance_overall" />
    </component>
-   <component height="170" name="AADC_Sensor_Visualization" width="172" x="1281" y="501">
+   <component height="170" name="AADC_Sensor_Visualization" width="172" x="1099" y="32">
     <input_pin name="UltrasonicStruct" />
     <input_pin name="InerMeasUnitStruct" />
     <input_pin name="WheelLeftStruct" />
     <input_pin name="WheelRightStruct" />
     <input_pin name="VoltageStruct" />
    </component>
-   <component height="410" name="AADC_Arduino_Communication" width="302" x="799" y="127">
+   <component height="410" name="AADC_Arduino_Communication" width="302" x="709" y="32">
     <input_pin name="SpeedController" />
     <input_pin name="SteeringController" />
     <input_pin name="headLightEnabled" />
@@ -458,48 +428,48 @@
     <output_pin name="WheelRightStruct" />
     <output_pin name="VoltageStruct" />
    </component>
-   <connection dest="Float_Value_Generator2" dest_pin="WatchdogAlive" reldiff="0" shape_type="4" source="AADC_Watchdog_Trigger2" source_pin="WatchdogAliveSignal" x_p2="208" x_p3="208" x_p4="255" x_p5="255" y_p2="0" y_p3="318" y_p4="318" y_p5="0" />
-   <connection dest="Felix_RadiusToAngle_Controller" dest_pin="radius" reldiff="0" shape_type="3" source="Float_Value_Generator2" source_pin="floatValue" x_p2="451" x_p3="451" x_p4="478" x_p5="478" y_p2="0" y_p3="318" y_p4="318" y_p5="0" />
-   <connection dest="AADC_Arduino_Communication" dest_pin="WatchdogAlive" reldiff="0" shape_type="4" source="AADC_Watchdog_Trigger3" source_pin="WatchdogAliveSignal" x_p2="648" x_p3="648" x_p4="747" x_p5="747" y_p2="0" y_p3="469" y_p4="469" y_p5="0" />
-   <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="198" x_p3="198" x_p4="248" x_p5="248" y_p2="0" y_p3="166" y_p4="166" y_p5="0" />
-   <connection dest="AADC_Arduino_Communication" dest_pin="SpeedController" reldiff="0" shape_type="3" source="Float_Value_Generator" source_pin="floatValue" x_p2="444" x_p3="444" x_p4="665" x_p5="665" y_p2="0" y_p3="169" y_p4="169" y_p5="0" />
-   <connection dest="AADC_Arduino_Communication" dest_pin="SteeringController" reldiff="0" shape_type="4" source="Felix_RadiusToAngle_Controller" source_pin="angle" x_p2="696" x_p3="696" x_p4="783" x_p5="783" y_p2="0" y_p3="199" y_p4="199" y_p5="0" />
-   <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelRight_Struct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelRightStruct" x_p2="1165" x_p3="1165" x_p4="1189" x_p5="1189" y_p2="0" y_p3="338" y_p4="338" y_p5="0" />
-   <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelLeft_Struct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelLeftStruct" x_p2="1161" x_p3="1161" x_p4="1178" x_p5="1178" y_p2="0" y_p3="298" y_p4="298" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="VoltageStruct" x_p2="1169" x_p3="1169" x_p4="1227" x_p5="1227" y_p2="0" y_p3="639" y_p4="639" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="WheelRightStruct" x_p2="1165" x_p3="1165" x_p4="1195" x_p5="1195" y_p2="0" y_p3="615" y_p4="615" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="WheelLeftStruct" x_p2="1161" x_p3="1161" x_p4="1199" x_p5="1199" y_p2="0" y_p3="591" y_p4="591" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="InerMeasUnitStruct" x_p2="1157" x_p3="1157" x_p4="1203" x_p5="1203" y_p2="0" y_p3="567" y_p4="567" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="UltrasonicStruct" x_p2="1153" x_p3="1153" x_p4="1207" x_p5="1207" y_p2="0" y_p3="543" y_p4="543" y_p5="0" />
+   <connection dest="AADC_Arduino_Communication" dest_pin="SteeringController" reldiff="0" shape_type="3" source="Felix_AngleToServo_Converter" source_pin="servoValue" x_p2="665" x_p3="665" x_p4="665" x_p5="665" y_p2="0" y_p3="104" y_p4="104" y_p5="0" />
+   <connection dest="Felix_AngleToServo_Converter" dest_pin="angle" reldiff="0" shape_type="3" source="Float_Value_Generator2" source_pin="floatValue" x_p2="428" x_p3="428" x_p4="428" x_p5="428" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
+   <connection dest="Float_Value_Generator2" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger2" source_pin="WatchdogAliveSignal" x_p2="216" x_p3="216" x_p4="216" x_p5="216" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
+   <connection dest="AADC_Arduino_Communication" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger3" source_pin="WatchdogAliveSignal" x_p2="656" x_p3="656" x_p4="656" x_p5="656" y_p2="0" y_p3="374" y_p4="374" y_p5="0" />
+   <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="432" x_p3="432" x_p4="432" x_p5="432" y_p2="0" y_p3="180" y_p4="180" y_p5="0" />
+   <connection dest="AADC_Arduino_Communication" dest_pin="SpeedController" reldiff="0" shape_type="4" source="Float_Value_Generator" source_pin="floatValue" x_p2="670" x_p3="670" x_p4="670" x_p5="670" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
+   <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelRight_Struct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelRightStruct" x_p2="1075" x_p3="1075" x_p4="1079" x_p5="1079" y_p2="0" y_p3="356" y_p4="356" y_p5="0" />
+   <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelLeft_Struct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelLeftStruct" x_p2="1071" x_p3="1071" x_p4="1083" x_p5="1083" y_p2="0" y_p3="316" y_p4="316" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="VoltageStruct" x_p2="1079" x_p3="1079" x_p4="1071" x_p5="1071" y_p2="0" y_p3="170" y_p4="170" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelRightStruct" x_p2="1075" x_p3="1075" x_p4="1075" x_p5="1075" y_p2="0" y_p3="146" y_p4="146" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelLeftStruct" x_p2="1071" x_p3="1071" x_p4="1079" x_p5="1079" y_p2="0" y_p3="122" y_p4="122" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="InerMeasUnitStruct" x_p2="1067" x_p3="1067" x_p4="1083" x_p5="1083" y_p2="0" y_p3="98" y_p4="98" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="UltrasonicStruct" x_p2="1063" x_p3="1063" x_p4="1087" x_p5="1087" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Live2" show="true" tab_pos="8" vertical_scrollbar_value="439" zoomfactor="0,694444">
-   <component height="50" name="Realsense_DepthRaw" width="135" x="559" y="120" />
-   <component height="50" name="RearView_outputRGB" width="133" x="252" y="1172" />
-   <component height="50" name="Realsense_outputRGB" width="138" x="563" y="59" />
-   <component height="50" name="VoltageStruct" width="91" x="935" y="721" />
-   <component height="50" name="WheelRightStruct" width="112" x="935" y="803" />
-   <component height="50" name="WheelLeftStruct" width="105" x="935" y="885" />
-   <component height="50" name="InerMeasUnitStruct" width="126" x="935" y="967" />
-   <component height="50" name="UltrasonicStruct" width="106" x="935" y="1049" />
-   <component height="482" name="Base_Config" width="304" x="333" y="476" />
-   <component height="74" name="Table_Display" width="172" x="919" y="1411">
+  <configuration horizontal_scrollbar_value="1" name="Live2" show="true" tab_pos="8" vertical_scrollbar_value="1" zoomfactor="0,694444">
+   <component height="50" name="Realsense_DepthRaw" width="135" x="305" y="175" />
+   <component height="50" name="RearView_outputRGB" width="133" x="916" y="439" />
+   <component height="50" name="Realsense_outputRGB" width="138" x="308" y="124" />
+   <component height="50" name="VoltageStruct" width="91" x="1191" y="1103" />
+   <component height="50" name="WheelRightStruct" width="112" x="1175" y="1156" />
+   <component height="50" name="WheelLeftStruct" width="105" x="1187" y="1207" />
+   <component height="50" name="InerMeasUnitStruct" width="126" x="1188" y="1266" />
+   <component height="50" name="UltrasonicStruct" width="106" x="1211" y="1320" />
+   <component height="482" name="Base_Config" width="304" x="537" y="598" />
+   <component height="74" name="Table_Display" width="172" x="931" y="241">
     <input_pin name="angle" />
    </component>
-   <component height="74" name="Felix_RadiusToAngle_Controller" width="194" x="517" y="1409">
+   <component height="74" name="Felix_RadiusToAngle_Controller" width="194" x="495" y="336">
     <input_pin name="radius" />
     <output_pin name="angle" />
    </component>
-   <component height="122" name="AADC_Realsense_Camera_Felix" width="195" x="275" y="71">
+   <component height="122" name="AADC_Realsense_Camera_Felix" width="195" x="19" y="122">
     <output_pin name="outputRGB" />
     <output_pin name="outputDepthRaw" />
     <output_pin name="outputDepthVisualization" />
    </component>
-   <component height="98" name="GRP2_Test_Filter" width="184" x="509" y="1228">
+   <component height="98" name="GRP2_Test_Filter" width="184" x="1070" y="490">
     <input_pin name="Video_Input" />
     <input_pin name="UltrasonicStruct" />
     <output_pin name="Video_Output" />
    </component>
-   <component height="242" name="AADC_AHRS_Calculator" width="303" x="935" y="447">
+   <component height="242" name="AADC_AHRS_Calculator" width="303" x="977" y="682">
     <input_pin name="InerMeasUnit_Struct" />
     <output_pin name="Roll" />
     <output_pin name="Pitch" />
@@ -510,20 +480,20 @@
     <output_pin name="Q3z" />
     <output_pin name="InerMeasUnit_Struct_Updated" />
    </component>
-   <component height="98" name="AADC_Driver_Module" width="174" x="40" y="354">
+   <component height="98" name="AADC_Driver_Module" width="174" x="279" y="1188">
     <input_pin name="Jury_Struct" />
     <input_pin name="Maneuver_List" />
     <output_pin name="Driver_Struct" />
    </component>
-   <component height="98" name="RearCam_Display" width="172" x="920" y="1227">
+   <component height="98" name="RearCam_Display" width="172" x="1324" y="489">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
    </component>
-   <component height="74" name="RearCam" width="172" x="30" y="1173">
+   <component height="74" name="RearCam" width="172" x="574" y="488">
     <output_pin name="output" />
    </component>
-   <component height="290" name="AADC_Car_Controller" width="172" x="40" y="32">
+   <component height="290" name="AADC_Car_Controller" width="172" x="32" y="488">
     <output_pin name="SpeedController" />
     <output_pin name="SteeringController" />
     <output_pin name="headLightEnabled" />
@@ -535,61 +505,61 @@
     <output_pin name="USSFrontEnabled" />
     <output_pin name="USSRearEnabled" />
    </component>
-   <component height="170" name="AADC_Sensor_Visualization" width="172" x="1348" y="36">
+   <component height="170" name="AADC_Sensor_Visualization" width="172" x="1623" y="885">
     <input_pin name="UltrasonicStruct" />
     <input_pin name="InerMeasUnitStruct" />
     <input_pin name="WheelLeftStruct" />
     <input_pin name="WheelRightStruct" />
     <input_pin name="VoltageStruct" />
    </component>
-   <component height="98" name="Realsense_Depth_Display" width="172" x="999" y="217">
+   <component height="98" name="Realsense_Depth_Display" width="172" x="495" y="200">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
    </component>
-   <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="983" y="334">
+   <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="494" y="45">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
    </component>
-   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="50" y="592">
+   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="25" y="957">
     <output_pin name="WatchdogAliveSignal" />
    </component>
-   <connection dest="Table_Display" dest_pin="angle" reldiff="0" shape_type="3" source="Felix_RadiusToAngle_Controller" source_pin="angle" x_p2="723" x_p3="723" x_p4="905" x_p5="905" y_p2="0" y_p3="1453" y_p4="1453" y_p5="0" />
-   <connection dest="Felix_RadiusToAngle_Controller" dest_pin="radius" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="SteeringController" x_p2="253" x_p3="253" x_p4="505" x_p5="505" y_p2="0" y_p3="1451" y_p4="1451" y_p5="0" />
-   <connection dest="" dest_pin="Realsense_outputRGB" reldiff="0" shape_type="4" source="AADC_Realsense_Camera_Felix" source_pin="outputRGB" x_p2="482" x_p3="482" x_p4="575" x_p5="575" y_p2="0" y_p3="72" y_p4="72" y_p5="0" />
-   <connection dest="" dest_pin="Realsense_DepthRaw" reldiff="0" shape_type="4" source="AADC_Realsense_Camera_Felix" source_pin="outputDepthRaw" x_p2="486" x_p3="486" x_p4="576" x_p5="576" y_p2="0" y_p3="133" y_p4="133" y_p5="0" />
-   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera_Felix" source_pin="outputRGB" x_p2="482" x_p3="482" x_p4="934" x_p5="934" y_p2="0" y_p3="376" y_p4="376" y_p5="0" />
-   <connection dest="Realsense_Depth_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera_Felix" source_pin="outputDepthVisualization" x_p2="490" x_p3="490" x_p4="759" x_p5="759" y_p2="0" y_p3="259" y_p4="259" y_p5="0" />
-   <connection dest="RearCam_Display" dest_pin="input" reldiff="0" shape_type="4" source="GRP2_Test_Filter" source_pin="Video_Output" x_p2="705" x_p3="705" x_p4="710" x_p5="710" y_p2="0" y_p3="1269" y_p4="1269" y_p5="0" />
-   <connection dest="GRP2_Test_Filter" dest_pin="UltrasonicStruct" reldiff="0" shape_type="1" source="Base_Config" source_pin="UltrasonicStruct" x_p2="717" x_p3="717" x_p4="280" x_p5="280" y_p2="926" y_p3="1256" y_p4="1256" y_p5="1294" />
-   <connection dest="GRP2_Test_Filter" dest_pin="Video_Input" reldiff="0" shape_type="3" source="RearCam" source_pin="output" x_p2="214" x_p3="214" x_p4="220" x_p5="220" y_p2="0" y_p3="1270" y_p4="1270" y_p5="0" />
-   <connection dest="" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="UltrasonicStruct" x_p2="717" x_p3="717" x_p4="807" x_p5="807" y_p2="0" y_p3="1062" y_p4="1062" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="4" source="AADC_AHRS_Calculator" source_pin="InerMeasUnit_Struct_Updated" x_p2="1278" x_p3="1278" x_p4="1286" x_p5="1286" y_p2="0" y_p3="102" y_p4="102" y_p5="0" />
-   <connection dest="AADC_AHRS_Calculator" dest_pin="InerMeasUnit_Struct" reldiff="0" shape_type="4" source="Base_Config" source_pin="InerMeasUnitStruct" x_p2="693" x_p3="693" x_p4="769" x_p5="769" y_p2="0" y_p3="489" y_p4="489" y_p5="0" />
-   <connection dest="" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="InerMeasUnitStruct" x_p2="693" x_p3="693" x_p4="817" x_p5="817" y_p2="0" y_p3="980" y_p4="980" y_p5="0" />
-   <connection dest="" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="WheelLeftStruct" x_p2="697" x_p3="697" x_p4="806" x_p5="806" y_p2="0" y_p3="898" y_p4="898" y_p5="0" />
-   <connection dest="" dest_pin="WheelRightStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="WheelRightStruct" x_p2="701" x_p3="701" x_p4="810" x_p5="810" y_p2="0" y_p3="816" y_p4="816" y_p5="0" />
-   <connection dest="" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="VoltageStruct" x_p2="713" x_p3="713" x_p4="799" x_p5="799" y_p2="0" y_p3="734" y_p4="734" y_p5="0" />
-   <connection dest="" dest_pin="RearView_outputRGB" reldiff="0" shape_type="4" source="RearCam" source_pin="output" x_p2="214" x_p3="214" x_p4="288" x_p5="288" y_p2="0" y_p3="1185" y_p4="1185" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="270" x_p3="270" x_p4="270" x_p5="270" y_p2="0" y_p3="881" y_p4="881" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="Driver_Struct" reldiff="0" shape_type="3" source="AADC_Driver_Module" source_pin="Driver_Struct" x_p2="226" x_p3="226" x_p4="226" x_p5="226" y_p2="0" y_p3="749" y_p4="749" y_p5="0" />
-   <connection dest="AADC_Driver_Module" dest_pin="Maneuver_List" reldiff="0" shape_type="2" source="Base_Config" source_pin="Jury_ManeuverList" x_p2="709" x_p3="709" x_p4="15" x_p5="15" y_p2="878" y_p3="991" y_p4="991" y_p5="420" />
-   <connection dest="AADC_Driver_Module" dest_pin="Jury_Struct" reldiff="0" shape_type="2" source="Base_Config" source_pin="Jury_Struct" x_p2="665" x_p3="665" x_p4="19" x_p5="19" y_p2="518" y_p3="974" y_p4="974" y_p5="396" />
-   <connection dest="Base_Config" dest_pin="USSRearEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="USSRearEnabled" x_p2="260" x_p3="260" x_p4="260" x_p5="260" y_p2="0" y_p3="848" y_p4="848" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="USSFrontEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="USSFrontEnabled" x_p2="256" x_p3="256" x_p4="256" x_p5="256" y_p2="0" y_p3="815" y_p4="815" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="hazzardLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="hazzardLightEnabled" x_p2="252" x_p3="252" x_p4="252" x_p5="252" y_p2="0" y_p3="782" y_p4="782" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="turnSignalRightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="turnSignalRightEnabled" x_p2="248" x_p3="248" x_p4="248" x_p5="248" y_p2="0" y_p3="650" y_p4="650" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="turnSignalLeftEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="turnSignalLeftEnabled" x_p2="244" x_p3="244" x_p4="244" x_p5="244" y_p2="0" y_p3="716" y_p4="716" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="reverseLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="reverseLightEnabled" x_p2="240" x_p3="240" x_p4="240" x_p5="240" y_p2="0" y_p3="683" y_p4="683" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="brakeLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="brakeLightEnabled" x_p2="236" x_p3="236" x_p4="236" x_p5="236" y_p2="0" y_p3="518" y_p4="518" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="headLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="headLightEnabled" x_p2="232" x_p3="232" x_p4="232" x_p5="232" y_p2="0" y_p3="584" y_p4="584" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="SteeringController" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="SteeringController" x_p2="228" x_p3="228" x_p4="228" x_p5="228" y_p2="0" y_p3="617" y_p4="617" y_p5="0" />
-   <connection dest="Base_Config" dest_pin="SpeedController" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="SpeedController" x_p2="224" x_p3="224" x_p4="224" x_p5="224" y_p2="0" y_p3="551" y_p4="551" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="WheelLeftStruct" x_p2="697" x_p3="697" x_p4="1124" x_p5="1124" y_p2="0" y_p3="126" y_p4="126" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="WheelRightStruct" x_p2="701" x_p3="701" x_p4="1124" x_p5="1124" y_p2="0" y_p3="150" y_p4="150" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="VoltageStruct" x_p2="713" x_p3="713" x_p4="1120" x_p5="1120" y_p2="0" y_p3="174" y_p4="174" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="UltrasonicStruct" x_p2="717" x_p3="717" x_p4="1136" x_p5="1136" y_p2="0" y_p3="78" y_p4="78" y_p5="0" />
+   <connection dest="Table_Display" dest_pin="angle" reldiff="0" shape_type="4" source="Felix_RadiusToAngle_Controller" source_pin="angle" x_p2="835" x_p3="835" x_p4="919" x_p5="919" y_p2="0" y_p3="283" y_p4="283" y_p5="0" />
+   <connection dest="Felix_RadiusToAngle_Controller" dest_pin="radius" reldiff="0" shape_type="4" source="AADC_Car_Controller" source_pin="SteeringController" x_p2="325" x_p3="325" x_p4="375" x_p5="375" y_p2="0" y_p3="378" y_p4="378" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="SteeringController" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="SteeringController" x_p2="220" x_p3="220" x_p4="513" x_p5="513" y_p2="0" y_p3="739" y_p4="739" y_p5="0" />
+   <connection dest="" dest_pin="Realsense_outputRGB" reldiff="0" shape_type="4" source="AADC_Realsense_Camera_Felix" source_pin="outputRGB" x_p2="226" x_p3="226" x_p4="230" x_p5="230" y_p2="0" y_p3="137" y_p4="137" y_p5="0" />
+   <connection dest="" dest_pin="Realsense_DepthRaw" reldiff="0" shape_type="3" source="AADC_Realsense_Camera_Felix" source_pin="outputDepthRaw" x_p2="234" x_p3="234" x_p4="276" x_p5="276" y_p2="0" y_p3="188" y_p4="188" y_p5="0" />
+   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="4" source="AADC_Realsense_Camera_Felix" source_pin="outputRGB" x_p2="230" x_p3="230" x_p4="279" x_p5="279" y_p2="0" y_p3="87" y_p4="87" y_p5="0" />
+   <connection dest="Realsense_Depth_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera_Felix" source_pin="outputDepthVisualization" x_p2="234" x_p3="234" x_p4="266" x_p5="266" y_p2="0" y_p3="242" y_p4="242" y_p5="0" />
+   <connection dest="RearCam_Display" dest_pin="input" reldiff="0" shape_type="4" source="GRP2_Test_Filter" source_pin="Video_Output" x_p2="1266" x_p3="1266" x_p4="1304" x_p5="1304" y_p2="0" y_p3="531" y_p4="531" y_p5="0" />
+   <connection dest="GRP2_Test_Filter" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="UltrasonicStruct" x_p2="921" x_p3="921" x_p4="953" x_p5="953" y_p2="0" y_p3="556" y_p4="556" y_p5="0" />
+   <connection dest="GRP2_Test_Filter" dest_pin="Video_Input" reldiff="0" shape_type="3" source="RearCam" source_pin="output" x_p2="878" x_p3="878" x_p4="878" x_p5="878" y_p2="0" y_p3="532" y_p4="532" y_p5="0" />
+   <connection dest="" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="UltrasonicStruct" x_p2="921" x_p3="921" x_p4="995" x_p5="995" y_p2="0" y_p3="1333" y_p4="1333" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="AADC_AHRS_Calculator" source_pin="InerMeasUnit_Struct_Updated" x_p2="1320" x_p3="1320" x_p4="1328" x_p5="1328" y_p2="0" y_p3="951" y_p4="951" y_p5="0" />
+   <connection dest="AADC_AHRS_Calculator" dest_pin="InerMeasUnit_Struct" reldiff="0" shape_type="4" source="Base_Config" source_pin="InerMeasUnitStruct" x_p2="897" x_p3="897" x_p4="943" x_p5="943" y_p2="0" y_p3="724" y_p4="724" y_p5="0" />
+   <connection dest="" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="InerMeasUnitStruct" x_p2="897" x_p3="897" x_p4="1005" x_p5="1005" y_p2="0" y_p3="1279" y_p4="1279" y_p5="0" />
+   <connection dest="" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="WheelLeftStruct" x_p2="901" x_p3="901" x_p4="994" x_p5="994" y_p2="0" y_p3="1220" y_p4="1220" y_p5="0" />
+   <connection dest="" dest_pin="WheelRightStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="WheelRightStruct" x_p2="905" x_p3="905" x_p4="998" x_p5="998" y_p2="0" y_p3="1169" y_p4="1169" y_p5="0" />
+   <connection dest="" dest_pin="VoltageStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="VoltageStruct" x_p2="917" x_p3="917" x_p4="987" x_p5="987" y_p2="0" y_p3="1116" y_p4="1116" y_p5="0" />
+   <connection dest="" dest_pin="RearView_outputRGB" reldiff="0" shape_type="4" source="RearCam" source_pin="output" x_p2="878" x_p3="878" x_p4="878" x_p5="878" y_p2="0" y_p3="452" y_p4="452" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="221" x_p3="221" x_p4="291" x_p5="291" y_p2="0" y_p3="1003" y_p4="1003" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="Driver_Struct" reldiff="0" shape_type="4" source="AADC_Driver_Module" source_pin="Driver_Struct" x_p2="465" x_p3="465" x_p4="466" x_p5="466" y_p2="0" y_p3="871" y_p4="871" y_p5="0" />
+   <connection dest="AADC_Driver_Module" dest_pin="Maneuver_List" reldiff="0" shape_type="1" source="Base_Config" source_pin="Jury_ManeuverList" x_p2="913" x_p3="913" x_p4="220" x_p5="220" y_p2="1000" y_p3="1357" y_p4="1357" y_p5="1254" />
+   <connection dest="AADC_Driver_Module" dest_pin="Jury_Struct" reldiff="0" shape_type="1" source="Base_Config" source_pin="Jury_Struct" x_p2="861" x_p3="861" x_p4="217" x_p5="217" y_p2="640" y_p3="1334" y_p4="1334" y_p5="1230" />
+   <connection dest="Base_Config" dest_pin="USSRearEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="USSRearEnabled" x_p2="252" x_p3="252" x_p4="438" x_p5="438" y_p2="0" y_p3="970" y_p4="970" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="USSFrontEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="USSFrontEnabled" x_p2="248" x_p3="248" x_p4="442" x_p5="442" y_p2="0" y_p3="937" y_p4="937" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="hazzardLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="hazzardLightEnabled" x_p2="244" x_p3="244" x_p4="446" x_p5="446" y_p2="0" y_p3="904" y_p4="904" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="turnSignalRightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="turnSignalRightEnabled" x_p2="240" x_p3="240" x_p4="462" x_p5="462" y_p2="0" y_p3="772" y_p4="772" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="turnSignalLeftEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="turnSignalLeftEnabled" x_p2="236" x_p3="236" x_p4="454" x_p5="454" y_p2="0" y_p3="838" y_p4="838" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="reverseLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="reverseLightEnabled" x_p2="232" x_p3="232" x_p4="458" x_p5="458" y_p2="0" y_p3="805" y_p4="805" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="brakeLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="brakeLightEnabled" x_p2="228" x_p3="228" x_p4="478" x_p5="478" y_p2="0" y_p3="640" y_p4="640" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="headLightEnabled" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="headLightEnabled" x_p2="224" x_p3="224" x_p4="470" x_p5="470" y_p2="0" y_p3="706" y_p4="706" y_p5="0" />
+   <connection dest="Base_Config" dest_pin="SpeedController" reldiff="0" shape_type="3" source="AADC_Car_Controller" source_pin="SpeedController" x_p2="216" x_p3="216" x_p4="474" x_p5="474" y_p2="0" y_p3="673" y_p4="673" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="WheelLeftStruct" x_p2="901" x_p3="901" x_p4="1320" x_p5="1320" y_p2="0" y_p3="975" y_p4="975" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="WheelRightStruct" x_p2="1293" x_p3="1293" x_p4="1349" x_p5="1349" y_p2="0" y_p3="999" y_p4="999" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="VoltageStruct" x_p2="917" x_p3="917" x_p4="1324" x_p5="1324" y_p2="0" y_p3="1023" y_p4="1023" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="UltrasonicStruct" x_p2="1288" x_p3="1288" x_p4="1361" x_p5="1361" y_p2="0" y_p3="927" y_p4="927" y_p5="0" />
   </configuration>
  </ce_layouts>
 </adtf:configuration>
