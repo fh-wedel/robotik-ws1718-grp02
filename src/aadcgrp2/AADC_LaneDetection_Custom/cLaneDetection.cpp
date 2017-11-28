@@ -368,6 +368,17 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
         if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
             houghVote = 300;
         }
+<<<<<<< HEAD
+        else{ houghVote += 25;}
+        while(lines.size() < 4 && houghVote > 0){
+          cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, 3.1415/180, houghVote);
+          hough->detect(contours, tmpLines);
+          hough->downloadResults(tmpLines, lines);
+            //cv::cuda::HoughLines(contours,lines,1,3.1415/180, houghVote);
+            houghVote -= 5;
+            
+            
+=======
         else {
           houghVote += 25;
         }
@@ -379,6 +390,7 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
     			hough->detect(contours, GpuMatLines);
     			hough->downloadResults(GpuMatLines, lines);
           houghVote -= 5;
+>>>>>>> 21762758738efacbc1190d9aa8a7a63526da9e73
         }
         std::cout << houghVote << "\n";
         cv::cuda::GpuMat result(image.size(),CV_8U,Scalar(255));
