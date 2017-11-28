@@ -240,7 +240,7 @@ Fertigstellung des `FloatValueGenerator` und Fehlersuche für den `RadiusToAngle
 
 **14:00 bis 15:30 Uhr - Felix, Franz, Frauke und Jan:**  
 Mapping von Angle auf ServoValue im `RadiusToAngleConverter` erstellt.
-Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien zusammenzufassen, da auf einem Fahrstreifen Mehrere Linien erkannt werden. Hierzu wird cv::partition() und eine eigene hilfsmethode isEqual() verwendet. 
+Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien erstellt, da für eine Fahrbahnmarkierung mehrere Linien erkannt werden. Hierzu wird `cv::partition()` und eine eigene Hilfsmethode `isEqual()` verwendet. 
 
 **15:30 bis 16:45 Uhr - Frauke und Jan:**  
 S.o.
@@ -250,3 +250,12 @@ Test des `RadiusToAngleConverter`.
 Inbetriebnahme des Fahrzeugs war geplant. Jedoch hat die Hardware versagt. Erst wollte Ubuntu nich mehr booten (im Recovery-Mode gings :]), danach klappte VNC nicht mehr.
 
 Insofern muss der Test auf morgen verschoben werden.
+
+
+----
+
+
+### Dienstag, 28.11.
+**21:00 bis 22:30 Uhr - Felix:**  
+Felix hat den Converter in zwei Teile aufgetrennt. Wir können nun sowohl von einem **Radius zu einem Winkel**, als auch von einem **Winkel zu einem Servo-Stellwert** konvertieren.  
+Diese Auftrennung ist sinnvoll, da Jan und Frauke anstatt Radien lieber Winkel ausgeben möchten.
