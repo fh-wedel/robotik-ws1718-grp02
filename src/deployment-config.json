@@ -1,0 +1,9 @@
+{
+    "type": "sftp",
+    "host": "172.16.6.202",
+    "username": "aadc",
+    "password": "aadc2017",
+    "port": 22,
+    "remotePath": "/home/aadc/ADTF/src/",
+    "uploadOnSave": false
+}

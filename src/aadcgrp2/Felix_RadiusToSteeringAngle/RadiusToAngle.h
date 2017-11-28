@@ -109,12 +109,6 @@ private:
 
     /*! media description for the Radius input pin */
     cObjectPtr<IMediaTypeDescription> m_RadiusDescription;
-    /*! the id for the f32value of the media description for input pin for the radius */
-    tBufferID m_RadiusDescriptionID;
-    /*! the id for the arduino timestamp of the media description for input pin for the radius */
-    tBufferID m_RadiusTimestampID;
-    /*! indicates of bufferIDs were set */
-    tBool m_RadiusDescriptionIsInitialized;
 
 // For encoding angle output
 
@@ -129,8 +123,12 @@ private:
 // Own Helper Functions
 
     tFloat32 readRadius(IMediaSample* pMediaSample);
-    tFloat32 convertToAngle(tFloat32 radius);
+    tFloat32 convertRadiusToAngle(tFloat32 radius);
+    tFloat32 convertAngleToServoValue(tFloat32 angle);
+
     tResult transmitAngle(tFloat32 angle);
+
+
 
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
