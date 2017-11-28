@@ -227,14 +227,16 @@ Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegan
 
 
 
-### Montag, 26.11.
+### Montag, 27.11.
 **10:00 bis 14:00 Uhr - Felix und Franz:**  
 Fertigstellung des `FloatValueGenerator` und Fehlersuche für den `RadiusToAngleConverter`. Es lag letztendlich an einer nicht initialisierten Variablen :]
 
 **14:00 bis 15:30 Uhr - Felix, Franz, Frauke und Jan:**  
 Mapping von Angle auf ServoValue im `RadiusToAngleConverter` erstellt.
+Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien zusammenzufassen, da auf einem Fahrstreifen Mehrere Linien erkannt werden. Hierzu wird cv::partition() und eine eigene hilfsmethode isEqual() verwendet. 
 
-**15:30 bis ... Uhr - Frauke und Jan:**  
+**15:30 bis 16:45 Uhr - Frauke und Jan:**  
+S.o.
 
 **18:30 bis 19:00 Uhr - Felix:**  
 Test des `RadiusToAngleConverter`.
