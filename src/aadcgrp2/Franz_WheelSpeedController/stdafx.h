@@ -23,10 +23,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR
 #include <adtf_platform_inc.h>
 #include <adtf_plugin_sdk.h>
 #include <additional/adtf_signal_registry_support.h>
-#include <iostream>
 using namespace adtf;
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 #endif // __STD_INCLUDES_HEADER

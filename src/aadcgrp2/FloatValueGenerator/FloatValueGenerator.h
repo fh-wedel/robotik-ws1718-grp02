@@ -18,31 +18,32 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include "stdafx.h"
 
-#define OID_ADTF_STEERINGCONTROLLER "adtf.aadc.felixSteeringController"
+#define OID_ADTF_STEERINGCONTROLLER "adtf.aadc.FloatValueGenerator"
 
 /*! this is the main class for the steering controller filter */
-class cController : public adtf::cFilter {
+class cFloatValueGenerator : public adtf::cFilter {
 
 
     /*! This macro does all the plugin setup stuff
     * Warning: This macro opens a "protected" scope see UCOM_IMPLEMENT_OBJECT_INFO(...) in object.h
     */
-    ADTF_DECLARE_FILTER_VERSION(OID_ADTF_STEERINGCONTROLLER, "Felix RadiusToAngle Controller", OBJCAT_DataFilter, "RadiusToAngle Controller", 1, 0, 0, "");
+    ADTF_DECLARE_FILTER_VERSION(OID_ADTF_STEERINGCONTROLLER, "Float Value Generator", OBJCAT_DataFilter, "Float Value Generator", 1, 0, 0, "");
 
-    /* the radius */
-    cInputPin m_InputRadius;
-    /* the angle */
-    cOutputPin m_OutputAngle;
+	/*! input pin for watchdog input */
+    cInputPin   m_oInputWatchdog;
+
+    /* define outputPin */
+    cOutputPin m_outputPin;
 
 public:
 
     /*! constructor for template class
     *    \param __info   [in] This is the name of the filter instance.
     */
-    cController(const tChar* __info);
+    cFloatValueGenerator(const tChar* __info);
 
     /*! Destructor. */
-    virtual ~cController();
+    virtual ~cFloatValueGenerator();
 
 protected: // overwrites cFilter
     /*! Implements the default cFilter state machine call. It will be
@@ -78,42 +79,30 @@ protected: // overwrites cFilter
 
     /*! the struct with all the properties*/
     struct filterProperties {
-        /*! the distance between axles (Radstand). */
-        tFloat32 wheelbase;
-
-        /*! the distance between the middle of left and right tires (Spurweite). */
-        tFloat32 tread;
-
-        /*! maximum deflection of front tires */
-        tFloat32 maxLeftAngle;
-        tFloat32 maxRightAngle;
+		
+		/*! Value to send to outputpin */
+		tFloat32 outputValue;
 
     }
     /*! the filter properties*/
     m_filterProperties;
 
 private:
-    /*! creates all the input Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
-    tResult CreateInputPins(ucom::IException** __exception_ptr = NULL);
 
     /*! creates all the output Pins
     * \param __exception_ptr the exception pointer
     * \return standard adtf error code
     */
     tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
+    
+    tResult CreateInputPins(ucom::IException** __exception_ptr = NULL);
 
-// For decoding radius input
-
-    /*! media description for the Radius input pin */
-    cObjectPtr<IMediaTypeDescription> m_RadiusDescription;
 
 // For encoding angle output
 
-    /*! media description for the Angle output pin  */
-    cObjectPtr<IMediaTypeDescription> m_AngleDescription;
+    /*! media description for the Float output pin  */
+    cObjectPtr<IMediaTypeDescription> m_FloatDescription;
+    
 
 // Debug
 
@@ -122,13 +111,8 @@ private:
 
 // Own Helper Functions
 
-    tFloat32 readRadius(IMediaSample* pMediaSample);
-    tFloat32 convertRadiusToAngle(tFloat32 radius);
-    tFloat32 convertAngleToServoValue(tFloat32 angle);
 
-    tResult transmitAngle(tFloat32 angle);
-
-
+    tResult transmitValue(tFloat32 angle);
 
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 

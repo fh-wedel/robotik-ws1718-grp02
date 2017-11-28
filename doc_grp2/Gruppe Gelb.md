@@ -212,7 +212,7 @@ Nachdem alle Kompilier- und Laufzeitfehler behoben wurden, funktionierte es auch
 Jetzt steht nur noch die Frage im Raum, wie man damit arbeiten kann, wenn man keine nVidia-Grafikkarte, oder keinen stationären PC hat (wie Frauke). Implementiert man erst für die CPU, und muss man dann alles ändern? Oder implementiert man "blind" in der GPU-API und testet dann Live am Auto? Vielleicht haben wir uns damit doch selbst ins Bein geschossen...
 
 ### Freitag, 24.11.
-**16:00 bis - Felix, Franz Frauke**
+**16:00 bis - Felix, Franz und Frauke:**
 
 Wir haben Franz die GPU-Implementierung gezeigt, die Farbwerte wieder an Blau angepasst.
 
@@ -231,4 +231,22 @@ hueLow:     100
 Saturation: 80
 Value:      2
 ```
-~~Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...~~ Frauke hat sie in einem Kommentar gefunden (bis auf `Value` -- siehe oben)! 
+~~Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...~~ Frauke hat sie in einem Kommentar gefunden (bis auf `Value` -- siehe oben)!
+
+
+### Montag, 27.11.
+**10:00 bis 14:00 Uhr - Felix und Franz:**  
+Fertigstellung des `FloatValueGenerator` und Fehlersuche für den `RadiusToAngleConverter`. Es lag letztendlich an einer nicht initialisierten Variablen :]
+
+**14:00 bis 15:30 Uhr - Felix, Franz, Frauke und Jan:**  
+Mapping von Angle auf ServoValue im `RadiusToAngleConverter` erstellt.
+Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien zusammenzufassen, da auf einem Fahrstreifen Mehrere Linien erkannt werden. Hierzu wird cv::partition() und eine eigene hilfsmethode isEqual() verwendet. 
+
+**15:30 bis 16:45 Uhr - Frauke und Jan:**  
+S.o.
+
+**18:30 bis 19:00 Uhr - Felix:**  
+Test des `RadiusToAngleConverter`.
+Inbetriebnahme des Fahrzeugs war geplant. Jedoch hat die Hardware versagt. Erst wollte Ubuntu nich mehr booten (im Recovery-Mode gings :]), danach klappte VNC nicht mehr.
+
+Insofern muss der Test auf morgen verschoben werden.
