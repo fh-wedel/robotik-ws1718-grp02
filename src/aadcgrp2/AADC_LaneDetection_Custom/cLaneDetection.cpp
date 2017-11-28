@@ -328,14 +328,16 @@ static void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec2f>& clustere
   for (int i = 0; i < classes; i++) {
     float sumAngle = 0;
     float sumDist = 0;
+    int classSize = 0;
     for (int label = 0; label < (int)labels.size(); label++) {
       if (labels.at(label) == i) {
+	classSize++;
         sumDist  += lines.at(i)[0];
         sumAngle += lines.at(i)[1];
       }
     }
     Vec3f mean = Vec3f();
-    clusteredLines.push_back(Vec2f(sumDist / labels.size(), sumAngle / labels.size()));
+    clusteredLines.push_back(Vec2f(sumDist / classSize, sumAngle / classSize));
   }
 
   printf("Klassen: %d\n", classes);
