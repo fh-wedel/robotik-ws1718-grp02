@@ -338,12 +338,9 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
         }
         else{ houghVote += 25;}
         while(lines.size() < 4 && houghVote > 0){
-			
-			
-			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, 3.1415/180, houghVote);
-			hough->detect(contours, tmpLines);
-			hough->downloadResults(tmpLines, lines);
-			
+          cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, 3.1415/180, houghVote);
+          hough->detect(contours, tmpLines);
+          hough->downloadResults(tmpLines, lines);
             //cv::cuda::HoughLines(contours,lines,1,3.1415/180, houghVote);
             houghVote -= 5;
             
