@@ -7,4 +7,12 @@
  <file name="alles_split_000.dat" path="/media/aadc/Samsung_T5/AADC/alles_split_000.dat" type="capture/datfile" />
  <file name="alles_split_001.dat" path="/media/aadc/Samsung_T5/AADC/alles_split_001.dat" type="capture/datfile" />
  <file name="links_abbiegen_split_000.dat" path="/media/aadc/Samsung_T5/AADC/links_abbiegen_split_000.dat" type="capture/datfile" />
+ <file name="realsense_unten_split_000.dat" path="../../../Desktop/recording/realsense_unten_split_000.dat" type="capture/datfile" />
+ <file name="realsense_unten_schnekk_split_000.dat" path="../../../Desktop/recording/realsense_unten_schnekk_split_000.dat" type="capture/datfile" />
+ <file name="realsense_unten_schnekk_split_001.dat" path="../../../Desktop/recording/realsense_unten_schnekk_split_001.dat" type="capture/datfile" />
+ <file name="realsense_unten_schnekk_split_002.dat" path="../../../Desktop/recording/realsense_unten_schnekk_split_002.dat" type="capture/datfile" />
+ <file name="realsense_unten_schnekk_split_003.dat" path="../../../Desktop/recording/realsense_unten_schnekk_split_003.dat" type="capture/datfile" />
+ <file name="unten_try2_split_000.dat" path="../../../Desktop/recording/unten_try2_split_000.dat" type="capture/datfile" />
+ <file name="unten_try3_split_000.dat" path="../../../Desktop/recording/unten_try3_split_000.dat" type="capture/datfile" />
+ <file name="unten_try3_split_001.dat" path="../../../Desktop/recording/unten_try3_split_001.dat" type="capture/datfile" />
 </project>

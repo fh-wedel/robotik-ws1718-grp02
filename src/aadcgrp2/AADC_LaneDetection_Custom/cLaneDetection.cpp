@@ -18,7 +18,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include "stdafx.h"
 #include "cLaneDetection.h"
 #include <iostream>
-
+using namespace cv;
 #define rad2deg(x) (x) * 180.0f / CV_PI
 
 
@@ -278,13 +278,19 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			//cv::GaussianBlur(out, outputImage, Size( 5, 5 ), 0, 0 );
 			//mit median
 			cv::medianBlur(out, outputImage, 3);
+			//closing
+			//https://docs.opencv.org/2.4/doc/tutorials/imgproc/opening_closing_hats/opening_closing_hats.html
+			int morph_size = 6; //kernelsize
+			Mat element = getStructuringElement( 0, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+			int operation = 3;
+			morphologyEx(outputImage, outputImage, operation, element);
 
 
             //calculate the detectionlines in image
-          //  getDetectionLines(detectionLines);
+            getDetectionLines(detectionLines);
 
-            //findLinePoints(detectionLines, outputImage, detectedLinePoints);
-			outputImage = findLinePointsNew(outputImage);
+            findLinePoints(detectionLines, outputImage, detectedLinePoints);
+			//outputImage = findLinePointsNew(outputImage);
         }
         pSample->Unlock(l_pSrcBuffer);
     }
@@ -317,7 +323,7 @@ static bool isEqual(Vec2f a, Vec2f b) {
   float angle = abs(a[1] - b[1]);
   float dist = abs(a[0] - b[0]);
 
-  return rad2deg(angle) < 10.0f && dist < 50.0f;
+  return rad2deg(angle) < 10.0f && dist < 100.0f;
 }
 
 static void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec2f>& clusteredLines) {
@@ -331,12 +337,11 @@ static void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec2f>& clustere
     int classSize = 0;
     for (int label = 0; label < (int)labels.size(); label++) {
       if (labels.at(label) == i) {
-	classSize++;
+		classSize++;
         sumDist  += lines.at(i)[0];
         sumAngle += lines.at(i)[1];
       }
     }
-    Vec3f mean = Vec3f();
     clusteredLines.push_back(Vec2f(sumDist / classSize, sumAngle / classSize));
   }
 
@@ -376,13 +381,13 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
 
     			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI/180, houghVote);
 
-    			hough->detect(contours, GpuMatLines);
+    			hough->detect(image, GpuMatLines);
     			hough->downloadResults(GpuMatLines, lines);
           houghVote -= 5;
         }
         std::cout << houghVote << "\n";
         cv::cuda::GpuMat result(image.size(),CV_8U,Scalar(255));
-        contours.copyTo(result);
+        image.copyTo(result);
 
         std::vector<Vec2f> clusteredLines;
         clusterLines(lines, clusteredLines);

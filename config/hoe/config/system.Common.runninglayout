@@ -14,7 +14,7 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="366" PosX="11" PosY="8" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="366" PosX="11" PosY="8" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
   </folder>
  </folder>
  <folder name="Lane_Detection">
@@ -25,17 +25,18 @@
    <folder Height="298" Maximized="false" PosX="57" PosY="330" Visible="true" Width="470" name="Video_Display" />
    <folder Height="122" PosX="131" PosY="50" Visible="true" Width="136" name="Video_Display2" />
    <folder Height="122" PosX="266" PosY="58" Visible="true" Width="136" name="Video_Display3" />
-   <folder Height="388" Maximized="false" PosX="140" PosY="15" Visible="true" Width="542" name="Lane_Detection_Display" />
+   <folder Height="388" Maximized="false" PosX="21" PosY="-8" Visible="true" Width="542" name="Lane_Detection_Display" />
   </folder>
  </folder>
  <folder name="Playback">
   <folder name="components">
-   <folder filter_tree_expanded_list="//Float_Value_Generator" name="FilterTraceView" />
+   <folder filter_tree_expanded_list="" name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="366" PosX="-6" PosY="0" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="548" PosX="9" PosY="26" Visible="true" Width="784" name="Realsense_RGB_Proc_Display" />
-   <folder Height="214" PosX="371" PosY="140" Visible="true" Width="312" name="Scope_Display" />
+   <folder Height="366" PosX="-6" PosY="0" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="214" PosX="0" PosY="0" Visible="true" Width="312" name="Scope_Display" />
+   <folder Height="574" PosX="0" PosY="0" Visible="true" Width="792" name="Lane_Detection_Display" />
+   <folder Height="1054" PosX="-1071" PosY="-368" Visible="true" Width="1912" name="Video_Display" />
   </folder>
  </folder>
  <folder name="Live2">
@@ -50,6 +51,19 @@
   </folder>
   <folder name="components">
    <folder name="FilterTraceView" />
+  </folder>
+ </folder>
+ <folder name="Recording">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="396" Minimized="true" Visible="true" Width="304" name="Live-AADC_Car_Controller" />
+   <folder Height="510" Minimized="true" Visible="true" Width="304" name="Live-AADC_Driver_Module" />
+   <folder Height="340" Minimized="false" Visible="true" Width="717" name="Live-AADC_Sensor_Visualization" />
+   <folder Height="548" Minimized="false" PosX="-129" PosY="79" Visible="false" Width="784" name="Live-Realsense_RGB_Proc_Display" />
+   <folder Height="548" Minimized="false" PosX="-152" PosY="31" Visible="false" Width="784" name="Live-Realsense_Depth_Display" />
+   <folder Height="548" Minimized="false" PosX="-158" PosY="35" Visible="true" Width="784" name="Live-RearCam_Display" />
   </folder>
  </folder>
 </adtf:export>
