@@ -259,3 +259,9 @@ Insofern muss der Test auf morgen verschoben werden.
 **21:00 bis 22:30 Uhr - Felix:**  
 Felix hat den Converter in zwei Teile aufgetrennt. Wir können nun sowohl von einem **Radius zu einem Winkel**, als auch von einem **Winkel zu einem Servo-Stellwert** konvertieren.  
 Diese Auftrennung ist sinnvoll, da Jan und Frauke anstatt Radien lieber Winkel ausgeben möchten.
+
+### Dienstag, 29.11.
+**13:00 bis 14:15 Uhr - Jan:**  
+Die Linienerkennug mit der Hough transformation funktioniert nur unzureichend. 
+Jan hat nun wieder die ADTF Demo Variante mit den Grünen Punkten aktiviert und die parameter im Video Playback angepasst. 
+Die Linien werden hier gut erkannt. Als nächstes müssen die gefundenen Punkte zu Linien zusammengefasst werden. 
