@@ -203,11 +203,11 @@ Letztendlich ist es nur ein *"Nimm mal diese Daten (Void\*) und baller sie in de
 
 **17:00 bis 19:15 - Franz und Frauke**
 
-Da wir heute aufgrund des anstehenden Besuchs der Ministerin im Projektraum gearbeitet haben und wir unsere blaue Straße nicht mitgenommen haben, mussten wir rot/orange Riesen-Steckerleisten zum Testen gewählt. Für die Erkennung der Farben mussten wir nur an den Parametern `hueLow` und `hueHigh` schrauben. Wir haben den Bereich zwischen 0 und 10° gewählt.
+Da wir heute aufgrund des anstehenden Besuchs der Ministerin im Projektraum gearbeitet haben und wir unsere blaue Straße nicht mitgenommen haben, mussten wir rot/orange Riesen-Steckerleisten zum Testen zu Rate ziehen. Für die Erkennung der Farben mussten wir nur an den Parametern `hueLow` und `hueHigh` schrauben. Wir haben den Bereich zwischen 0 und 10° gewählt.
 
-Wir haben uns mit der GPU-Implementierung der Hough-Transformation beschäftigt. Es stellte sich heraus, dass das gar nicht so schwierig ist, man muss nur die richtigen Header (gute Kandidaten sind `<opencv2/cudaarithm.hpp>`, `<opencv2/core/cuda.hpp>` und `<opencv2/cudaimgproc.hpp>`) kennen und in vielen Fällen nur die `cv::Mat`'s per `upload` auf die GPU laden. Ergebnis ist eine `cv::cuda::GpuMat`. Ist man fertig mit allen GPU-Operationen, muss die `cv::cuda::GpuMat` wieder heruntergeladen werden und auf eine `cv::Mat` geschrieben werden. Vor viele Funktionen muss man auch nur `cv::cuda::` + `Funktionsname` schreiben. Fies wird es, wenn das gerade nicht reicht, und sich die komplette Signatur ändert! So ist das zum Beispiel bei der Funktion `cv::HoughLines`. Die wird in der GPU-Implementierung durch einen Pointer auf eine abstrakte Klasse repräsentiert. Eine Variable dieses Typs sieht dann so aus: `cv::Ptr<cv::cuda::HoughLinesDetector> hough`. Auf diesen Pointer kann man dann beispielsweise die Funktion `detect` aufrufen. Beide Operationen zusammen haben eine ähnliche Signatur wie die CPU-Implementierung von `cv::HoughLines`. Einige Funktionen gibt es auch nicht mit Hardware-Unterstützung, zum Beispiel `cv::line`.
+Wir haben uns mit der GPU-Implementierung der Hough-Transformation beschäftigt. Es stellte sich heraus, dass das gar nicht so schwierig ist, man muss nur die richtigen Header (gute Kandidaten sind `<opencv2/cudaarithm.hpp>`, `<opencv2/core/cuda.hpp>` und `<opencv2/cudaimgproc.hpp>`) kennen und in vielen Fällen nur die `cv::Mat`'s per `upload` auf die GPU laden. Ergebnis ist eine `cv::cuda::GpuMat`. Ist man fertig mit allen GPU-Operationen, muss die `cv::cuda::GpuMat` wieder heruntergeladen werden und auf eine `cv::Mat` geschrieben werden. Vor viele Funktionen muss man auch nur `cv::cuda::` + `Funktionsname` schreiben. Fies wird es, wenn das gerade nicht reicht, und sich die komplette Signatur ändert! So ist das zum Beispiel bei der Funktion `cv::HoughLines`. Die wird in der GPU-Implementierung durch einen Pointer auf eine abstrakte Klasse repräsentiert. Eine Variable dieses Typs sieht dann so aus: `cv::Ptr<cv::cuda::HoughLinesDetector> hough`. Auf diesen Pointer kann man dann beispielsweise die Funktion `detect` aufrufen. Beide Operationen zusammen haben eine ähnliche Signatur wie die CPU-Implementierung von `cv::HoughLines`. Einige Funktionen gibt es auch nicht mit GPU-Unterstützung, zum Beispiel `cv::line`.
 
-Nachdem alle Komplier- und Laufzeitfehler behoben wurden, funktionierte es auch! **Und wir haben einen deutlichen Unterschied zwischen CPU- und GPU-Implementierung gemerkt**, sodass die GPU-Variante -- je nach Auflösung des Videos -- nahezu in Echtzeit abläuft. Dazu können wir aber gerne noch genauere Messungen vornehmen. Leider haben wir die CPU-Variante nicht committed, sodass wir die erst einmal wieder rekonstruieren müssen :-(.
+Nachdem alle Kompilier- und Laufzeitfehler behoben wurden, funktionierte es auch! **Und wir haben einen deutlichen Unterschied zwischen CPU- und GPU-Implementierung gemerkt**, sodass die GPU-Variante -- je nach Auflösung des Videos -- nahezu in Echtzeit abläuft. Dazu können wir aber gerne noch genauere Messungen vornehmen. Leider haben wir die CPU-Variante nicht committed, sodass wir die erst einmal wieder rekonstruieren müssen :-(.
 
 Jetzt steht nur noch die Frage im Raum, wie man damit arbeiten kann, wenn man keine nVidia-Grafikkarte, oder keinen stationären PC hat (wie Frauke). Implementiert man erst für die CPU, und muss man dann alles ändern? Oder implementiert man "blind" in der GPU-API und testet dann Live am Auto? Vielleicht haben wir uns damit doch selbst ins Bein geschossen...
 
@@ -216,6 +216,14 @@ Jetzt steht nur noch die Frage im Raum, wie man damit arbeiten kann, wenn man ke
 
 Wir haben Franz die GPU-Implementierung gezeigt, die Farbwerte wieder an Blau angepasst.
 
+Unsere alten Werte waren:
+```
+hueHigh:    120
+hueLow:     90
+Saturation: 120
+Value:      ??
+```
+
 Unsere neuen Werte sind:
 ```
 hueHigh:    120
@@ -223,8 +231,7 @@ hueLow:     100
 Saturation: 80
 Value:      2
 ```
-Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...
-
+~~Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...~~ Frauke hat sie in einem Kommentar gefunden (bis auf `Value` -- siehe oben)!
 
 
 ### Montag, 27.11.
@@ -233,7 +240,7 @@ Fertigstellung des `FloatValueGenerator` und Fehlersuche für den `RadiusToAngle
 
 **14:00 bis 15:30 Uhr - Felix, Franz, Frauke und Jan:**  
 Mapping von Angle auf ServoValue im `RadiusToAngleConverter` erstellt.
-Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien zusammenzufassen, da auf einem Fahrstreifen Mehrere Linien erkannt werden. Hierzu wird cv::partition() und eine eigene hilfsmethode isEqual() verwendet. 
+Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien erstellt, da für eine Fahrbahnmarkierung mehrere Linien erkannt werden. Hierzu wird `cv::partition()` und eine eigene Hilfsmethode `isEqual()` verwendet. 
 
 **15:30 bis 16:45 Uhr - Frauke und Jan:**  
 S.o.
@@ -243,3 +250,12 @@ Test des `RadiusToAngleConverter`.
 Inbetriebnahme des Fahrzeugs war geplant. Jedoch hat die Hardware versagt. Erst wollte Ubuntu nich mehr booten (im Recovery-Mode gings :]), danach klappte VNC nicht mehr.
 
 Insofern muss der Test auf morgen verschoben werden.
+
+
+----
+
+
+### Dienstag, 28.11.
+**21:00 bis 22:30 Uhr - Felix:**  
+Felix hat den Converter in zwei Teile aufgetrennt. Wir können nun sowohl von einem **Radius zu einem Winkel**, als auch von einem **Winkel zu einem Servo-Stellwert** konvertieren.  
+Diese Auftrennung ist sinnvoll, da Jan und Frauke anstatt Radien lieber Winkel ausgeben möchten.
