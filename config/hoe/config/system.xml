@@ -100,6 +100,7 @@
     </filter>
     <connection connection_priority="50" dest="Realsense_outputRGB" interface="" source="AADC_Realsense_Camera.outputRGB" />
     <connection connection_priority="50" dest="Realsense_DepthRaw" interface="" source="AADC_Realsense_Camera.outputDepthRaw" />
+    <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="AADC_Realsense_Camera.outputRGB" />
    </graph>
    <settings>
     <property name="connection_priority" type="Int" value="50" />
@@ -109,7 +110,7 @@
    <graph>
     <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="1">
      <settings>
-      <property name="filename" type="String" value="../../../../Desktop/recording/unten_try3_split_001.dat" />
+      <property name="filename" type="String" value="/home/aadc/Desktop/recording/unten_try3_split_001.dat" />
      </settings>
     </filter>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="1">
@@ -131,10 +132,17 @@
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
     <filter alias="Felix_RadiusToAngle_Controller" idref="adtf.aadc.felixSteeringController" priority="7">
-     <settings />
+     <settings>
+      <property name="Algorithm::MaxLeftAngle" type="Float" value="45.0" />
+      <property name="Algorithm::MaxRightAngle" type="Float" value="45.0" />
+      <property name="Algorithm::Tread" type="Float" value="260.0" />
+      <property name="Algorithm::WheelBase" type="Float" value="360.0" />
+      <property name="Debug Mode" type="Bool" value="false" />
+      <property name="active" type="Bool" value="false" />
+     </settings>
     </filter>
-    <connection connection_priority="50" dest="Felix_RadiusToAngle_Controller.radius" interface="" source="Float_Value_Generator.floatValue" />
-    <connection connection_priority="50" dest="Scope_Display.servoAngle" interface="" source="Felix_RadiusToAngle_Controller.angle" />
+    <connection active="false" connection_priority="50" dest="Felix_RadiusToAngle_Controller.radius" interface="" source="Float_Value_Generator.floatValue" />
+    <connection active="false" connection_priority="50" dest="Scope_Display.servoAngle" interface="" source="Felix_RadiusToAngle_Controller.angle" />
     <filter alias="Lane_Detection_Display" idref="adtf.visual.video_display" priority="7">
      <settings>
       <property name="ScaleGCL" type="Bool" value="true" />
@@ -146,7 +154,7 @@
       <property name="Algorithm::Image Binarization Threshold" type="Int" value="2" />
       <property name="Algorithm::Maximum Line Width" type="Int" value="200" />
       <property name="Algorithm::Saturation" type="Int" value="100" />
-      <property name="Algorithm::Value" type="Int" value="40" />
+      <property name="Algorithm::Value" type="Int" value="80" />
       <property name="ROI::Height" type="Int" value="450" />
       <property name="ROI::Width" type="Int" value="1920" />
       <property name="ROI::XOffset" type="Int" value="1" />
@@ -156,9 +164,12 @@
     </filter>
     <connection connection_priority="50" dest="AADC_Lane_Detection_Custom2.Video_Input" interface="" source="Harddisk_Player.Realsense_RGB" />
     <connection connection_priority="50" dest="Lane_Detection_Display.input" interface="" source="AADC_Lane_Detection_Custom2.Video_Output_Debug" />
-    <connection connection_priority="50" dest="Lane_Detection_Display.gcl_input" interface="" source="AADC_Lane_Detection_Custom2.GCL" />
-    <filter alias="Video_Display" idref="adtf.visual.video_display" priority="8" />
-    <connection connection_priority="50" dest="Video_Display.input" interface="" source="Harddisk_Player.Realsense_RGB" />
+    <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="11">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="Harddisk_Player.Realsense_RGB" />
    </graph>
   </configuration>
   <configuration description="" name="Recording">
@@ -280,24 +291,22 @@
     </filter>
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="AADC_Arduino_Communication.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="AADC_Arduino_Communication.WheelRightStruct" />
-<<<<<<< HEAD
     <filter alias="Felix_RadiusToAngle_Controller" idref="adtf.aadc.felixSteeringController" priority="2">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
       <property name="Algorithm::MaxLeftAngle" type="Float" value="42.0" />
       <property name="Algorithm::MaxRightAngle" type="Float" value="42.0" />
+      <property name="Algorithm::Tread" type="Float" value="260.0" />
+      <property name="Algorithm::WheelBase" type="Float" value="360.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="AADC_Arduino_Communication.SteeringController" interface="" source="Felix_RadiusToAngle_Controller.angle" />
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="3">
-=======
-    <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="2">
->>>>>>> 92bbde699f8e188069b80ac44ea59b698701f633
      <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Arduino_Communication.SpeedController" interface="" source="Float_Value_Generator.floatValue" />
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
-    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="3">
+    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="4">
      <settings>
       <property name="Transmit rate in ms" type="Int" value="500" />
      </settings>
@@ -306,9 +315,8 @@
      <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger3.WatchdogAliveSignal" />
-    <filter alias="Float_Value_Generator2" idref="adtf.aadc.FloatValueGenerator" priority="4">
+    <filter alias="Float_Value_Generator2" idref="adtf.aadc.FloatValueGenerator" priority="5">
      <settings>
-<<<<<<< HEAD
       <property name="outputValue" type="Float" value="5000.0" />
      </settings>
     </filter>
@@ -316,16 +324,7 @@
      <settings />
     </filter>
     <connection connection_priority="50" dest="Felix_RadiusToAngle_Controller.radius" interface="" source="Float_Value_Generator2.floatValue" />
-=======
-      <property name="outputValue" type="Float" value="-22,5.0" />
-     </settings>
-    </filter>
-    <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="5" />
->>>>>>> 92bbde699f8e188069b80ac44ea59b698701f633
     <connection connection_priority="50" dest="Float_Value_Generator2.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger2.WatchdogAliveSignal" />
-    <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="6" />
-    <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="Float_Value_Generator2.floatValue" />
-    <connection connection_priority="50" dest="AADC_Arduino_Communication.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
    </graph>
   </configuration>
   <configuration description="" name="Live2">
@@ -426,7 +425,13 @@
     <connection active="false" connection_priority="50" dest="Realsense_DepthRaw" interface="" source="AADC_Realsense_Camera_Felix.outputDepthRaw" />
     <connection active="false" connection_priority="50" dest="Realsense_outputRGB" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
     <filter alias="Felix_RadiusToAngle_Controller" idref="adtf.aadc.felixSteeringController" priority="13">
-     <settings />
+     <settings>
+      <property name="Algorithm::MaxLeftAngle" type="Float" value="45.0" />
+      <property name="Algorithm::MaxRightAngle" type="Float" value="45.0" />
+      <property name="Algorithm::Tread" type="Float" value="260.0" />
+      <property name="Algorithm::WheelBase" type="Float" value="360.0" />
+      <property name="Debug Mode" type="Bool" value="false" />
+     </settings>
     </filter>
     <filter alias="Table_Display" idref="adtf.visual.table_display" priority="14" />
     <connection connection_priority="50" dest="Felix_RadiusToAngle_Controller.radius" interface="" source="AADC_Car_Controller.SteeringController" />

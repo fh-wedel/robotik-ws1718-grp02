@@ -255,10 +255,10 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
         {
             m_inputImage.data = (uchar*)(l_pSrcBuffer);
 
-            Size size(640, 480);
+            /*Size size(640, 480);
             Mat resizedImage;
             resize(m_inputImage, resizedImage, size);
-            vw.write(resizedImage);
+            vw.write(resizedImage);*/
 
             //cv::Mat rgb[3];
             //cv::split(m_inputImage,rgb);
@@ -274,6 +274,8 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 								m_filterProperties.Value)
 								,Scalar(m_filterProperties.HueHigh,255,255),out);//detects blue; farbbereich: 90-120; Saettigung 120
 
+			cv::Rect(0, out.rows / 2, out.cols, out.rows / 2); /* TODO */
+			
 			//mit gauss (nicht so gut)
 			//cv::GaussianBlur(out, outputImage, Size( 5, 5 ), 0, 0 );
 			//mit median
@@ -289,8 +291,8 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
             //calculate the detectionlines in image
             getDetectionLines(detectionLines);
 
-            findLinePoints(detectionLines, outputImage, detectedLinePoints);
-			//outputImage = findLinePointsNew(outputImage);
+            //findLinePoints(detectionLines, outputImage, detectedLinePoints);
+			outputImage = findLinePointsNew(outputImage);
         }
         pSample->Unlock(l_pSrcBuffer);
     }
@@ -377,14 +379,14 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
           houghVote += 25;
         }
 
-        while(lines.size() < 10 && houghVote > 0){
+        //while(lines.size() < 10 && houghVote > 0){
 
-    			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI/180, houghVote);
+    			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI/180, 200);
 
     			hough->detect(image, GpuMatLines);
     			hough->downloadResults(GpuMatLines, lines);
-          houghVote -= 5;
-        }
+          //houghVote -= 5;
+        //}
         std::cout << houghVote << "\n";
         cv::cuda::GpuMat result(image.size(),CV_8U,Scalar(255));
         image.copyTo(result);
@@ -402,7 +404,7 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
             float rho= (*it)[0];   // first element is distance rho
             float theta= (*it)[1]; // second element is angle theta
 
-            if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) || (theta > 1.5 && theta < 1.6)) { // filter to remove vertical and horizontal lines
+            //if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) || (theta > 1.5 && theta < 1.6)) { // filter to remove vertical and horizontal lines
 
                 // point of intersection of the line with first row
                 Point pt1(rho/cos(theta),0);
@@ -410,7 +412,7 @@ cv::Mat cLaneDetection::findLinePointsNew(cv::Mat& src)
                 Point pt2((rho-result.rows*sin(theta))/cos(theta),result.rows);
                 // draw a line: Color = Scalar(R, G, B), thickness
                 cv::line( output, pt1, pt2, Scalar(255,255,255), 1);
-            }
+            //}
 
             ++it;
         }
@@ -551,9 +553,6 @@ tResult cLaneDetection::transmitGCL(const vector<tInt>& detectionLines, const ve
     RETURN_IF_FAILED(m_oGCLOutputPin.Transmit(pSample));
 
     cGCLWriter::FreeDynamicMemoryBlock(pGCLCmdDebugInfo);
-
-
-
 
     RETURN_NOERROR;
 }
