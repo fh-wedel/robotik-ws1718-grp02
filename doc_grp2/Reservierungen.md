@@ -1,9 +1,9 @@
 ### Zeiteinteilung der Arbeit am Modell
 ----
-#### Gruppe 1 - Grün?
+#### Gruppe 1 - Grün
 
 - Montag bis 14 Uhr
-
+- Freitag bis 14 Uhr
 
 ----
 #### Gruppe 2 - Gelb
