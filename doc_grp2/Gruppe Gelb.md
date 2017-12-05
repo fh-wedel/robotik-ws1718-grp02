@@ -283,6 +283,9 @@ Die Linienerkennug mit der Hough transformation funktioniert nur unzureichend.
 Jan hat nun wieder die ADTF Demo Variante mit den Grünen Punkten aktiviert und die parameter im Video Playback angepasst. 
 Die Linien werden hier gut erkannt. Als nächstes müssen die gefundenen Punkte zu Linien zusammengefasst werden. 
 
+### Freitag, 01.12.
+**12:45 bis 13:50 Uhr - Frauke:**
+Frauke hat sich noch einmal die Bildverarbeitung angeschaut, um zu schauen, ob es nicht doch ohne die grünen Punkte geht (siehe Jan's Eintrag oben). Bisher ist aber noch nicht wirklich etwas dabei herumgekommen.
 
 ----
 
