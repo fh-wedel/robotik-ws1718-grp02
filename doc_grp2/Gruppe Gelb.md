@@ -128,7 +128,9 @@ Als wir dies nun alles zum Laufen gebracht hatten, klebten einigen blaue Streife
 
 Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
 
+
 ----
+
 
 ### Dienstag, 21.11.
 **09:30 bis 10:55 Uhr - Frauke, Franz, Felix:**  
@@ -147,6 +149,10 @@ Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
 **15:30 bis 17:15 Uhr - Jan:**
 
 Jan hat ein Model für eine Halterung der RealSense Kamera in TinkerCAD gebaut, und mit kurzer Hilfe von Timm Bostelmann gedruckt. Leider ist die Passform etwas zu eng. Ein weiterer versuch, mit angepasstem Modell erfolgt warscheinlich morgen. 
+
+
+----
+
 
 ### Mittwoch, 22.11.
 **14:00 bis 15:30 Uhr - Jan, Franz, Felix:**  
@@ -211,6 +217,10 @@ Nachdem alle Kompilier- und Laufzeitfehler behoben wurden, funktionierte es auch
 
 Jetzt steht nur noch die Frage im Raum, wie man damit arbeiten kann, wenn man keine nVidia-Grafikkarte, oder keinen stationären PC hat (wie Frauke). Implementiert man erst für die CPU, und muss man dann alles ändern? Oder implementiert man "blind" in der GPU-API und testet dann Live am Auto? Vielleicht haben wir uns damit doch selbst ins Bein geschossen...
 
+
+----
+
+
 ### Freitag, 24.11.
 **16:00 bis - Felix, Franz und Frauke:**
 
@@ -232,6 +242,9 @@ Saturation: 80
 Value:      2
 ```
 ~~Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...~~ Frauke hat sie in einem Kommentar gefunden (bis auf `Value` -- siehe oben)!
+
+
+----
 
 
 ### Montag, 27.11.
@@ -260,8 +273,42 @@ Insofern muss der Test auf morgen verschoben werden.
 Felix hat den Converter in zwei Teile aufgetrennt. Wir können nun sowohl von einem **Radius zu einem Winkel**, als auch von einem **Winkel zu einem Servo-Stellwert** konvertieren.  
 Diese Auftrennung ist sinnvoll, da Jan und Frauke anstatt Radien lieber Winkel ausgeben möchten.
 
-### Dienstag, 29.11.
+
+----
+
+
+### Mittwoch, 29.11.
 **13:00 bis 14:15 Uhr - Jan:**  
 Die Linienerkennug mit der Hough transformation funktioniert nur unzureichend. 
 Jan hat nun wieder die ADTF Demo Variante mit den Grünen Punkten aktiviert und die parameter im Video Playback angepasst. 
 Die Linien werden hier gut erkannt. Als nächstes müssen die gefundenen Punkte zu Linien zusammengefasst werden. 
+
+
+----
+
+
+### Montag, 04.12.
+**09:00 bis 09:20 Uhr - Frauke, Felix:**  
+Unser Stick wird nicht mehr vom System erkannt. Sowohl im BIOS/Boot-Menü als auch aus einem laufenden Linux ist dieser nicht mehr zu sehen. Anscheinend hat die **Hardware versagt**. Hermann ist informiert und kümmert sich um Ersatz.  
+Übergangsweise dürfen wir nun seinen *blauen* Stick verwenden.
+
+
+----
+
+
+### Dienstag, 05.12.
+**08:00 bis 09:00 - Frauke**  
+
+
+
+**09:00 bis 10:50 - Franz, Frauke, Felix**  
+
+
+
+**14:00 bis 15:20 - Alle**  
+
+
+
+
+----
+
