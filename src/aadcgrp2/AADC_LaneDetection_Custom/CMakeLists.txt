@@ -11,6 +11,8 @@ adtf_add_filter(${FILTER_NAME}
 
     cLaneDetection.h
     cLaneDetection.cpp
+    bva.hpp
+    bva.cpp
 )
 
 target_link_libraries(${FILTER_NAME} ${OpenCV_LIBS})
