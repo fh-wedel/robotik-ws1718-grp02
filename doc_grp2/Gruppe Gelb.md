@@ -308,11 +308,20 @@ Unser Stick wird nicht mehr vom System erkannt. Sowohl im BIOS/Boot-Menü als au
 
 
 **15:20 bis 17:00 - Frauke, Jan**  
-
-linenerkemmung und bündelung...
-
+Es wurde weiter an der Linienerkennung und der Bündellung der Linien gearbeitet. Nachdem die Parameter verstanden undd angepasst wurden, funktionierte dies auch recht gut. 
 
 
+----
+
+### Dienstag, 06.12.
+**11:00 bis 13:30 - Jan**  
+Das verarbeitete canny Bild `contours` wird nun in eine Vogelperspektive mit Hilfe von  `cv::cuda::warpPerspective()` verzerrt.
+In Versuchen sieht das Resultat besser aus, wenn man das Warping auf das `contours` anstatt auf `src` anwendet. Dies muss aber nicht immer so sein... 
+die ROI eingrenzung muss nun warscheinlich nicht mehr durchgeführt werden, da das Bild nun eh größtenteils nur die Fahrbahn abbildet. 
+Da parallel Fahrstreifen nun auch im Bild parallel sind, wird in der Funktion `isEqual()` nun auch die Distanz berücksichtigt. 
+Mit hilfe der `clusteredLines` wird nun mit Hilfe von `getAngle()` provisorisch ein erster Lenkwinkel auf der Konsole ausgegeben.
+dieser ist jedoch noch anfällig für ausreißende linien.
+Eine Idee zur Lösung des Problems ist, die hough transformation anzupassen. Eine Vernachlässigung dieser Ausreißer könnte Probleme bei Kurven verursachen.
 
 
 ----
