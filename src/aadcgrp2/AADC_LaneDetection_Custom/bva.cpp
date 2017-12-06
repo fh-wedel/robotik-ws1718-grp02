@@ -44,60 +44,60 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src)
 		canny->detect(image, contours);
 
 		cv::cuda::GpuMat contoursInv;
-        cv::cuda::threshold(contours,contoursInv,128,255,THRESH_BINARY_INV);
+    cv::cuda::threshold(contours,contoursInv,128,255,THRESH_BINARY_INV);
 
-        /*
-         Hough tranform for line detection with feedback
-         Increase by 25 for the next frame if we found some lines.
-         This is so we don't miss other lines that may crop up in the next frame
-         but at the same time we don't want to start the feed back loop from scratch.
-         */
-        cv::cuda::GpuMat GpuMatLines;
-        vector<Vec2f> lines;
-        /*if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
-            houghVote = 300;
-        }
-        else {
-          houghVote += 25;
-        }*/
+    /*
+     Hough tranform for line detection with feedback
+     Increase by 25 for the next frame if we found some lines.
+     This is so we don't miss other lines that may crop up in the next frame
+     but at the same time we don't want to start the feed back loop from scratch.
+     */
+    cv::cuda::GpuMat GpuMatLines;
+    vector<Vec2f> lines;
+    /*if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
+        houghVote = 300;
+    }
+    else {
+      houghVote += 25;
+    }*/
 
-        //while(lines.size() < 10 && houghVote > 0){
+    //while(lines.size() < 10 && houghVote > 0){
 
-    			cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI/180, 200);
+    cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI/180, 200);
 
-    			hough->detect(image, GpuMatLines);
-    			hough->downloadResults(GpuMatLines, lines);
-          //houghVote -= 5;
+    hough->detect(image, GpuMatLines);
+    hough->downloadResults(GpuMatLines, lines);
+      //houghVote -= 5;
+    //}
+    //std::cout << houghVote << "\n";
+    cv::cuda::GpuMat result(image.size(),CV_8U,Scalar(255));
+    image.copyTo(result);
+
+    std::vector<Vec2f> clusteredLines;
+    clusterLines(lines, clusteredLines);
+
+    // Draw the lines
+    std::vector<Vec2f>::const_iterator it = clusteredLines.begin();
+    cv::Mat output;
+    result.download(output);
+
+    while (it!=clusteredLines.end()) {
+
+        float rho= (*it)[0];   // first element is distance rho
+        float theta= (*it)[1]; // second element is angle theta
+
+        //if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) || (theta > 1.5 && theta < 1.6)) { // filter to remove vertical and horizontal lines
+
+            // point of intersection of the line with first row
+            Point pt1(rho/cos(theta),0);
+            // point of intersection of the line with last row
+            Point pt2((rho-result.rows*sin(theta))/cos(theta),result.rows);
+            // draw a line: Color = Scalar(R, G, B), thickness
+            cv::line( output, pt1, pt2, Scalar(255,255,255), 1);
         //}
-        //std::cout << houghVote << "\n";
-        cv::cuda::GpuMat result(image.size(),CV_8U,Scalar(255));
-        image.copyTo(result);
 
-        std::vector<Vec2f> clusteredLines;
-        clusterLines(lines, clusteredLines);
-
-        // Draw the lines
-        std::vector<Vec2f>::const_iterator it = clusteredLines.begin();
-        cv::Mat output;
-        result.download(output);
-
-        while (it!=clusteredLines.end()) {
-
-            float rho= (*it)[0];   // first element is distance rho
-            float theta= (*it)[1]; // second element is angle theta
-
-            //if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) || (theta > 1.5 && theta < 1.6)) { // filter to remove vertical and horizontal lines
-
-                // point of intersection of the line with first row
-                Point pt1(rho/cos(theta),0);
-                // point of intersection of the line with last row
-                Point pt2((rho-result.rows*sin(theta))/cos(theta),result.rows);
-                // draw a line: Color = Scalar(R, G, B), thickness
-                cv::line( output, pt1, pt2, Scalar(255,255,255), 1);
-            //}
-
-            ++it;
-        }
+        ++it;
+    }
 
 
 

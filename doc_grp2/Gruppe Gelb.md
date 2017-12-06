@@ -301,8 +301,9 @@ Unser Stick wird nicht mehr vom System erkannt. Sowohl im BIOS/Boot-Menü als au
 
 ### Dienstag, 05.12.
 **08:00 bis 09:00 - Frauke**  
-
-
+Frauke hat sich weiter mit der Trennung von Bildverarbeitungsteil für den ADTF-Filter und die Bildverarbeitung in der LaneDetection gekümmert. Die beiden Dinge sind nun getrennt, OpenCV-Operationen wurden in die bva._pp ausgelagert.
+Darüber hinaus hat sie im git-Repo den Ordner config/hoe/ zu config/grp2 und die Projektdatei config/hoe/hoe.prj zu config/grp2/grp2.prj umbenannt, damit es nicht zu Konflikten oder Überschreibungen kommt, wenn wir auf Hermanns Stick arbeiten (git hat übrigens ganz schlau bemerkt, dass ich den Ordner und die Datei nur umbenannt habe :) ). Das Builden funktioniert weiterhin.
+Beim Ausprobieren (Ausführen in ADTF) auf dem Auto fliegt die Exception: "CUDA driver version is insufficient for CUDA runtime version in function allocate". Anscheinend ist auf Hermanns Stick eine andere Version von CUDA installert, denn auf unserem Stick hatten wir keine Probleme mit der Version. Jetzt ist die Frage, wie wir damit umgehen ...
 
 **09:00 bis 10:50 - Franz, Frauke, Felix**  
 
