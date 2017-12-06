@@ -258,9 +258,9 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
             outputImage = bva::lineBinarization(m_inputImage,
 				m_filterProperties.HueLow, m_filterProperties.HueHigh,
 				m_filterProperties.Saturation, m_filterProperties.Value);
-            
+
 			//calculate the detectionlines in image
-			getDetectionLines(detectionLines);
+			//getDetectionLines(detectionLines);
 
 			//findLinePoints(detectionLines, outputImage, detectedLinePoints);
 			outputImage = bva::findLinePointsNew(outputImage);
