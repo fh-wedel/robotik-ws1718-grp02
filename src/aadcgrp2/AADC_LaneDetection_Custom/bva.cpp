@@ -2,6 +2,7 @@
 
 #define rad2deg(x) (x) * 180.0f / CV_PI
 
+//returns true if two vectors are similar
 static bool isEqual(Vec2f a, Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
 	float dist = fabs(a[0] - b[0]);
@@ -10,14 +11,15 @@ static bool isEqual(Vec2f a, Vec2f b) {
 }
 
 //calculate steering angle
-static float getAngle(std::vector<Vec2f> clusteredLines){
+static float getAngle(std::vector<Vec2f> clusteredLines) {
 	float sum = 0;
-	if (clusteredLines.size() == 0) return 0;
+	if (clusteredLines.size() == 0) return 0; //no lane was detected
 	for (Vec2f v : clusteredLines) {
 		float deg = rad2deg(v[1]);
-		if(deg < 90) {
+		if (deg < 90) {
 			sum += deg;
-		}else{
+		}
+		else {
 			sum -= 180 - deg;
 		}
 	}
@@ -30,9 +32,9 @@ static float getAngle(std::vector<Vec2f> clusteredLines){
 	int classes;
 	classes = cv::partition(lines, labels, isEqual);
 
-	for (int i = 0; i < lines.size(); i++) {
-		//printf("dist: %.3f angle: %.3f Klasse: %d\n", lines.at(i)[0], rad2deg(lines.at(i)[1]), labels.at(i));
-	}
+//	for (int i = 0; i < lines.size(); i++) {
+//		printf("dist: %.3f angle: %.3f Klasse: %d\n", lines.at(i)[0], rad2deg(lines.at(i)[1]), labels.at(i));
+//	}
 
 	for (int i = 0; i < classes; i++) {
 		float sumAngle = 0;
@@ -53,34 +55,30 @@ static float getAngle(std::vector<Vec2f> clusteredLines){
 		printf("dist: %.3f angle: %.3f\n", v[0], rad2deg(v[1]));//
 	}
 
-	printf("Klassen: %d\n", classes);
+	//printf("Klassen: %d\n", classes);
 }
 
-static void createMask(cv::Mat& mask, std::vector<std::vector<cv::Point> >& contours,
-	cv::Point refPoint) {
-	std::vector<cv::Point> contour;
-	contour.push_back(refPoint);
-	contour.push_back(cv::Point(0, mask.rows - 1));
-	contour.push_back(cv::Point(mask.cols - 1, mask.rows - 1));
-	contour.push_back(cv::Point(mask.cols - 1 - refPoint.x, refPoint.y));
-
-	contours.push_back(contour);
-}
-
+//static void createMask(cv::Mat& mask, std::vector<std::vector<cv::Point> >& contours,
+//	cv::Point refPoint) {
+//	std::vector<cv::Point> contour;
+//	contour.push_back(refPoint);
+//	contour.push_back(cv::Point(0, mask.rows - 1));
+//	contour.push_back(cv::Point(mask.cols - 1, mask.rows - 1));
+//	contour.push_back(cv::Point(mask.cols - 1 - refPoint.x, refPoint.y));
+//	contours.push_back(contour);
+//}
 
 //own implementation of line detection
 cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
 {
 	//----------------------ROI------------------------------
-	cv::Mat mask = cv::Mat::zeros(src.size(), CV_8U);
-	std::vector<std::vector<cv::Point> > maskContour;
-	createMask(mask, maskContour, cv::Point(500, 600));
-	cv::fillPoly(mask, maskContour, 255);
-
+	//cv::Mat mask = cv::Mat::zeros(src.size(), CV_8U);
+	//std::vector<std::vector<cv::Point> > maskContour;
+	//createMask(mask, maskContour, cv::Point(500, 600));
+	//cv::fillPoly(mask, maskContour, 255);
 	//src = src & mask;
 
-
-  //--------------------canny-------------------------
+	//--------------------canny-------------------------
 	cv::cuda::GpuMat image(src);
 	//image.upload(src);
 
@@ -99,17 +97,18 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
 	cv::Point2f refPoint = cv::Point(680, 650);
 	source_points[0] = refPoint;
 	source_points[1] = cv::Point(0, contours.rows - 1);
-	source_points[2] = cv::Point(contours.cols -1, contours.rows - 1);
+	source_points[2] = cv::Point(contours.cols - 1, contours.rows - 1);
 	source_points[3] = cv::Point(contours.cols - 1 - refPoint.x, refPoint.y);
 
 	dest_points[0] = cv::Point2f(0, 0);
-	dest_points[1] = cv::Point2f(250, contours.rows -1);
-	dest_points[2] = cv::Point2f(contours.cols -250, contours.rows -1);
-	dest_points[3] = cv::Point2f(contours.cols -1,0);
+	dest_points[1] = cv::Point2f(250, contours.rows - 1);
+	dest_points[2] = cv::Point2f(contours.cols - 250, contours.rows - 1);
+	dest_points[3] = cv::Point2f(contours.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
-  cv::cuda::GpuMat contoursWarped;
+	cv::cuda::GpuMat contoursWarped;
 	cv::cuda::warpPerspective(contours, contoursWarped, transform_matrix, cv::Size(contours.cols, contours.rows));
+
 	/*
 	Hough tranform for line detection with feedback
 	Increase by 25 for the next frame if we found some lines.
@@ -147,7 +146,6 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
 	result.download(output);
 
 	while (it != lines.end()) {
-
 		float rho = (*it)[0];   // first element is distance rho
 		float theta = (*it)[1]; // second element is angle theta
 
@@ -182,7 +180,7 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
 		++it;
 	}
 
-  //steeringangle
+	//steeringangle
 	angle = getAngle(clusteredLines);
 
 	return output;
@@ -191,36 +189,24 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
 cv::Mat bva::lineBinarization(cv::Mat& input_img, int hueLow,
 	int hueHigh, int saturation, int value)
 {
-	/*Size size(640, 480);
-	Mat resizedImage;
-	resize(m_inputImage, resizedImage, size);
-	vw.write(resizedImage);*/
-
-	//cv::Mat rgb[3];
-	//cv::split(m_inputImage,rgb);
-	//threshold(rgb[2], outputImage, m_filterProperties.thresholdImageBinarization, 255, THRESH_BINARY_INV);// Generate Binary Image
-
-	//filter Red pixels
-
 	cv::Mat hsv;
 	cv::Mat out;
+	//convert to HSV colorspace
 	cvtColor(input_img, hsv, CV_BGR2HSV);
+	
+	//Filter blue color (range: ~90-120 saturation: ~120-255)
 	inRange(hsv, Scalar(hueLow,
 		saturation,
 		value)
-		, Scalar(hueHigh, 255, 255), out);//detects blue; farbbereich: 90-120; Saettigung 120
+		, Scalar(hueHigh, 255, 255), out);
 
-										  /* cv::Rect(0, out.rows / 2, out.cols, out.rows / 2); TODO ROI-Maske */
-
-										  //mit median
-										  //cv::medianBlur(out, out, 3);
-										  //closing
-										  //https://docs.opencv.org/2.4/doc/tutorials/imgproc/opening_closing_hats/opening_closing_hats.html
-	int morph_size = 6; //kernelsize
-	Mat element = getStructuringElement(0, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
+	//closing
+	int kernelSize = 6;
+	Mat kernel = getStructuringElement(0, Size(2 * kernelSize + 1, 2 * kernelSize + 1), Point(kernelSize, kernelSize));
 	int operation = 3;
-	morphologyEx(out, out, operation, element);
-	//mit gauss (nicht so gut)
+	morphologyEx(out, out, operation, kernel);
+
+	//Gauss filter for flattening edges after closing
 	cv::GaussianBlur(out, out, Size(5, 5), 0, 0);
 
 	return out;
