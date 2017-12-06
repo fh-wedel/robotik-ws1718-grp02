@@ -127,13 +127,16 @@ tResult cLaneDetection::Init(tInitStage eStage, __exception)
         RETURN_IF_FAILED(m_oVideoInputPin.Create("Video_Input", IPin::PD_Input, static_cast<IPinEventSink*>(this)));
         RETURN_IF_FAILED(RegisterPin(&m_oVideoInputPin));
 
-        // Video Input
+
         RETURN_IF_FAILED(m_oVideoOutputPin.Create("Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
         RETURN_IF_FAILED(RegisterPin(&m_oVideoOutputPin));
 
-        // Video Input
+
         m_oGCLOutputPin.Create("GCL", new adtf::cMediaType(MEDIA_TYPE_COMMAND, MEDIA_SUBTYPE_COMMAND_GCL), static_cast<IPinEventSink*>(this));
         RegisterPin(&m_oGCLOutputPin);
+
+
+
 
     }
     else if (eStage == StageNormal)
@@ -253,17 +256,19 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
         //convert to mat, be sure to select the right pixelformat
         if (tInt32(m_inputImage.total() * m_inputImage.elemSize()) == m_sInputFormat.nSize)
         {
-			m_inputImage.data = (uchar*)(l_pSrcBuffer);
-			// Binarization of specified range
+			      m_inputImage.data = (uchar*)(l_pSrcBuffer);
+			          // Binarization of specified range
             outputImage = bva::lineBinarization(m_inputImage,
-				m_filterProperties.HueLow, m_filterProperties.HueHigh,
-				m_filterProperties.Saturation, m_filterProperties.Value);
+				    m_filterProperties.HueLow, m_filterProperties.HueHigh,
+				    m_filterProperties.Saturation, m_filterProperties.Value);
 
 			//calculate the detectionlines in image
 			//getDetectionLines(detectionLines);
 
 			//findLinePoints(detectionLines, outputImage, detectedLinePoints);
-			outputImage = bva::findLinePointsNew(outputImage);
+           int angle = -1;
+			     outputImage = bva::findLinePointsNew(outputImage, angle);
+          		printf("Winkel %d\n", angle);
         }
         pSample->Unlock(l_pSrcBuffer);
     }
