@@ -61,6 +61,27 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src)
     cv::fillPoly(mask, maskContour, 255);
 
     src = src & mask;
+	
+        /* cv::Mat dst;
+	cv::Mat transform_matrix;
+	cv::Point2f source_points[4];
+	cv::Point2f dest_points[4];
+
+	source_points[0] = *new cv::Point2f(opParam.opFloat.at(2), opParam.opFloat.at(3));
+	source_points[1] = *new cv::Point2f(opParam.opFloat.at(4), opParam.opFloat.at(5));
+	source_points[2] = *new cv::Point2f(opParam.opFloat.at(6), opParam.opFloat.at(7));
+	source_points[3] = *new cv::Point2f(opParam.opFloat.at(8), opParam.opFloat.at(9));
+
+	dest_points[0] = *new cv::Point2f(0, 0);
+	dest_points[1] = *new cv::Point2f(width, 0);
+	dest_points[2] = *new cv::Point2f(width, height);
+	dest_points[3] = *new cv::Point2f(0, height);
+ 
+	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
+
+	cv::warpPerspective(imageStack.top().clone(), dst, transform_matrix, cv::Size(width, height));*/
+	
+	
     cv::cuda::GpuMat image(src);
 		//image.upload(src);
 
