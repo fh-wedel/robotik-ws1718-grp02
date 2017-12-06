@@ -306,6 +306,8 @@ Unser Stick wird nicht mehr vom System erkannt. Sowohl im BIOS/Boot-Menü als au
 
 **09:00 bis 10:50 - Franz, Frauke, Felix**  
 
+**12:30 bis 15:20 - Alle**
+Lenkwinkel neu vermessen, Hermann hillft bei NVidia Treibern, Aufnahme.
 
 **15:20 bis 17:00 - Frauke, Jan**  
 Es wurde weiter an der Linienerkennung und der Bündellung der Linien gearbeitet. Nachdem die Parameter verstanden undd angepasst wurden, funktionierte dies auch recht gut. 
