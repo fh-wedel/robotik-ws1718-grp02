@@ -307,8 +307,10 @@ Unser Stick wird nicht mehr vom System erkannt. Sowohl im BIOS/Boot-Menü als au
 **09:00 bis 10:50 - Franz, Frauke, Felix**  
 
 
+**15:20 bis 17:00 - Frauke, Jan**  
 
-**14:00 bis 15:20 - Alle**  
+linenerkemmung und bündelung...
+
 
 
 
