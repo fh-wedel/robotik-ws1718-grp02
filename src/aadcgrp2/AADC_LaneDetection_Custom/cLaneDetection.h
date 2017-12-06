@@ -6,10 +6,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-3.  All advertising materials mentioning features or use of this software must display the following acknowledgement: “This product includes software developed by the Audi AG and its contributors for Audi Autonomous Driving Cup.”
+3.  All advertising materials mentioning features or use of this software must display the following acknowledgement: ï¿½This product includes software developed by the Audi AG and its contributors for Audi Autonomous Driving Cup.ï¿½
 4.  Neither the name of Audi nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL AUDI AG OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS ï¿½AS ISï¿½ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL AUDI AG OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 **********************************************************************
@@ -31,13 +31,13 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR
 #define ADTF_FILTER_VERSION_Minor 0//change will work but notice
 #define ADTF_FILTER_VERSION_Build 0//change will work but notice
 //the detailed description of the filter
-#define ADTF_FILTER_VERSION_LABEL "A small Lane DetectionFilter \n$Rev:: 62948"
+#define ADTF_FILTER_VERSION_LABEL "An awesome Lane DetectionFilter \n$Rev:: 62948"
 
 /*! @defgroup LaneDetection Lane Detection
 *  @{
 *
 *  \image html LaneDetction.PNG "Plugin Lane Detection Filter"
-*         
+*
 * This filter does a very simple detection of lanes in the input image and can be used by the teams as a startup for their own implementation.
 * It does the following subsequent steps:
 * \li binarize input image with threshold set in the properties "Threshold for image binarization"
@@ -47,7 +47,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR
 * # suggested: do a classification which point is left line, middle line, right line
 * \li# suggested: calculate a clothoide for each line
 * \li# suggested: calculate a clothoide for the car
-* 
+*
 * This plugin needs the following libraries:
 * \li OpenCV  v.3.2.0
 *
@@ -114,6 +114,9 @@ protected:
 
     /*! output for rgb image */
     cOutputPin           m_oGCLOutputPin;
+
+    /* define outputPin */
+    cOutputPin           m_SteeringPin;
 
 public:
     /*! default constructor for template class
@@ -278,13 +281,13 @@ private: // private methods
         int minLineContrast;
         /*! Threshold for image binarization */
         int thresholdImageBinarization;
-        
+
         //eigene
-           int HueLow; 
-           int HueHigh;   
-           int Saturation;   
+           int HueLow;
+           int HueHigh;
+           int Saturation;
            int Value;
-        
+
     }
     /*! the filter properties of this class */
     m_filterProperties;

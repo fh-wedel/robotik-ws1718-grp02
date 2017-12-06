@@ -284,7 +284,7 @@ Jan hat nun wieder die ADTF Demo Variante mit den Grünen Punkten aktiviert und 
 Die Linien werden hier gut erkannt. Als nächstes müssen die gefundenen Punkte zu Linien zusammengefasst werden. 
 
 ### Freitag, 01.12.
-**12:45 bis 13:50 Uhr - Frauke:**
+**12:45 bis 13:50 Uhr - Frauke:**  
 Frauke hat sich noch einmal die Bildverarbeitung angeschaut, um zu schauen, ob es nicht doch ohne die grünen Punkte geht (siehe Jan's Eintrag oben). Bisher ist aber noch nicht wirklich etwas dabei herumgekommen.
 
 ----
@@ -301,17 +301,36 @@ Unser Stick wird nicht mehr vom System erkannt. Sowohl im BIOS/Boot-Menü als au
 
 ### Dienstag, 05.12.
 **08:00 bis 09:00 - Frauke**  
-Frauke hat sich weiter mit der Trennung von Bildverarbeitungsteil für den ADTF-Filter und die Bildverarbeitung in der LaneDetection gekümmert. Die beiden Dinge sind nun getrennt, OpenCV-Operationen wurden in die bva._pp ausgelagert.
-Darüber hinaus hat sie im git-Repo den Ordner config/hoe/ zu config/grp2 und die Projektdatei config/hoe/hoe.prj zu config/grp2/grp2.prj umbenannt, damit es nicht zu Konflikten oder Überschreibungen kommt, wenn wir auf Hermanns Stick arbeiten (git hat übrigens ganz schlau bemerkt, dass ich den Ordner und die Datei nur umbenannt habe :) ). Das Builden funktioniert weiterhin.
+Frauke hat sich weiter mit der Trennung von Bildverarbeitungsteil für den ADTF-Filter und die Bildverarbeitung in der LaneDetection gekümmert. Die beiden Dinge sind nun getrennt, OpenCV-Operationen wurden in die `bva._pp` ausgelagert.
+Darüber hinaus hat sie im git-Repo den Ordner `config/hoe/` zu `config/grp2/` und die Projektdatei `config/hoe/hoe.prj` zu `config/grp2/grp2.prj` umbenannt, damit es nicht zu Konflikten oder Überschreibungen kommt, wenn wir auf Hermanns Stick arbeiten (git hat übrigens ganz schlau bemerkt, dass ich den Ordner und die Datei nur umbenannt habe :) ). Das Builden funktioniert weiterhin.
 Beim Ausprobieren (Ausführen in ADTF) auf dem Auto fliegt die Exception: "CUDA driver version is insufficient for CUDA runtime version in function allocate". Anscheinend ist auf Hermanns Stick eine andere Version von CUDA installert, denn auf unserem Stick hatten wir keine Probleme mit der Version. Jetzt ist die Frage, wie wir damit umgehen ...
 
-**09:00 bis 10:50 - Franz, Frauke, Felix**  
+**09:00 bis 10:50 - Franz, Frauke, Felix, Hermann**  
+Hermann hat den nVidia-Treiber wieder zum laufen gebracht. Was nach langem Suchen schlussendlich geholfen hat, war das `purge`n des nVidia-Treibers und die komplette Neuinstallation. Die BVA auf der GPU funktionierte dann wieder :)
+Danach haben wir uns entschieden, Franz' SSD auf Hermann's alsten USB-Stick zu klonen. Das hat dank Hermanns Hilfe auch schnell funktioniert. Danke Hermann! :)
+Danach haben wir aber einen git-Konflikt ausgelöst, der durch uncommittete Änderungen von Franz kam.
+
+**12:30 bis 15:20 - Alle**
+In der Mittagspause wurde der Stick an Fraukes Laptop angeschlossen, damit wir ihn dort booten können und das "kaputte" git wieder gerade zu biegen.
+Oben in der Robotik gab es wieder den gleichen CUDA-Fehler wie vorher. Hermann hat das wieder geradegebogen. Danke Hermann x2.
+Lenkwinkel neu vermessen, Hermann hillft bei NVidia Treibern, Aufnahme.
+
+**15:20 bis 17:00 - Frauke, Jan**  
+Es wurde weiter an der Linienerkennung und der Bündelung der Linien gearbeitet. Nachdem die Parameter verstanden und angepasst wurden, funktionierte dies auch recht gut. 
 
 
+----
 
-**14:00 bis 15:20 - Alle**  
-
-
+### Dienstag, 06.12.
+**11:00 bis 13:30 - Jan**  
+Das verarbeitete canny Bild `contours` wird nun in eine Vogelperspektive mit Hilfe von  `cv::cuda::warpPerspective()` verzerrt.
+In Versuchen sieht das Resultat besser aus, wenn man das Warping auf das `contours` anstatt auf `src` anwendet. Dies muss aber nicht immer so sein... 
+die ROI eingrenzung muss nun warscheinlich nicht mehr durchgeführt werden, da das Bild nun eh größtenteils nur die Fahrbahn abbildet. 
+Da parallel Fahrstreifen nun auch im Bild parallel sind, wird in der Funktion `isEqual()` nun auch die Distanz berücksichtigt. 
+Mit hilfe der `clusteredLines` wird nun mit Hilfe von `getAngle()` provisorisch ein erster Lenkwinkel auf der Konsole ausgegeben.
+dieser ist jedoch noch anfällig für ausreißende Linien.
+Eine Idee zur Lösung des Problems ist, die hough transformation anzupassen. Eine Vernachlässigung dieser Ausreißer könnte Probleme bei Kurven verursachen.
+Ein Kommentar von Frauke: Vielleicht können wir einen Median-Filter verwenden, um die Ausreißer loszuwerden?
 
 
 ----
