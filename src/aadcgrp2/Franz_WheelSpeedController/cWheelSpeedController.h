@@ -22,7 +22,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 
 #include "stdafx.h"
 
-#define OID_ADTF_WHEELSPEEDCONTROLLER "adtf.aadc.wheelSpeedController"
+#define OID_ADTF_WHEELSPEEDCONTROLLER "adtf.aadc.franz.wheelSpeedController"
 /*! @defgroup WheelSpeedController Wheel Speed Controller
 *  @{
 *
@@ -262,7 +262,7 @@ private:
     /*! differential factor for PID Controller */
     tFloat64    m_f64PIDKd;
     /*! the sampletime for the pid controller */
-    tFloat64 m_f64PIDSampleTime;
+    tFloat64 m_f64PIDLastSampleTime;
     /*! the minimum output value for the controller */
     tFloat64 m_f64PIDMinimumOutput;
     /*! the maximum output value for the controller */
