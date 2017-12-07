@@ -45,9 +45,16 @@ include_directories(${AADC_DIR}/include)
 #add_subdirectory(AADC_FirstOpenCV)
 add_subdirectory(AADC_grp2)
 add_subdirectory(AADC_LaneDetection_Custom)
-add_subdirectory(AADC_ConverterWheels_Custom)
-add_subdirectory(AADC_Realsense_Felix)
-add_subdirectory(Felix_RadiusToSteeringAngle)
-add_subdirectory(Felix_AngleToServoValue)
+
+
+#---- Franz ----
 add_subdirectory(FloatValueGenerator)
 add_subdirectory(Franz_WheelSpeedController)
+add_subdirectory(AADC_ConverterWheels_Custom)
+
+
+#---- Felix ----
+#add_subdirectory(AADC_Realsense_Felix)
+add_subdirectory(Felix_RadiusToSteeringAngle)
+add_subdirectory(Felix_AngleToServoValue)
+add_subdirectory(Felix_Gain)

@@ -11,9 +11,12 @@ static bool isEqual(Vec2f a, Vec2f b) {
 }
 
 //calculate steering angle
-static float getAngle(std::vector<Vec2f> clusteredLines) {
-	float sum = 0;
+static tFloat32 getAngle(std::vector<Vec2f> clusteredLines) {
+	tFloat32 sum = 0;
 	if (clusteredLines.size() == 0) return 0; //no lane was detected
+	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
+	// Car: "Just go straight and full speed :]"
+
 	for (Vec2f v : clusteredLines) {
 		float deg = rad2deg(v[1]);
 		if (deg < 90) {
@@ -29,14 +32,13 @@ static float getAngle(std::vector<Vec2f> clusteredLines) {
 
 /*static*/ void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec2f>& clusteredLines) {
 	std::vector<int> labels;
-	int classes;
-	classes = cv::partition(lines, labels, isEqual);
+	int amountOfClasses = cv::partition(lines, labels, isEqual);
 
 //	for (int i = 0; i < lines.size(); i++) {
 //		printf("dist: %.3f angle: %.3f Klasse: %d\n", lines.at(i)[0], rad2deg(lines.at(i)[1]), labels.at(i));
 //	}
 
-	for (int i = 0; i < classes; i++) {
+	for (int i = 0; i < amountOfClasses; i++) {
 		float sumAngle = 0;
 		float sumDist = 0;
 		int classSize = 0;
@@ -55,7 +57,7 @@ static float getAngle(std::vector<Vec2f> clusteredLines) {
 		printf("dist: %.3f angle: %.3f\n", v[0], rad2deg(v[1]));//
 	}
 
-	//printf("Klassen: %d\n", classes);
+	//printf("Klassen: %d\n", amountOfClasses);
 }
 
 //static void createMask(cv::Mat& mask, std::vector<std::vector<cv::Point> >& contours,
@@ -69,7 +71,7 @@ static float getAngle(std::vector<Vec2f> clusteredLines) {
 //}
 
 //own implementation of line detection
-cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
+cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 {
 	//----------------------ROI------------------------------
 	//cv::Mat mask = cv::Mat::zeros(src.size(), CV_8U);
@@ -89,25 +91,42 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
 
 	cv::cuda::GpuMat contoursInv;
 	cv::cuda::threshold(contours, contoursInv, 128, 255, THRESH_BINARY_INV);
+	//TODO: contoursInv wird nie benutzt
 
 	//--------------perspective warp------------------
 	cv::Mat transform_matrix;
 	cv::Point2f source_points[4];
 	cv::Point2f dest_points[4];
+
+	// Parameters
 	cv::Point2f refPoint = cv::Point(680, 650);
+	int bottomCornerInset = 250;
+
+	/*	TODO: refPoint.x < imageSize.width / 2
+	 * 	-> ansonsten wird das bild gespiegelt?!
+	 *
+	 * 	vielleicht hier lieber eine eingabe in prozent verwenden?
+	 * 	(länge der oberen kante des trapezes beträgt x% der bildbreite)
+	 */
+
 	source_points[0] = refPoint;
-	source_points[1] = cv::Point(0, contours.rows - 1);
-	source_points[2] = cv::Point(contours.cols - 1, contours.rows - 1);
+	source_points[1] = cv::Point(0, contours.rows - 1); // bottom left corner
+	source_points[2] = cv::Point(contours.cols - 1, contours.rows - 1); // bottom right corner
 	source_points[3] = cv::Point(contours.cols - 1 - refPoint.x, refPoint.y);
 
 	dest_points[0] = cv::Point2f(0, 0);
-	dest_points[1] = cv::Point2f(250, contours.rows - 1);
-	dest_points[2] = cv::Point2f(contours.cols - 250, contours.rows - 1);
+	dest_points[1] = cv::Point2f(bottomCornerInset, contours.rows - 1);
+	dest_points[2] = cv::Point2f(contours.cols - bottomCornerInset, contours.rows - 1);
 	dest_points[3] = cv::Point2f(contours.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
 	cv::cuda::GpuMat contoursWarped;
-	cv::cuda::warpPerspective(contours, contoursWarped, transform_matrix, cv::Size(contours.cols, contours.rows));
+	cv::cuda::warpPerspective(
+		contours,
+		contoursWarped,
+		transform_matrix,
+		cv::Size(contours.cols, contours.rows) //TODO: contours.size() ?
+	);
 
 	/*
 	Hough tranform for line detection with feedback
@@ -134,34 +153,24 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, int& angle)
 	//houghVote -= 5;
 	//}
 	//std::cout << houghVote << "\n";
+
+
+	// Create our final mat on GPU and write the contours to it.
 	cv::cuda::GpuMat result(image.size(), CV_8U, Scalar(255));
 	contoursWarped.copyTo(result);
+
+	// Cluster the detected hough lines and draw them onto the mat
+	//
+	// Unfortunately drawing can't be done using GPU (yet), therefore we download
+	// the intermediary result and use the CPU.
+	cv::Mat output;
+	result.download(output);
 
 	std::vector<Vec2f> clusteredLines;
 	clusterLines(lines, clusteredLines);
 
 	// Draw the lines
-	std::vector<Vec2f>::const_iterator it = lines.begin();
-	cv::Mat output;
-	result.download(output);
-
-	while (it != lines.end()) {
-		float rho = (*it)[0];   // first element is distance rho
-		float theta = (*it)[1]; // second element is angle theta
-
-								//if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) || (theta > 1.5 && theta < 1.6)) { // filter to remove vertical and horizontal lines
-
-								// point of intersection of the line with first row
-		Point pt1(rho / cos(theta), 0);
-		// point of intersection of the line with last row
-		Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
-		// draw a line: Color = Scalar(R, G, B), thickness
-		//cv::line(output, pt1, pt2, Scalar(255, 255, 255), 1);
-		//}
-
-		++it;
-	}
-	it = clusteredLines.begin();
+	std::vector<Vec2f>::const_iterator it = clusteredLines.begin();
 	while (it != clusteredLines.end()) {
 
 		float rho = (*it)[0];   // first element is distance rho
@@ -193,7 +202,7 @@ cv::Mat bva::lineBinarization(cv::Mat& input_img, int hueLow,
 	cv::Mat out;
 	//convert to HSV colorspace
 	cvtColor(input_img, hsv, CV_BGR2HSV);
-	
+
 	//Filter blue color (range: ~90-120 saturation: ~120-255)
 	inRange(hsv, Scalar(hueLow,
 		saturation,

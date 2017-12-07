@@ -31,7 +31,7 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 
 
 
-	cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
+cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 {
 
 	SetPropertyInt("ROI::XOffset", 0);
@@ -99,9 +99,7 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 
 }
 
-cLaneDetection::~cLaneDetection()
-{
-}
+cLaneDetection::~cLaneDetection() {}
 
 tResult cLaneDetection::Start(__exception)
 {
@@ -114,36 +112,66 @@ tResult cLaneDetection::Stop(__exception)
 	//destroyWindow("Debug");
 	return cFilter::Stop(__exception_ptr);
 }
+
+
+tResult cLaneDetection::CreateInputPins(__exception) {
+	// Video Input
+	RETURN_IF_FAILED(m_oVideoInputPin.Create("Video_Input", IPin::PD_Input, static_cast<IPinEventSink*>(this)));
+	RETURN_IF_FAILED(RegisterPin(&m_oVideoInputPin));
+
+    RETURN_NOERROR;
+}
+
+
+tResult cLaneDetection::CreateOutputPins(__exception) {
+
+// Debug Video Output Pins
+
+	RETURN_IF_FAILED(m_oVideoOutputPin.Create("Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
+	RETURN_IF_FAILED(RegisterPin(&m_oVideoOutputPin));
+
+
+	m_oGCLOutputPin.Create("GCL", new adtf::cMediaType(MEDIA_TYPE_COMMAND, MEDIA_SUBTYPE_COMMAND_GCL), static_cast<IPinEventSink*>(this));
+	RegisterPin(&m_oGCLOutputPin);
+
+// Steering Angle Output Pin
+
+    // create description manager
+    cObjectPtr<IMediaDescriptionManager> pDescManager;
+    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
+
+    // get media type
+    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
+    RETURN_IF_POINTER_NULL(strDescSignalValue);
+    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //TODO: Soll angeblich ein "deprecated constructor" sein !!
+
+    // set member media description
+    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_SteeringOutputDescription));
+
+    // create pin
+    RETURN_IF_FAILED(m_SteeringPin.Create("steeringAngle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
+    RETURN_IF_FAILED(RegisterPin(&m_SteeringPin));
+
+    RETURN_NOERROR;
+}
+
 tResult cLaneDetection::Init(tInitStage eStage, __exception)
 {
 	RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr));
 
-	if (eStage == StageFirst)
-	{
+	switch (eStage) {
+	case StageFirst:
 		vw.open("/home/aadc/ADTF/src/aadcgrp2/AADC_LaneDetection_Custom/recording/recording001.avi",
 			CV_FOURCC('M', 'J', 'P', 'G'), 30, Size(640, 480));
 
-		// Video Input
-		RETURN_IF_FAILED(m_oVideoInputPin.Create("Video_Input", IPin::PD_Input, static_cast<IPinEventSink*>(this)));
-		RETURN_IF_FAILED(RegisterPin(&m_oVideoInputPin));
+		RETURN_IF_FAILED(CreateInputPins(__exception_ptr));
+		RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
+		break;
 
+	case StageNormal:
+		break;
 
-		RETURN_IF_FAILED(m_oVideoOutputPin.Create("Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
-		RETURN_IF_FAILED(RegisterPin(&m_oVideoOutputPin));
-
-
-		m_oGCLOutputPin.Create("GCL", new adtf::cMediaType(MEDIA_TYPE_COMMAND, MEDIA_SUBTYPE_COMMAND_GCL), static_cast<IPinEventSink*>(this));
-		RegisterPin(&m_oGCLOutputPin);
-
-
-
-
-	}
-	else if (eStage == StageNormal)
-	{
-	}
-	else if (eStage == StageGraphReady)
-	{
+	case StageGraphReady:
 		// get the image format of the input video pin
 		cObjectPtr<IMediaType> pType;
 		RETURN_IF_FAILED(m_oVideoInputPin.GetMediaType(&pType));
@@ -156,6 +184,7 @@ tResult cLaneDetection::Init(tInitStage eStage, __exception)
 		{
 			LOG_ERROR("Invalid Input Format for this filter");
 		}
+		break;
 	}
 
 	RETURN_NOERROR;
@@ -262,13 +291,11 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				m_filterProperties.HueLow, m_filterProperties.HueHigh,
 				m_filterProperties.Saturation, m_filterProperties.Value);
 
-			//calculate the detectionlines in image
-			//getDetectionLines(detectionLines);
-
-			//findLinePoints(detectionLines, outputImage, detectedLinePoints);
-			int angle = -1;
+			//find the lines in image and calculate the desired steering angle
+			tFloat32 angle = -1;
 			outputImage = bva::findLinePointsNew(outputImage, angle);
 			printf("Winkel %d\n", angle);
+			transmitValue(angle);
 		}
 		pSample->Unlock(l_pSrcBuffer);
 	}
@@ -277,9 +304,15 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 	{
 		UpdateOutputImageFormat(outputImage);
 
-		//create a cImage from CV Matrix (not necessary, just for demonstration9
+		//create a cImage from CV Matrix (not necessary, just for demonstration)
 		cImage newImage;
-		newImage.Create(m_sOutputFormat.nWidth, m_sOutputFormat.nHeight, m_sOutputFormat.nBitsPerPixel, m_sOutputFormat.nBytesPerLine, outputImage.data);
+		newImage.Create(
+			m_sOutputFormat.nWidth,
+			m_sOutputFormat.nHeight,
+			m_sOutputFormat.nBitsPerPixel,
+			m_sOutputFormat.nBytesPerLine,
+			outputImage.data
+		);
 
 		//create the new media sample
 		cObjectPtr<IMediaSample> pMediaSample;
@@ -292,74 +325,16 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		outputImage.release();
 	}
 
-	if (m_oGCLOutputPin.IsConnected()) transmitGCL(detectionLines, detectedLinePoints);
+	if (m_oGCLOutputPin.IsConnected()) {
+		transmitGCL(detectionLines, detectedLinePoints);
+	}
 
-	RETURN_NOERROR;
-}
+	if (m_SteeringPin.IsConnected()) {
 
-tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const cv::Mat& image, vector<cPoint>& detectedLinePoints)
-{
-	//iterate through the calculated horizontal lines
-	for (vector<tInt>::const_iterator nline = detectionLines.begin(); nline != detectionLines.end(); nline++)
-	{
-		uchar ucLastVal = 0;
-
-		// create vector with line data
-		const uchar* p = image.ptr<uchar>(*nline, m_filterProperties.ROIOffsetX);
-		std::vector<uchar> lineData(p, p + m_filterProperties.ROIWidth);
-
-		tBool detectedStartCornerLine = tFalse;
-		tInt columnStartCornerLine = 0;
-
-		for (std::vector<uchar>::iterator lineIterator = lineData.begin(); lineIterator != lineData.end(); lineIterator++)
-		{
-			uchar ucCurrentVal = *lineIterator;
-			tInt currentIndex = tInt(std::distance(lineData.begin(), lineIterator));
-			//look for transition from dark to bright -> start of line corner
-			if ((ucCurrentVal - ucLastVal) > m_filterProperties.minLineContrast)
-			{
-				detectedStartCornerLine = tTrue;
-				columnStartCornerLine = currentIndex;
-			}//look for transition from bright to dark -> end of line
-			else if ((ucLastVal - ucCurrentVal) > m_filterProperties.minLineContrast && detectedStartCornerLine)
-			{
-				//we already have the start corner of line, so check the width of detected line
-				if ((abs(columnStartCornerLine - currentIndex) > m_filterProperties.minLineWidth)
-					&& (abs(columnStartCornerLine - currentIndex) < m_filterProperties.maxLineWidth))
-				{
-					detectedLinePoints.push_back(cPoint(tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
-						m_filterProperties.ROIOffsetX), *nline));
-
-					detectedStartCornerLine = tFalse;
-					columnStartCornerLine = 0;
-				}
-			}
-			//we reached maximum line width limit, stop looking for end of line
-			if (detectedStartCornerLine &&
-				abs(columnStartCornerLine - currentIndex) > m_filterProperties.maxLineWidth)
-			{
-				detectedStartCornerLine = tFalse;
-				columnStartCornerLine = 0;
-			}
-			ucLastVal = ucCurrentVal;
-		}
 	}
 
 	RETURN_NOERROR;
 }
-
-
-tResult cLaneDetection::getDetectionLines(vector<tInt>& detectionLines)
-{
-	tInt distanceBetweenDetectionLines = m_filterProperties.ROIHeight / (m_filterProperties.detectionLines + 1);
-
-	for (int i = 1; i <= m_filterProperties.detectionLines; i++)
-	{
-		detectionLines.push_back(m_filterProperties.ROIOffsetY + i * distanceBetweenDetectionLines);
-	}
-	RETURN_NOERROR;
-}
-
 
 tResult cLaneDetection::UpdateInputImageFormat(const tBitmapFormat* pFormat)
 {
@@ -443,4 +418,51 @@ tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage)
 		m_oVideoOutputPin.SetFormat(&m_sOutputFormat, NULL);
 	}
 	RETURN_NOERROR;
+}
+
+tResult cLinearFunction::transmitValue(tFloat32 value) {
+
+    cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_SteeringOutputDescription);
+    {
+        // focus for sample write lock
+        // read data from the media sample with the coder of the descriptor
+        __adtf_sample_write_lock_mediadescription(m_SteeringOutputDescription, pMediaSample, pCoder);
+
+        /*! indicates of bufferIDs were set */
+        static tBool m_SteeringOutputDescriptionIsInitialized = false;
+        /*! the id for the f32value of the media description for input pin for the set speed */
+        static tBufferID m_SteeringOutputDescriptionID;
+        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
+        static tBufferID m_OutputValueTimestampID;
+
+        if(!m_SteeringOutputDescriptionIsInitialized) {
+            pCoder->GetID("f32Value", m_SteeringOutputDescriptionID);
+            pCoder->GetID("ui32ArduinoTimestamp", m_OutputValueTimestampID);
+            m_SteeringOutputDescriptionIsInitialized = tTrue;
+        }
+
+        //write values to media sample
+        pCoder->Set(m_SteeringOutputDescriptionID, (tVoid*)&value);
+    }
+
+    //transmit media sample over output pin
+    RETURN_IF_FAILED(pMediaSample->SetTime(_clock->GetStreamTime()));
+    RETURN_IF_FAILED(m_SteeringPin.Transmit(pMediaSample));
+
+    RETURN_NOERROR;
+}
+
+cObjectPtr<IMediaSample> cLinearFunction::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
+
+    // determine size in memory using the type descriptor
+    cObjectPtr<IMediaSerializer> pSerializer;
+    typeDescription->GetMediaSampleSerializer(&pSerializer);
+    tInt nSize = pSerializer->GetDeserializedSize();
+
+    // create new media sample
+    cObjectPtr<IMediaSample> pMediaSample;
+    AllocMediaSample((tVoid**)&pMediaSample);
+    pMediaSample->AllocBuffer(nSize);
+
+    return pMediaSample;
 }

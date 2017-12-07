@@ -32,13 +32,13 @@ cAngleToServoConverter::cAngleToServoConverter(const tChar* __info) : cFilter(__
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
 
-    /*! maximum deflection of front tires */
-    SetPropertyFloat("Algorithm::MaxLeftAngle", 45.0);
+    /*! maximum deflection of front tires (this value corresponds to an inner diameter of 80cm) */
+    SetPropertyFloat("Algorithm::MaxLeftAngle", 34.2);
     SetPropertyStr("Algorithm::MaxLeftAngle" NSSUBPROP_DESCRIPTION, "maximum deflection of front left tire");
     SetPropertyBool("Algorithm::MaxLeftAngle" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    /*! maximum deflection of front right tires */
-    SetPropertyFloat("Algorithm::MaxRightAngle", 45.0);
+    /*! maximum deflection of front right tires (this value corresponds to an inner diameter of 80cm between tires) */
+    SetPropertyFloat("Algorithm::MaxRightAngle", 34.2);
     SetPropertyStr("Algorithm::MaxRightAngle" NSSUBPROP_DESCRIPTION, "maximum deflection of front right tire");
     SetPropertyBool("Algorithm::MaxRightAngle" NSSUBPROP_ISCHANGEABLE, tTrue);
 
@@ -58,7 +58,7 @@ tResult cAngleToServoConverter::CreateInputPins(__exception) {
     cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue,IMediaDescription::MDF_DDL_DEFAULT_VERSION);
 
     // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_ServoDescription));
+    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_AngleDescription));
 
     // create pins
     RETURN_IF_FAILED(m_InputAngle.Create("angle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
@@ -78,7 +78,7 @@ tResult cAngleToServoConverter::CreateOutputPins(__exception) {
     cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //TODO: Soll angeblich ein "deprecated constructor" sein !!
 
     // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_AngleDescription));
+    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_ServoDescription));
 
     // create pin
     RETURN_IF_FAILED(m_OutputServoValue.Create("servoValue", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
