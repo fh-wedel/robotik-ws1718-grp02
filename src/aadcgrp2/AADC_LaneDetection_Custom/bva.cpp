@@ -11,13 +11,13 @@ static bool isEqual(Vec2f a, Vec2f b) {
 }
 
 //calculate steering angle
-static tFloat32 getAngle(std::vector<Vec2f> clusteredLines) {
+static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 	tFloat32 sum = 0;
 	if (clusteredLines.size() == 0) return 0; //no lane was detected
 	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
 	// Car: "Just go straight and full speed :]"
 
-	for (Vec2f v : clusteredLines) {
+	for (Vec3f v : clusteredLines) {
 		float deg = rad2deg(v[1]);
 		if (deg < 90) {
 			sum += deg;
@@ -171,7 +171,7 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 	clusterLines(lines, clusteredLines);
 
 	// Draw the lines
-	std::vector<Vec2f>::const_iterator it = clusteredLines.begin();
+	std::vector<Vec3f>::const_iterator it = clusteredLines.begin();
 	while (it != clusteredLines.end()) {
 
 		float rho = (*it)[0];   // first element is distance rho
