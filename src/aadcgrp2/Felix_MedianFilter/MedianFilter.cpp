@@ -35,6 +35,9 @@ cMedianFilter::cMedianFilter(const tChar* __info) : cFilter(__info), m_bDebugMod
     SetPropertyInt("Filter::WindowSize", 40);
     SetPropertyStr("Filter::WindowSize" NSSUBPROP_DESCRIPTION, "Number of values to keep in storage.");
     SetPropertyBool("Filter::WindowSize" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    m_storedValues.push_back(7);
+    std::cout << "m_storedValues: " << m_storedValues[0] << '\n';
 }
 
 cMedianFilter::~cMedianFilter() {}
