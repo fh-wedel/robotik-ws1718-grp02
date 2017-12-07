@@ -22,9 +22,10 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include "stdafx.h"
 #include "cWheelSpeedController.h"
 
+#define WSC_PROP_PT1_OUTPUT_FACTOR "OutputFactor"
+
 #define WSC_PROP_PT1_TIMECONSTANT "PT1::TimeConstant"
 #define WSC_PROP_PT1_GAIN "PT1::Gain"
-#define WSC_PROP_PT1_OUTPUT_FACTOR "PT1::OutputFactor"
 #define WSC_PROP_PT1_CORRECTION_FACTOR "PT1::Correction Factor"
 
 #define WSC_PROP_PID_KP "PID::Kp_value"
@@ -48,6 +49,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define WSC_PROP_PID_MAXOUTPUT "PID::Maxiumum output"
 #define WSC_PROP_PID_MINOUTPUT "PID::Minimum output"
 #define WSC_PROP_DEBUG_MODE "Debug Mode"
+
 
 ADTF_FILTER_PLUGIN("Franz Wheel Speed Controller", OID_ADTF_WHEELSPEEDCONTROLLER, cWheelSpeedController)
 
@@ -130,11 +132,6 @@ tResult cWheelSpeedController::ReadProperties(const tChar* strPropertyName)
     if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PID_KI))
     {
         m_f64PIDKi = GetPropertyFloat(WSC_PROP_PID_KI);
-    }
-
-    if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PID_SAMPLE_TIME))
-    {
-        m_f64PIDSampleTime = GetPropertyFloat(WSC_PROP_PID_SAMPLE_TIME);
     }
 
     if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PT1_OUTPUT_FACTOR))
@@ -495,6 +492,15 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
 
     //m_f64LastSpeedValue = i_f64MeasuredValue;
 
+    // calculate time delta since last sample
+    tTimeStamp deltaT = GetTime() - m_f64PIDLastSampleTime;
+    m_f64PIDLastSampleTime = GetTime();
+
+    if (m_bShowDebug) {
+      std::cout << "deltaT -> " <<  deltaT << '\n';
+      std::cout << "current Speed -> " << i_f64MeasuredValue << '\n';
+    }
+
     tFloat f64Result = 0;
 
     //the three controller algorithms
@@ -505,7 +511,7 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
         //algorithm:
         //y = Kp * e
         //error:
-        tFloat64 f64Error = (m_f64SetPoint-i_f64MeasuredValue);
+        tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
 
         f64Result = m_f64PIDKp * f64Error;
     }
@@ -517,19 +523,19 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
         //esum = esum + e
         //y = Kp * e + Ki * Ta * esum
         //error:
-        tFloat64 f64Error = (m_f64SetPoint-i_f64MeasuredValue);
+        tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
         // accumulated error:
 
-        m_f64accumulatedVariable +=(f64Error*m_f64PIDSampleTime);
+        m_f64accumulatedVariable += (f64Error * deltaT);
 
-        f64Result = m_f64PIDKp*f64Error
-                    +(m_f64PIDKi*m_f64accumulatedVariable);
+        tFloat64 y_p = m_f64PIDKp * f64Error;
+        tFloat64 y_i = m_f64PIDKi * m_f64accumulatedVariable;
+
+        f64Result = y_p + y_i;
 
     }
     else if(m_i32ControllerMode==3)
     {
-        m_lastSampleTime = GetTime();
-        tFloat64 f64SampleTime = m_f64PIDSampleTime;
 
         //algorithm:
         //esum = esum + e
@@ -537,13 +543,15 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
         //ealt = e
 
         //error:
-        tFloat64 f64Error = (m_f64SetPoint-i_f64MeasuredValue);
+        tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
         // accumulated error:
-        m_f64accumulatedVariable +=f64Error*m_f64PIDSampleTime;
+        m_f64accumulatedVariable += f64Error * deltaT;
 
-        f64Result =  m_f64PIDKp*f64Error
-                     +(m_f64PIDKi*m_f64accumulatedVariable)
-                     +m_f64PIDKd*(f64Error-m_f64LastMeasuredError)/f64SampleTime;
+        tFloat64 y_p = m_f64PIDKp * f64Error;
+        tFloat64 y_i = m_f64PIDKi * m_f64accumulatedVariable;
+        tFloat64 y_d = m_f64PIDKd * (f64Error - m_f64LastMeasuredError) / deltaT;
+
+        f64Result =  y_p + y_i + y_d;
 
         m_f64LastMeasuredError = f64Error;
     }

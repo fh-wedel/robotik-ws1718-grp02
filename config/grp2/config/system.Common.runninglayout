@@ -19,12 +19,10 @@
  </folder>
  <folder name="Wheel_Converter">
   <folder name="components">
-   <folder name="FilterTraceView" />
+   <folder filter_tree_expanded_list="" name="FilterTraceView" />
   </folder>
   <folder name="windows">
    <folder Height="366" PosX="11" PosY="8" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="360" PosX="135" PosY="2" Visible="true" Width="539" name="Video_Display" />
-   <folder Height="322" PosX="133" PosY="357" Visible="true" Width="542" name="Video_Display2" />
   </folder>
  </folder>
  <folder name="Lane_Detection">
