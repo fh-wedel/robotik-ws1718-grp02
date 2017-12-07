@@ -30,7 +30,8 @@ static tFloat32 getAngle(std::vector<Vec2f> clusteredLines) {
 	return sum / clusteredLines.size();
 };
 
-/*static*/ void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec2f>& clusteredLines) {
+//weight saved in clusteredLines[2]
+/*static*/ void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec3f>& clusteredLines) {
 	std::vector<int> labels;
 	int amountOfClasses = cv::partition(lines, labels, isEqual);
 
@@ -50,11 +51,11 @@ static tFloat32 getAngle(std::vector<Vec2f> clusteredLines) {
 			}
 		}
 		//printf("sumDist: %.1f sumAngle: %.1f\n", sumDist, sumAngle);
-		clusteredLines.push_back(Vec2f(sumDist / classSize, sumAngle / classSize));
+		clusteredLines.push_back(Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize));
 	}
 	printf("Clustered:\n");
 	for (Vec2f v : clusteredLines) {
-		printf("dist: %.3f angle: %.3f\n", v[0], rad2deg(v[1]));//
+		printf("dist: %.3f angle: %.3f weight: %.1f\n", v[0], rad2deg(v[1]), v[2]);//
 	}
 
 	//printf("Klassen: %d\n", amountOfClasses);
@@ -166,7 +167,7 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 	cv::Mat output;
 	result.download(output);
 
-	std::vector<Vec2f> clusteredLines;
+	std::vector<Vec3f> clusteredLines;
 	clusterLines(lines, clusteredLines);
 
 	// Draw the lines
