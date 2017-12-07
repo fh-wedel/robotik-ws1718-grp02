@@ -123,26 +123,10 @@ tResult cMedianFilter::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, 
     RETURN_NOERROR;
 }
 
-tFloat32 cMedianFilter::calculateMedian(std::vector<tFloat32> values) {
-
-    // sort values ascending
-    std:sort(values.begin(), values.end());
-
-    // 0 / 2 = 0    -> 0
-    // 1 / 2 = 0.5  -> 0
-    // 2 / 2 = 1    -> 1
-    // 3 / 2 = 1.5  -> 1
-    // 4 / 2 = 2    -> 2
-    // 5 / 2 = 2.5  -> 2
-    int medianIndex = values.size() / 2;
-
-    return values[medianIndex];
-}
-
 tResult cMedianFilter::OnValueChanged(tFloat32 newValue) {
 
     // erase oldest values if window size has been reached
-    int amountOfOverflownElements = m_filterProperties.windowSize - m_storedValues.size()
+    int amountOfOverflownElements = m_filterProperties.windowSize - m_storedValues.size();
     if (amountOfOverflownElements > 0) {
         m_storedValues.erase(
             m_storedValues.begin(),
@@ -159,6 +143,23 @@ tResult cMedianFilter::OnValueChanged(tFloat32 newValue) {
 
     RETURN_NOERROR;
 }
+
+tFloat32 cMedianFilter::calculateMedian(std::vector<tFloat32> values) {
+
+    // sort values ascending
+    std::sort(values.begin(), values.end());
+
+    // 0 / 2 = 0    -> 0
+    // 1 / 2 = 0.5  -> 0
+    // 2 / 2 = 1    -> 1
+    // 3 / 2 = 1.5  -> 1
+    // 4 / 2 = 2    -> 2
+    // 5 / 2 = 2.5  -> 2
+    int medianIndex = values.size() / 2;
+
+    return values[medianIndex];
+}
+
 
 // Input Value PROCESSING
 

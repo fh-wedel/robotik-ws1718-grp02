@@ -87,7 +87,7 @@ protected: // overwrites cFilter
     struct filterProperties {
 
         tInt windowSize;
-        
+
     } m_filterProperties;
 
 
@@ -122,7 +122,9 @@ private:
 
 // Own Helper Functions
 
-    tResult OnValueChanged();
+    tResult OnValueChanged(tFloat32 value);
+
+    tFloat32 calculateMedian(std::vector<tFloat32> values);
 
     tFloat32 readInputValue(IMediaSample* pMediaSample);
     tResult transmitValue(tFloat32 value);
