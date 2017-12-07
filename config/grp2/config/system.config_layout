@@ -1,7 +1,43 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="1" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="56" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="1" zoomfactor="1,000000">
+   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="611" y="658">
+    <output_pin name="WatchdogAliveSignal" />
+   </component>
+   <component height="74" name="Felix_AngleToServo_Converter" width="189" x="793" y="377">
+    <input_pin name="angle" />
+    <output_pin name="servoValue" />
+   </component>
+   <component height="410" name="AADC_Arduino_Communication" width="302" x="1069" y="359">
+    <input_pin name="SpeedController" />
+    <input_pin name="SteeringController" />
+    <input_pin name="headLightEnabled" />
+    <input_pin name="brakeLightEnabled" />
+    <input_pin name="reverseLightEnabled" />
+    <input_pin name="turnSignalLeftEnabled" />
+    <input_pin name="turnSignalRightEnabled" />
+    <input_pin name="hazardLightEnabled" />
+    <input_pin name="USSFrontEnabled" />
+    <input_pin name="USSRearEnabled" />
+    <input_pin name="WatchdogAlive" />
+    <input_pin name="EmergencyStop" />
+    <output_pin name="UltrasonicFrontLeft" />
+    <output_pin name="UltrasonicFrontCenterLeft" />
+    <output_pin name="UltrasonicFrontCenter" />
+    <output_pin name="UltrasonicFrontCenterRight" />
+    <output_pin name="UltrasonicFrontRight" />
+    <output_pin name="UltrasonicSideLeft" />
+    <output_pin name="UltrasonicSideRight" />
+    <output_pin name="UltrasonicRearCenterLeft" />
+    <output_pin name="UltrasonicRearCenter" />
+    <output_pin name="UltrasonicRearCenterRight" />
+    <output_pin name="UltrasonicStruct" />
+    <output_pin name="InerMeasUnitStruct" />
+    <output_pin name="WheelLeftStruct" />
+    <output_pin name="WheelRightStruct" />
+    <output_pin name="VoltageStruct" />
+   </component>
    <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="485" y="403">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -61,6 +97,9 @@
     <property name="send_forward_seek_reset_events" type="bool" value="true" />
     <property name="start_paused" type="bool" value="false" />
    </component>
+   <connection dest="AADC_Arduino_Communication" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="795" x_p3="795" x_p4="910" x_p5="910" y_p2="0" y_p3="701" y_p4="701" y_p5="0" />
+   <connection dest="AADC_Arduino_Communication" dest_pin="SteeringController" reldiff="0" shape_type="3" source="Felix_AngleToServo_Converter" source_pin="servoValue" x_p2="994" x_p3="994" x_p4="1053" x_p5="1053" y_p2="0" y_p3="431" y_p4="431" y_p5="0" />
+   <connection dest="Felix_AngleToServo_Converter" dest_pin="angle" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom2" source_pin="steeringAngle" x_p2="691" x_p3="691" x_p4="781" x_p5="781" y_p2="0" y_p3="419" y_p4="419" y_p5="0" />
    <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="Realsense_RGB" x_p2="251" x_p3="251" x_p4="439" x_p5="439" y_p2="0" y_p3="445" y_p4="445" y_p5="0" />
    <connection dest="Lane_Detection_Display" dest_pin="input" reldiff="0" shape_type="4" source="AADC_Lane_Detection_Custom2" source_pin="Video_Output_Debug" x_p2="683" x_p3="683" x_p4="866" x_p5="866" y_p2="0" y_p3="227" y_p4="227" y_p5="0" />
    <connection dest="AADC_Lane_Detection_Custom2" dest_pin="Video_Input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="Realsense_RGB" x_p2="251" x_p3="251" x_p4="363" x_p5="363" y_p2="0" y_p3="293" y_p4="293" y_p5="0" />

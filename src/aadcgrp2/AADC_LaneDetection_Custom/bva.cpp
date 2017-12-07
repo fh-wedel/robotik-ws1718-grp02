@@ -16,15 +16,16 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 	if (clusteredLines.size() == 0) return 0; //no lane was detected
 	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
 	// Car: "Just go straight and full speed :]"
+	int lines = 0;
 
 	for (Vec3f v : clusteredLines) {
-		float deg = rad2deg(v[1]);
-		if (deg < 90) {
-			sum += deg;
-		}
-		else {
-			sum -= 180 - deg;
-		}
+			lines += v[2];
+	}
+	for (Vec3f v : clusteredLines) {
+		float angle = rad2deg(v[1]);
+		if(angle > 90) angle -=180;
+		sum += angle * (v[2] / lines);
+
 	}
 
 	return sum / clusteredLines.size();
@@ -147,7 +148,7 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 
 	//while(lines.size() < 10 && houghVote > 0){
 
-	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, 150);
+	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, 250);
 
 	hough->detect(contoursWarped, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);

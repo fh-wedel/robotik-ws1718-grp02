@@ -148,6 +148,18 @@
      </settings>
     </filter>
     <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="Harddisk_Player.Realsense_RGB" />
+    <filter alias="AADC_Arduino_Communication" idref="adtf.aadc.arduinoCommunication" priority="6">
+     <settings />
+    </filter>
+    <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="7">
+     <settings />
+    </filter>
+    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="8">
+     <settings />
+    </filter>
+    <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="AADC_Lane_Detection_Custom2.steeringAngle" />
+    <connection connection_priority="50" dest="AADC_Arduino_Communication.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
+    <connection connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
    </graph>
   </configuration>
   <configuration description="" name="Recording">
@@ -283,12 +295,14 @@
      <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger3.WatchdogAliveSignal" />
-    <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="4" />
+    <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="4">
+     <settings />
+    </filter>
     <filter alias="AADC_Lane_Detection_Custom" idref="adtf.aadc_LaneDetection_Custom" priority="5">
      <settings>
       <property name="Algorithm::HueLow" type="Int" value="100" />
-      <property name="Algorithm::Saturation" type="Int" value="80" />
-      <property name="Algorithm::Value" type="Int" value="2" />
+      <property name="Algorithm::Saturation" type="Int" value="70" />
+      <property name="Algorithm::Value" type="Int" value="80" />
      </settings>
     </filter>
     <filter alias="Video_Display" idref="adtf.visual.video_display" priority="6" />
