@@ -321,7 +321,7 @@ Es wurde weiter an der Linienerkennung und der Bündelung der Linien gearbeitet.
 
 ----
 
-### Dienstag, 06.12.
+### Mittwoch, 06.12.
 **11:00 bis 13:30 - Jan**  
 Das verarbeitete canny Bild `contours` wird nun in eine Vogelperspektive mit Hilfe von  `cv::cuda::warpPerspective()` verzerrt.
 In Versuchen sieht das Resultat besser aus, wenn man das Warping auf das `contours` anstatt auf `src` anwendet. Dies muss aber nicht immer so sein... 
@@ -335,3 +335,10 @@ Ein Kommentar von Frauke: Vielleicht können wir einen Median-Filter verwenden, 
 
 ----
 
+### Donnerstag, 8.12.
+**10:30-12:00 - Felix, Franz**
+Zuerst haben wir das Repository wieder auf den Benutzer des Autos umgestellt. Jetzt funktioniert es wieder einwandfrei. 
+Da noch einige commits auf dem Auto waren, wir aber schon zuhause weiter gemacht haben, haben wir das lokale Repository auf den origin gesetzt. Dazu sind die nicht hochgeladenen commits in den lokalen branch `bva-save` gesichert.
+Danach haben wir noch den aktuellen Stand der bva getestet in dem wir das Auto auf die Straße gestellt haben. Um den Lenkwinkel anzuzeigen haben wir mit OpenCV den aktuellen Lenkwinkel in die Ausgabe gemalt.
+
+----
