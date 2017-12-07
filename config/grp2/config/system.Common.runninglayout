@@ -23,6 +23,8 @@
   </folder>
   <folder name="windows">
    <folder Height="366" PosX="11" PosY="8" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="360" PosX="135" PosY="2" Visible="true" Width="539" name="Video_Display" />
+   <folder Height="322" PosX="133" PosY="357" Visible="true" Width="542" name="Video_Display2" />
   </folder>
  </folder>
  <folder name="Lane_Detection">
@@ -30,15 +32,15 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="298" Maximized="false" PosX="57" PosY="330" Visible="true" Width="470" name="Video_Display" />
-   <folder Height="122" PosX="131" PosY="50" Visible="true" Width="136" name="Video_Display2" />
-   <folder Height="122" PosX="266" PosY="58" Visible="true" Width="136" name="Video_Display3" />
-   <folder Height="388" Maximized="false" PosX="21" PosY="-8" Visible="true" Width="542" name="Lane_Detection_Display" />
+   <folder Floating="true" Height="298" Maximized="false" PosX="596" PosY="486" Visible="true" Width="470" name="Video_Display" />
+   <folder Floating="true" Height="122" PosX="670" PosY="206" Visible="true" Width="136" name="Video_Display2" />
+   <folder Floating="true" Height="122" PosX="805" PosY="214" Visible="true" Width="136" name="Video_Display3" />
+   <folder Floating="true" Height="388" Maximized="false" PosX="725" PosY="158" Visible="true" Width="542" name="Lane_Detection_Display" />
   </folder>
  </folder>
  <folder name="Playback">
   <folder name="components">
-   <folder filter_tree_expanded_list="" name="FilterTraceView" />
+   <folder filter_tree_expanded_list="//AADC_Lane_Detection_Custom2" name="FilterTraceView" />
   </folder>
   <folder name="windows">
    <folder Height="366" PosX="-6" PosY="0" Visible="false" Width="725" name="AADC_Sensor_Visualization" />

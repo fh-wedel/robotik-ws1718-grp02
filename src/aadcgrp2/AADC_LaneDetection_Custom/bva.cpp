@@ -54,7 +54,7 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 		clusteredLines.push_back(Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize));
 	}
 	printf("Clustered:\n");
-	for (Vec2f v : clusteredLines) {
+	for (Vec3f v : clusteredLines) {
 		printf("dist: %.3f angle: %.3f weight: %.1f\n", v[0], rad2deg(v[1]), v[2]);//
 	}
 
@@ -192,6 +192,13 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 
 	//steeringangle
 	angle = getAngle(clusteredLines);
+
+	string text = std::to_string(angle);
+int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
+double fontScale = 2;
+int thickness = 3;
+cv::Point textOrg(10, 130);
+cv::putText(output, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
 
 	return output;
 }

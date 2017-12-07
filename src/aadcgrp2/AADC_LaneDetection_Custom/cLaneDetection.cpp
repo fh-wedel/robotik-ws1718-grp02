@@ -294,7 +294,7 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			//find the lines in image and calculate the desired steering angle
 			tFloat32 angle = -1;
 			outputImage = bva::findLinePointsNew(outputImage, angle);
-			printf("Winkel %d\n", angle);
+			printf("Winkel %f\n", angle);
 			transmitValue(angle);
 		}
 		pSample->Unlock(l_pSrcBuffer);
@@ -420,7 +420,7 @@ tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage)
 	RETURN_NOERROR;
 }
 
-tResult cLinearFunction::transmitValue(tFloat32 value) {
+tResult cLaneDetection::transmitValue(tFloat32 value) {
 
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_SteeringOutputDescription);
     {
@@ -452,7 +452,7 @@ tResult cLinearFunction::transmitValue(tFloat32 value) {
     RETURN_NOERROR;
 }
 
-cObjectPtr<IMediaSample> cLinearFunction::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
+cObjectPtr<IMediaSample> cLaneDetection::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
 
     // determine size in memory using the type descriptor
     cObjectPtr<IMediaSerializer> pSerializer;

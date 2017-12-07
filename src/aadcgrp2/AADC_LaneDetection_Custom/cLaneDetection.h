@@ -140,6 +140,10 @@ public:
     */
     tResult Init(tInitStage eStage, ucom::IException** __exception_ptr);
 
+    tResult CreateInputPins(__exception);
+
+    tResult CreateOutputPins(__exception);
+
     /*!
     *   Implements the default cFilter state machine call. It will be
     *   called automatically by changing the filters state and needs
