@@ -129,7 +129,7 @@ tResult cMedianFilter::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, 
 tResult cMedianFilter::OnValueChanged(tFloat32 newValue) {
 
     // erase oldest values if window size has been reached
-    int amountOfOverflownElements = m_filterProperties.windowSize - m_storedValues.size();
+    int amountOfOverflownElements = m_storedValues.size() - m_filterProperties.windowSize;
     if (amountOfOverflownElements > 0) {
         m_storedValues.erase(
             m_storedValues.begin(),

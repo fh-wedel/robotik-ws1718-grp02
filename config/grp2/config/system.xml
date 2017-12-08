@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Live2" />
+  <property name="active_configuration" type="String" value="Lane_Detection" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -110,7 +110,7 @@
    <graph>
     <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="1">
      <settings>
-      <property name="filename" type="String" value="../../../../Desktop/Aufnahmen/realsense_unten_schnekk_split_000.dat" />
+      <property name="filename" type="String" value="../../../../Desktop/recording/unten_try3_split_000.dat" />
      </settings>
     </filter>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="1">
@@ -119,8 +119,6 @@
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.UltrasonicStruct" />
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.InerMeasUnitStruct" />
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.WheelLeftStruct" />
-    <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.WheelRightStruct" />
-    <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.VoltageStruct" />
     <filter alias="Lane_Detection_Display" idref="adtf.visual.video_display" priority="4">
      <settings>
       <property name="ScaleGCL" type="Bool" value="true" />
@@ -187,16 +185,9 @@
   </configuration>
   <configuration description="" name="Lane_Detection">
    <graph>
-    <filter alias="Lane_Detection_Display" idref="adtf.visual.video_display" priority="8">
+    <filter alias="Lane_Detection_Display" idref="adtf.visual.video_display" priority="4">
      <settings>
       <property name="ScaleGCL" type="Bool" value="true" />
-     </settings>
-    </filter>
-    <filter alias="AADC_Realsense_Camera" idref="adtf.aadc.aadc_realsense" priority="2">
-     <settings>
-      <property name="Enable Infrared 1 Stream" type="Bool" value="true" />
-      <property name="Enable Infrared 2 Stream" type="Bool" value="true" />
-      <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
      </settings>
     </filter>
     <filter alias="AADC_Lane_Detection_Custom" idref="adtf.aadc_LaneDetection_Custom" priority="2">
@@ -212,26 +203,11 @@
       <property name="Algorithm::HueLow" type="Int" value="100" />
      </settings>
     </filter>
-    <filter alias="RearCam" idref="adtf.io.linux_video_capture_device" priority="4">
-     <settings>
-      <property name="active" type="Bool" value="false" />
-      <property name="BitsPerPixel" type="Int" value="24" />
-      <property name="captureheight" type="Int" value="480" />
-      <property name="capturewidth" type="Int" value="640" />
-      <property name="devicename" type="String" value="/dev/video3" />
-      <property name="FlipVertical" type="Bool" value="true" />
-      <property name="Height" type="Int" value="480" />
-      <property name="Width" type="Int" value="640" />
-     </settings>
-    </filter>
-    <filter alias="Video_Display" idref="adtf.visual.video_display" priority="5" />
-    <connection connection_priority="50" dest="Video_Display.input" interface="" source="AADC_Realsense_Camera.outputRGB" />
-    <filter alias="Video_Display2" idref="adtf.visual.video_display" priority="6" />
-    <filter alias="Video_Display3" idref="adtf.visual.video_display" priority="6" />
-    <connection active="false" connection_priority="50" dest="Video_Display3" interface="" source="RearCam" />
+    <filter alias="Video_Display" idref="adtf.visual.video_display" priority="3" />
     <connection connection_priority="50" dest="Lane_Detection_Display.input" interface="" source="AADC_Lane_Detection_Custom.Video_Output_Debug" />
-    <connection connection_priority="50" dest="Lane_Detection_Display.gcl_input" interface="" source="AADC_Lane_Detection_Custom.GCL" />
-    <connection connection_priority="50" dest="AADC_Lane_Detection_Custom.Video_Input" interface="" source="AADC_Realsense_Camera.outputRGB" />
+    <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.aadc_realsense" priority="4" />
+    <connection connection_priority="50" dest="AADC_Lane_Detection_Custom.Video_Input" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
+    <connection connection_priority="50" dest="Video_Display.input" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
    </graph>
   </configuration>
   <configuration description="" name="Marker_Detection">

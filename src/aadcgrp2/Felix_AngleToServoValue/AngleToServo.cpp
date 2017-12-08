@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #define SC_PROP_DEBUG_MODE "Debug Mode"
 
-#define IfDebug(x) std::cout << x << endl;
+#define IfDebug(x) /*std::cout << x << endl*/;
 
 
 ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cAngleToServoConverter)
