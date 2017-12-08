@@ -40,15 +40,15 @@
   </folder>
   <folder name="windows">
    <folder Height="366" PosX="-6" PosY="0" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="329" PosX="153" PosY="8" Visible="true" Width="491" name="Lane_Detection_Display" />
-   <folder Height="298" PosX="158" PosY="337" Visible="true" Width="488" name="Realsense_RGB_Proc_Display" />
+   <folder Floating="true" Height="1000" PosX="0" PosY="25" Visible="true" Width="698" name="Lane_Detection_Display" />
+   <folder Floating="true" Height="1000" PosX="700" PosY="25" Visible="true" Width="698" name="Realsense_RGB_Proc_Display" />
   </folder>
  </folder>
  <folder name="Live2">
   <folder name="windows">
    <folder Height="340" Visible="false" Width="717" name="AADC_Sensor_Visualization" />
-   <folder Floating="true" Height="347" PosX="541" PosY="500" TopOfMain="true" Visible="true" Width="537" name="Hough_Display" />
-   <folder Floating="true" Height="290" PosX="543" PosY="207" TopOfMain="true" Visible="true" Width="532" name="RGB_Display" />
+   <folder Floating="true" Height="285" PosX="697" PosY="134" TopOfMain="true" Visible="true" Width="537" name="Hough_Display" />
+   <folder Floating="true" Height="290" PosX="546" PosY="233" TopOfMain="true" Visible="true" Width="532" name="RGB_Display" />
   </folder>
   <folder name="components">
    <folder name="FilterTraceView" />

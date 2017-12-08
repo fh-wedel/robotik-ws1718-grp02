@@ -325,7 +325,9 @@
     <connection connection_priority="50" dest="AADC_Sensor_Visualization.InerMeasUnitStruct" interface="" source="AADC_AHRS_Calculator.InerMeasUnit_Struct_Updated" />
     <connection connection_priority="50" dest="UltrasonicStruct" interface="" source="Base_Config.UltrasonicStruct" />
     <filter alias="Felix_MedianFilter" idref="adtf.aadc.felix.MedianFilter" priority="5">
-     <settings />
+     <settings>
+      <property name="Filter::WindowSize" type="Int" value="10" />
+     </settings>
     </filter>
     <filter alias="AADC_Lane_Detection_Custom" idref="adtf.aadc_LaneDetection_Custom" priority="6">
      <settings />

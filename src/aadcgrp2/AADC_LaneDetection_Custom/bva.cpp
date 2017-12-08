@@ -23,6 +23,7 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 	}
 	for (Vec3f v : clusteredLines) {
 		float angle = rad2deg(v[1]);
+		printf("CalculatedAngle; %.2f\n", angle);
 		if (angle > 90) angle -= 180;
 		sum += angle * (v[2] / lines);
 
@@ -169,6 +170,7 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 	//steeringangle
 	angle = getAngle(clusteredLines);
 
+	// Write current angle to screen for visualization
 	string text = std::to_string(angle);
   int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
   double fontScale = 2;
