@@ -73,7 +73,7 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 //}
 
 //own implementation of line detection
-cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
+cv::Mat bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 {
 	//----------------------ROI------------------------------
 	//cv::Mat mask = cv::Mat::zeros(src.size(), CV_8U);
@@ -129,7 +129,7 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 	cv::cuda::GpuMat GpuMatLines;
 	vector<Vec2f> lines;
 
-	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, 250);
+	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, houghThresh);
 
 	hough->detect(contoursWarped, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);
@@ -142,8 +142,7 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 	//
 	// Unfortunately drawing can't be done using GPU (yet), therefore we download
 	// the intermediary result and use the CPU.
-	cv::Mat output;
-	result.download(output);
+	cv::Mat out(result);
 
 	std::vector<Vec3f> clusteredLines;
 	clusterLines(lines, clusteredLines);
@@ -161,29 +160,28 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 		// point of intersection of the line with last row
 		Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
 		// draw a line: Color = Scalar(R, G, B), thickness
-		cv::line(output, pt1, pt2, Scalar(255, 255, 255), 3);
+		cv::line(out, pt1, pt2, Scalar(255, 255, 255), 3);
 
 		++it;
 	}
 
 	//steeringangle
-	angle = getAngle(clusteredLines);
+	tFloat32 angle = getAngle(clusteredLines);
 
 	string text = std::to_string(angle);
   int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
   double fontScale = 2;
   int thickness = 3;
   cv::Point textOrg(10, 130);
-  cv::putText(output, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
+  cv::putText(out, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
 
-	return output;
+	return angle;
 }
 
-cv::Mat bva::lineBinarization(cv::Mat& input_img, int hueLow,
-	int hueHigh, int saturation, int value)
+void bva::lineBinarization(cv::Mat& input_img, cv::Mat out,
+          int hueLow, int hueHigh, int saturation, int value)
 {
 	cv::Mat hsv;
-	cv::Mat out;
 	//convert to HSV colorspace
 	cvtColor(input_img, hsv, CV_BGR2HSV);
 

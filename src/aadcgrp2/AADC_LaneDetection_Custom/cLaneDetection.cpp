@@ -22,8 +22,6 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include <iostream>
 
 
-int houghVote = 200;
-
 // define the ADTF property names to avoid errors
 ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 	OID_ADTF_FILTER_DEF,
@@ -78,24 +76,28 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 	SetPropertyInt("Algorithm::Image Binarization Threshold" NSSUBPROP_MAX, 255);
 
 	//eigene
-	SetPropertyInt("Algorithm::HueLow", 90);
-	SetPropertyStr("Algorithm::HueLow" NSSUBPROP_DESCRIPTION, "q");
-	SetPropertyBool("Algorithm::HueLow" NSSUBPROP_ISCHANGEABLE, tTrue);
+	SetPropertyInt("Algorithm::Hue Low", 90);
+	SetPropertyStr("Algorithm::Hue Low" NSSUBPROP_DESCRIPTION, "Low threshold for hue");
+	SetPropertyBool("Algorithm::Hue Low" NSSUBPROP_ISCHANGEABLE, tTrue);
 
 
-	SetPropertyInt("Algorithm::HueHigh", 120);
-	SetPropertyStr("Algorithm::HueHigh" NSSUBPROP_DESCRIPTION, "q");
-	SetPropertyBool("Algorithm::HueHigh" NSSUBPROP_ISCHANGEABLE, tTrue);
+	SetPropertyInt("Algorithm::Hue High", 120);
+	SetPropertyStr("Algorithm::Hue High" NSSUBPROP_DESCRIPTION, "Upper threshold for hue");
+	SetPropertyBool("Algorithm::Hue High" NSSUBPROP_ISCHANGEABLE, tTrue);
 
 
 	SetPropertyInt("Algorithm::Saturation", 120);
-	SetPropertyStr("Algorithm::Saturation" NSSUBPROP_DESCRIPTION, "q");
+	SetPropertyStr("Algorithm::Saturation" NSSUBPROP_DESCRIPTION, "Lower threshold for saturation");
 	SetPropertyBool("Algorithm::Saturation" NSSUBPROP_ISCHANGEABLE, tTrue);
 
 
 	SetPropertyInt("Algorithm::Value", 120);
-	SetPropertyStr("Algorithm::Value" NSSUBPROP_DESCRIPTION, "q");
+	SetPropertyStr("Algorithm::Value" NSSUBPROP_DESCRIPTION, "Lower threshold for Value");
 	SetPropertyBool("Algorithm::Value" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+  SetPropertyInt("Algorithm::Hough Threshold", 250);
+	SetPropertyStr("Algorithm::Hough Threshold" NSSUBPROP_DESCRIPTION, "Threshold for hough votes");
+	SetPropertyBool("Algorithm::Hough Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
 
 }
 
@@ -254,13 +256,15 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
 
 	//eigene properties
 	else if (cString::IsEqual(strName, "Algorithm::HueLow"))
-		m_filterProperties.HueLow = GetPropertyInt("Algorithm::HueLow");
+		m_filterProperties.hueLow = GetPropertyInt("Algorithm::HueLow");
 	else if (cString::IsEqual(strName, "Algorithm::HueHigh"))
-		m_filterProperties.HueHigh = GetPropertyInt("Algorithm::HueHigh");
+		m_filterProperties.hueHigh = GetPropertyInt("Algorithm::HueHigh");
 	else if (cString::IsEqual(strName, "Algorithm::Saturation"))
-		m_filterProperties.Saturation = GetPropertyInt("Algorithm::Saturation");
+		m_filterProperties.saturation = GetPropertyInt("Algorithm::Saturation");
 	else if (cString::IsEqual(strName, "Algorithm::Value"))
-		m_filterProperties.Value = GetPropertyInt("Algorithm::Value");
+		m_filterProperties.value = GetPropertyInt("Algorithm::Value");
+	else if (cString::IsEqual(strName, "Algorithm::Hough Threshold"))
+		m_filterProperties.houghThresh = GetPropertyInt("Algorithm::Hough Threshold");
 	RETURN_NOERROR;
 }
 
@@ -287,13 +291,13 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
 			// Binarization of specified range
-			outputImage = bva::lineBinarization(m_inputImage,
-				m_filterProperties.HueLow, m_filterProperties.HueHigh,
-				m_filterProperties.Saturation, m_filterProperties.Value);
+			bva::lineBinarization(m_inputImage, outputImage
+				m_filterProperties.hueLow, m_filterProperties.HueHigh,
+				m_filterProperties.saturation, m_filterProperties.Value);
 
 			//find the lines in image and calculate the desired steering angle
 			tFloat32 angle = -1;
-			outputImage = bva::findLinePointsNew(outputImage, angle);
+			bva::findLinePointsNew(outputImage, outputImage, m_filterProperties.houghThresh);
 			printf("Winkel %f\n", angle);
 			transmitValue(angle);
 		}

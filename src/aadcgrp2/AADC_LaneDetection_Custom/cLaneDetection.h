@@ -115,7 +115,7 @@ protected:
     /*! output for lines */
     cOutputPin           m_oGCLOutputPin;
 
-    /* define outputPin */
+    /*! define outputPin */
     cOutputPin           m_SteeringPin;
 
 public:
@@ -207,13 +207,6 @@ public:
 
 private: // private methods
 
-	VideoWriter vw;
-
-    /*!
-     * Searches for the lanes.(eigene Version)
-     */
-	cv::Mat findLinePointsNew(cv::Mat& image);
-
     /*! function to set the m_sProcessFormat and the  m_sInputFormat variables
     *   \param pFormat the new format for the input pin
     *   \return Standard Result Code.
@@ -240,7 +233,7 @@ private: // private methods
     tBitmapFormat m_sOutputFormat;
 
     /*! tha last received input image*/
-    Mat m_inputImage;
+    cv::Mat m_inputImage;
 
     /*! the struct with all the properties*/
     struct filterProperties
@@ -265,10 +258,11 @@ private: // private methods
         int thresholdImageBinarization;
 
         //eigene
-           int HueLow;
-           int HueHigh;
-           int Saturation;
-           int Value;
+        int hueLow;
+        int hueHigh;
+        int saturation;
+        int value;
+        int houghThresh;
 
     }
     /*! the filter properties of this class */

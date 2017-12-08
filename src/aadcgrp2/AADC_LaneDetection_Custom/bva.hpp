@@ -4,10 +4,10 @@
 #include "stdafx.h"
 
 namespace bva {
-	cv::Mat findLinePointsNew(cv::Mat& src, tFloat32& angle);
+	tFloat32 findLines(cv::Mat& src, cv::Mst& out, int houghThresh );
 
-	cv::Mat lineBinarization(cv::Mat& input_img, int hueLow,
-								int hueHigh, int saturation, int value);
+	void lineBinarization(cv::Mat& input_img, cv::Mat& out,
+                int hueLow,	int hueHigh, int saturation, int value);
 }
 
 #endif
