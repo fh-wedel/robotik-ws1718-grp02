@@ -102,6 +102,13 @@ cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__in
     SetPropertyStr("Controller Typ" NSSUBPROP_VALUELISTNOEDIT, "1@P|2@PI|3@PID|4@PT1");
 
     //m_pISignalRegistry = NULL;
+
+    m_f64LastOutput = 0;
+    m_f64LastMeasuredError = 0;
+    m_f64SetPoint = 0;
+    m_lastSampleTime = GetTime();
+    m_f64LastSpeedValue = 0;
+    m_f64accumulatedVariable = 0;
 }
 
 cWheelSpeedController::~cWheelSpeedController()
@@ -295,7 +302,7 @@ tResult cWheelSpeedController::Start(__exception)
     m_f64LastOutput = 0;
     m_f64LastMeasuredError = 0;
     m_f64SetPoint = 0;
-    m_lastSampleTime = 0;
+    m_lastSampleTime = GetTime();
     m_f64LastSpeedValue = 0;
     m_f64accumulatedVariable = 0;
 
@@ -369,6 +376,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
                 m_f64LastOutput = 0;
                 m_f64accumulatedVariable = 0;
                 m_f64LastMeasuredError = 0;
+                m_lastSampleTime = GetTime();
             }
             else
                 m_f64LastOutput= getControllerValue(f32Value)*m_f64PT1OutputFactor;
@@ -493,15 +501,19 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
     //m_f64LastSpeedValue = i_f64MeasuredValue;
 
     // calculate time delta since last sample
-    tTimeStamp deltaT = GetTime() - m_f64PIDLastSampleTime;
-    m_f64PIDLastSampleTime = GetTime();
+    tTimeStamp deltaT = GetTime() - m_lastSampleTime;
+    m_lastSampleTime = GetTime();
 
     if (m_bShowDebug) {
       std::cout << "deltaT -> " <<  deltaT << '\n';
       std::cout << "current Speed -> " << i_f64MeasuredValue << '\n';
+      std::cout << "Set Value: " << m_f64SetPoint << " Measured Value: " << i_f64MeasuredValue << '\n';
     }
 
     tFloat f64Result = 0;
+
+    //error:
+    tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
 
     //the three controller algorithms
     if (m_i32ControllerMode==1)
@@ -510,8 +522,6 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
 
         //algorithm:
         //y = Kp * e
-        //error:
-        tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
 
         f64Result = m_f64PIDKp * f64Error;
     }
@@ -522,11 +532,9 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
         //algorithm:
         //esum = esum + e
         //y = Kp * e + Ki * Ta * esum
-        //error:
-        tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
         // accumulated error:
 
-        m_f64accumulatedVariable += (f64Error * deltaT);
+        m_f64accumulatedVariable += (f64Error * deltaT) / 1e6;
 
         tFloat64 y_p = m_f64PIDKp * f64Error;
         tFloat64 y_i = m_f64PIDKi * m_f64accumulatedVariable;
@@ -542,10 +550,8 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
         //y = Kp * e + Ki * Ta * esum + Kd * (e � ealt)/Ta
         //ealt = e
 
-        //error:
-        tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
         // accumulated error:
-        m_f64accumulatedVariable += f64Error * deltaT;
+        m_f64accumulatedVariable += f64Error * deltaT / 1e6;
 
         tFloat64 y_p = m_f64PIDKp * f64Error;
         tFloat64 y_i = m_f64PIDKi * m_f64accumulatedVariable;
@@ -554,6 +560,10 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
         f64Result =  y_p + y_i + y_d;
 
         m_f64LastMeasuredError = f64Error;
+
+        if (m_bShowDebug) {
+          std::cout << "Error: " << f64Error << " Accumulated Error " << m_f64accumulatedVariable << '\n';
+        }
     }
     else if (m_i32ControllerMode==4)
     {
@@ -582,9 +592,14 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
         * T/T1: time constant
         ********************************************/
         f64Result = m_f64LastOutput + m_f64PT1TimeConstant * (m_f64PT1Gain *
-                    (m_f64SetPoint-i_f64MeasuredValue) - m_f64LastOutput);
+                    f64Error - m_f64LastOutput);
 
     }
+
+    if (m_bShowDebug) {
+      std::cout << "Output Value before limit " << f64Result  << '\n';
+    }
+
     // checking for minimum and maximum limits
     if (f64Result>m_f64PIDMaximumOutput)
     {
@@ -596,6 +611,10 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
     }
 
     m_f64LastOutput = f64Result;
+
+    if (m_bShowDebug) {
+      std::cout << "Output Value after limit " << f64Result  << '\n';
+    }
 
     return f64Result;
 }

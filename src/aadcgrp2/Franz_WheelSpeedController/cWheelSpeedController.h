@@ -261,8 +261,6 @@ private:
     tFloat64    m_f64PIDKi;
     /*! differential factor for PID Controller */
     tFloat64    m_f64PIDKd;
-    /*! the sampletime for the pid controller */
-    tFloat64 m_f64PIDLastSampleTime;
     /*! the minimum output value for the controller */
     tFloat64 m_f64PIDMinimumOutput;
     /*! the maximum output value for the controller */
