@@ -54,7 +54,7 @@ add_subdirectory(AADC_ConverterWheels_Custom)
 
 
 #---- Felix ----
-#add_subdirectory(AADC_Realsense_Felix)
+add_subdirectory(AADC_Realsense_Felix)
 add_subdirectory(Felix_RadiusToSteeringAngle)
 add_subdirectory(Felix_AngleToServoValue)
 add_subdirectory(Felix_LinearFunction)
