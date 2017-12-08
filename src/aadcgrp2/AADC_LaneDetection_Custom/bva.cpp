@@ -23,7 +23,7 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 	}
 	for (Vec3f v : clusteredLines) {
 		float angle = rad2deg(v[1]);
-		if(angle > 90) angle -=180;
+		if (angle > 90) angle -= 180;
 		sum += angle * (v[2] / lines);
 
 	}
@@ -56,7 +56,7 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 	}
 	printf("Clustered:\n");
 	for (Vec3f v : clusteredLines) {
-		printf("dist: %.3f angle: %.3f weight: %.1f\n", v[0], rad2deg(v[1]), v[2]);//
+		printf("dist: %.3f angle: %.3f weight: %.1f\n", v[0], rad2deg(v[1]), v[2]);
 	}
 
 	//printf("Klassen: %d\n", amountOfClasses);
@@ -84,16 +84,11 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 
 	//--------------------canny-------------------------
 	cv::cuda::GpuMat image(src);
-	//image.upload(src);
 
 	cv::cuda::GpuMat contours;
 
 	cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(0, 10, 3, false);
 	canny->detect(image, contours);
-
-	cv::cuda::GpuMat contoursInv;
-	cv::cuda::threshold(contours, contoursInv, 128, 255, THRESH_BINARY_INV);
-	//TODO: contoursInv wird nie benutzt
 
 	//--------------perspective warp------------------
 	cv::Mat transform_matrix;
@@ -127,38 +122,20 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 		contours,
 		contoursWarped,
 		transform_matrix,
-		cv::Size(contours.cols, contours.rows) //TODO: contours.size() ?
+		contours.size() //TODO: contours.size() ?
 	);
 
-	/*
-	Hough tranform for line detection with feedback
-	Increase by 25 for the next frame if we found some lines.
-	This is so we don't miss other lines that may crop up in the next frame
-	but at the same time we don't want to start the feed back loop from scratch.
-	*/
 	//---------------hough transformation---------------------------
 	cv::cuda::GpuMat GpuMatLines;
 	vector<Vec2f> lines;
-	/*if (houghVote < 1 or lines.size() > 2) { // we lost all lines. reset
-	houghVote = 300;
-	}
-	else {
-	houghVote += 25;
-	}*/
-
-	//while(lines.size() < 10 && houghVote > 0){
 
 	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, 250);
 
 	hough->detect(contoursWarped, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);
-	//houghVote -= 5;
-	//}
-	//std::cout << houghVote << "\n";
-
 
 	// Create our final mat on GPU and write the contours to it.
-	cv::cuda::GpuMat result(image.size(), CV_8U, Scalar(255));
+	cv::cuda::GpuMat result(image.size(), CV_8U);
 	contoursWarped.copyTo(result);
 
 	// Cluster the detected hough lines and draw them onto the mat
@@ -178,15 +155,13 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 		float rho = (*it)[0];   // first element is distance rho
 		float theta = (*it)[1]; // second element is angle theta
 
-								//if ( (theta > 0.09 && theta < 1.48) || (theta < 3.14 && theta > 1.66) || (theta > 1.5 && theta < 1.6)) { // filter to remove vertical and horizontal lines
 
-								// point of intersection of the line with first row
+    // point of intersection of the line with first row
 		Point pt1(rho / cos(theta), 0);
 		// point of intersection of the line with last row
 		Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
 		// draw a line: Color = Scalar(R, G, B), thickness
 		cv::line(output, pt1, pt2, Scalar(255, 255, 255), 3);
-		//}
 
 		++it;
 	}
@@ -195,11 +170,11 @@ cv::Mat bva::findLinePointsNew(cv::Mat& src, tFloat32& angle)
 	angle = getAngle(clusteredLines);
 
 	string text = std::to_string(angle);
-int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
-double fontScale = 2;
-int thickness = 3;
-cv::Point textOrg(10, 130);
-cv::putText(output, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
+  int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
+  double fontScale = 2;
+  int thickness = 3;
+  cv::Point textOrg(10, 130);
+  cv::putText(output, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
 
 	return output;
 }
