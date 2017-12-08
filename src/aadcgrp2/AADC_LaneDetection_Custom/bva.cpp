@@ -74,7 +74,7 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 //}
 
 //own implementation of line detection
-cv::Mat bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
+tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 {
 	//----------------------ROI------------------------------
 	//cv::Mat mask = cv::Mat::zeros(src.size(), CV_8U);
@@ -123,7 +123,7 @@ cv::Mat bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 		contours,
 		contoursWarped,
 		transform_matrix,
-		contours.size() //TODO: contours.size() ?
+		contours.size()
 	);
 
 	//---------------hough transformation---------------------------
@@ -143,7 +143,7 @@ cv::Mat bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 	//
 	// Unfortunately drawing can't be done using GPU (yet), therefore we download
 	// the intermediary result and use the CPU.
-	cv::Mat out(result);
+	result.download(out);
 
 	std::vector<Vec3f> clusteredLines;
 	clusterLines(lines, clusteredLines);
@@ -180,7 +180,7 @@ cv::Mat bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 	return angle;
 }
 
-void bva::lineBinarization(cv::Mat& input_img, cv::Mat out,
+void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
           int hueLow, int hueHigh, int saturation, int value)
 {
 	cv::Mat hsv;
@@ -201,6 +201,4 @@ void bva::lineBinarization(cv::Mat& input_img, cv::Mat out,
 
 	//Gauss filter for flattening edges after closing
 	cv::GaussianBlur(out, out, Size(5, 5), 0, 0);
-
-	return out;
 }

@@ -163,9 +163,6 @@ tResult cLaneDetection::Init(tInitStage eStage, __exception)
 
 	switch (eStage) {
 	case StageFirst:
-		vw.open("/home/aadc/ADTF/src/aadcgrp2/AADC_LaneDetection_Custom/recording/recording001.avi",
-			CV_FOURCC('M', 'J', 'P', 'G'), 30, Size(640, 480));
-
 		RETURN_IF_FAILED(CreateInputPins(__exception_ptr));
 		RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
 		break;
@@ -291,13 +288,13 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
 			// Binarization of specified range
-			bva::lineBinarization(m_inputImage, outputImage
-				m_filterProperties.hueLow, m_filterProperties.HueHigh,
-				m_filterProperties.saturation, m_filterProperties.Value);
+			bva::lineBinarization(m_inputImage, outputImage,
+				m_filterProperties.hueLow, m_filterProperties.hueHigh,
+				m_filterProperties.saturation, m_filterProperties.value);
 
 			//find the lines in image and calculate the desired steering angle
 			tFloat32 angle = -1;
-			bva::findLinePointsNew(outputImage, outputImage, m_filterProperties.houghThresh);
+			bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
 			printf("Winkel %f\n", angle);
 			transmitValue(angle);
 		}
