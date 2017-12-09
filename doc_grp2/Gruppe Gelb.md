@@ -324,21 +324,60 @@ Es wurde weiter an der Linienerkennung und der Bündelung der Linien gearbeitet.
 ### Mittwoch, 06.12.
 **11:00 bis 13:30 - Jan**  
 Das verarbeitete canny Bild `contours` wird nun in eine Vogelperspektive mit Hilfe von  `cv::cuda::warpPerspective()` verzerrt.
-In Versuchen sieht das Resultat besser aus, wenn man das Warping auf das `contours` anstatt auf `src` anwendet. Dies muss aber nicht immer so sein... 
-die ROI eingrenzung muss nun warscheinlich nicht mehr durchgeführt werden, da das Bild nun eh größtenteils nur die Fahrbahn abbildet. 
-Da parallel Fahrstreifen nun auch im Bild parallel sind, wird in der Funktion `isEqual()` nun auch die Distanz berücksichtigt. 
-Mit hilfe der `clusteredLines` wird nun mit Hilfe von `getAngle()` provisorisch ein erster Lenkwinkel auf der Konsole ausgegeben.
-dieser ist jedoch noch anfällig für ausreißende Linien.
-Eine Idee zur Lösung des Problems ist, die hough transformation anzupassen. Eine Vernachlässigung dieser Ausreißer könnte Probleme bei Kurven verursachen.
-Ein Kommentar von Frauke: Vielleicht können wir einen Median-Filter verwenden, um die Ausreißer loszuwerden?
+In Versuchen sieht das Resultat besser aus, wenn man das Warping auf das `contours` anstatt auf `src` anwendet. Dies muss aber nicht immer so sein...
+
+Die ROI Eingrenzung muss nun warscheinlich nicht mehr durchgeführt werden, da das Bild nun eh größtenteils nur die Fahrbahn abbildet.
+Da parallele Fahrstreifen nun auch im Bild parallel sind, wird in der Funktion `isEqual()` nun auch die Distanz berücksichtigt. 
+Aus den `clusteredLines` wird nun mit Hilfe von `getAngle()` provisorisch ein erster Lenkwinkel auf der Konsole ausgegeben.  
+Dieser ist jedoch noch **anfällig für ausreißende Linien**.
+Eine Idee zur Lösung des Problems ist, die Hough-Transformation anzupassen. Eine Vernachlässigung dieser Ausreißer könnte Probleme bei Kurven verursachen.
+
+Ein Kommentar von Frauke: Vielleicht können wir **einen Median-Filter** verwenden, um die Ausreißer loszuwerden?
 
 
 ----
 
-### Donnerstag, 8.12.
-**10:30-12:00 - Felix, Franz**
+### Donnerstag, 07.12.
+**10:30 - 12:00 Uhr - Felix, Franz**  
 Zuerst haben wir das Repository wieder auf den Benutzer des Autos umgestellt. Jetzt funktioniert es wieder einwandfrei. 
-Da noch einige commits auf dem Auto waren, wir aber schon zuhause weiter gemacht haben, haben wir das lokale Repository auf den origin gesetzt. Dazu sind die nicht hochgeladenen commits in den lokalen branch `bva-save` gesichert.
+Da noch einige commits auf dem Auto waren, wir aber schon zuhause weiter gemacht hatten, haben wir das lokale Repository auf den origin zurückgesetzt. Dazu sind die nicht hochgeladenen commits in den lokalen branch `bva-save` gesichert worden.
+
 Danach haben wir noch den aktuellen Stand der bva getestet in dem wir das Auto auf die Straße gestellt haben. Um den Lenkwinkel anzuzeigen haben wir mit OpenCV den aktuellen Lenkwinkel in die Ausgabe gemalt.
+
+Felix hat darüberhinaus die **Lineare Funktion** fertiggestellt. Sie hat 3 Inputs (`x`: Input, `g`: Gain, `o`: Offset) und einen Output (y).  
+Der Output wird wie folgt berechnet: `y = gx + o`  
+Sowohl Gain als auch Offset können durch Parameter in der Filterkonfiguration gesetzt und überschrieben werden.
+
+Dieser Filter soll später eine Möglichkeit bieten, um die Geschwindigkeit innerhalb von Kurven herabzusetzen:
+    
+    Input = Geschwindigkeit
+    Gain = Lenkwinkel
+    Offset = 0
+
+**17:00 - 19:00 Uhr - Felix**
+Am Abend habe ich einen Median-Filter erstellt. Dieser führte allerdings noch zu einem **Segmentation Fault**.  
+Der Filter besitzt eine variable Fenstergröße, die auch **live** während des Betriebes über die Filterparameter angepasst werden kann.
+
+
+----
+
+
+### Freitag, 08.12.
+**14:20 - 16:00 Uhr - Felix, Franz**  
+Gemeinsam haben wir die Ursache für den SegFault ausfindig machen können und ihn behoben. Letztendlich war es nur eine umgekehrte Subtraktion, was zu einem **Zugriff auf negative Array-Indizes** führte.  
+Dies war leicht behoben und der Filter funktionierte hervorragend.
+
+Wir setzen diesen Filter jetzt hinter der BVA für den Lenkwinkel ein. **Eine gute Fenstergröße scheint ~10 zu sein.**
+
+Dann haben wir uns die Motorsteuerung genauer angesehen.
+Den Code von Audi kann man echt in die Tonne treten. Er ist **durchzogen von Flüchtigkeitsfehlern** und hat unübersichtlich **viele Redundanzen**.
+
+Der wohl schönste Fehler ist, dass wenn das Auto sich der genwünschten Geschwindigkeit annähert, die berechnete Regelabweichung dich vergrößert.
+**Excuse me, Sir:** *What the \*\*\*\*?*
+
+Es ist uns rätselhaft wie Audi da sagen kann, dass die Werte schon ganz gut passen und der Regler vernünftig funktionieren würde.
+
+**16:00 - 19:00 Uhr - Frauke, Franz, Felix**  
+Am Nachmittag haben wir Frauke die Auswirkung des Median-Filters gezeigt und weiter an der BVA rumgeschraubt.
 
 ----
