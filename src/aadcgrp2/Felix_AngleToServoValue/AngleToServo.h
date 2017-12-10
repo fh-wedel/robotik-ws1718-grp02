@@ -13,16 +13,16 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 **********************************************************************/
 
-#ifndef _RadiusToAngleConverter_H_
-#define _RadiusToAngleConverter_H_
+#ifndef _AngleToServoConverter_H_
+#define _AngleToServoConverter_H_
 
 #include "stdafx.h"
 
-#define UNIQUE_FILTER_ID "adtf.aadc.felix.RadiusToAngleConverter"
-#define FILTER_NAME "Felix RadiusToAngle Converter"
+#define UNIQUE_FILTER_ID "adtf.aadc.felix.AngleToServoConverter"
+#define FILTER_NAME "Felix AngleToServo Converter"
 
 /*! this is the main class for the steering controller filter */
-class cRadiusToAngleConverter : public adtf::cFilter {
+class cAngleToServoConverter : public adtf::cFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -31,19 +31,19 @@ class cRadiusToAngleConverter : public adtf::cFilter {
     ADTF_DECLARE_FILTER_VERSION(UNIQUE_FILTER_ID, FILTER_NAME, OBJCAT_DataFilter, FILTER_NAME, 1, 0, 0, "");
 
     /* the radius */
-    cInputPin m_InputRadius;
+    cInputPin m_InputAngle;
     /* the angle */
-    cOutputPin m_OutputAngle;
+    cOutputPin m_OutputServoValue;
 
 public:
 
     /*! constructor for template class
     *    \param __info   [in] This is the name of the filter instance.
     */
-    cRadiusToAngleConverter(const tChar* __info);
+    cAngleToServoConverter(const tChar* __info);
 
     /*! Destructor. */
-    virtual ~cRadiusToAngleConverter();
+    virtual ~cAngleToServoConverter();
 
 protected: // overwrites cFilter
     /*! Implements the default cFilter state machine call. It will be
@@ -79,22 +79,16 @@ protected: // overwrites cFilter
 
     /*! the struct with all the properties*/
     struct filterProperties {
-        /*! the distance between axles (Radstand). */
-        tFloat32 wheelbase;
 
-        /*! the distance between the middle of left and right tires (Spurweite). */
-        tFloat32 tread;
+        /*! maximum deflection of front tires */
+        tFloat32 maxLeftAngle;
+        tFloat32 maxRightAngle;
+
     }
     /*! the filter properties*/
     m_filterProperties;
 
 
-// TIME TRIGGERED Filter
-/*
-    tResult Cycle(__exception=NULL);
-
-    tResult SetInterval(tTimeStamp nInterval);
-*/
 private:
     /*! creates all the input Pins
     * \param __exception_ptr the exception pointer
@@ -108,14 +102,14 @@ private:
     */
     tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
 
-// For decoding radius input
+// For decoding servo input
 
-    /*! media description for the Radius input pin */
-    cObjectPtr<IMediaTypeDescription> m_RadiusDescription;
+    /*! media description for the Servo output pin */
+    cObjectPtr<IMediaTypeDescription> m_ServoDescription;
 
-// For encoding angle output
+// For encoding angle input
 
-    /*! media description for the Angle output pin  */
+    /*! media description for the Angle input pin  */
     cObjectPtr<IMediaTypeDescription> m_AngleDescription;
 
 // Debug
@@ -125,14 +119,14 @@ private:
 
 // Own Helper Functions
 
-    tFloat32 readRadius(IMediaSample* pMediaSample);
-    tFloat32 convertRadiusToAngle(tFloat32 radius);
+    tFloat32 readAngle(IMediaSample* pMediaSample);
+    tFloat32 convertAngleToServoValue(tFloat32 angle);
 
-    tResult transmitAngle(tFloat32 angle);
+    tResult transmitValue(tFloat32 servoValue);
 
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
 
 };
 /*! @} */ // end of group
-#endif // _RadiusToAngleConverter_H_
+#endif // _AngleToServoConverter_H_

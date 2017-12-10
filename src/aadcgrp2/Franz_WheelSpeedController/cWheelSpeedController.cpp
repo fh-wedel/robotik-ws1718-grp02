@@ -22,11 +22,6 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include "stdafx.h"
 #include "cWheelSpeedController.h"
 
-#define WSC_PROP_PT1_TIMECONSTANT "PT1::TimeConstant"
-#define WSC_PROP_PT1_GAIN "PT1::Gain"
-#define WSC_PROP_PT1_OUTPUT_FACTOR "PT1::OutputFactor"
-#define WSC_PROP_PT1_CORRECTION_FACTOR "PT1::Correction Factor"
-
 #define WSC_PROP_PID_KP "PID::Kp_value"
 #define WSC_PROP_PID_KI "PID::Ki_value"
 #define WSC_PROP_PID_KD "PID::Kd_value"
@@ -49,6 +44,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define WSC_PROP_PID_MINOUTPUT "PID::Minimum output"
 #define WSC_PROP_DEBUG_MODE "Debug Mode"
 
+
 ADTF_FILTER_PLUGIN("Franz Wheel Speed Controller", OID_ADTF_WHEELSPEEDCONTROLLER, cWheelSpeedController)
 
 cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__info), m_f64LastMeasuredError(0), m_f64SetPoint(0), m_lastSampleTime(0),m_f64LastSpeedValue(0)
@@ -65,41 +61,25 @@ cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__in
     SetPropertyBool(WSC_PROP_PID_KD NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_KD NSSUBPROP_DESCRIPTION, "The differential factor Kd for the PID Controller");
 
-    SetPropertyFloat(WSC_PROP_PID_SAMPLE_TIME,0.025);
-    SetPropertyBool(WSC_PROP_PID_SAMPLE_TIME NSSUBPROP_ISCHANGEABLE, tTrue);
-    SetPropertyStr(WSC_PROP_PID_SAMPLE_TIME NSSUBPROP_DESCRIPTION, "The sample interval in msec used by the PID controller");
-
-    SetPropertyFloat(WSC_PROP_PID_MAXOUTPUT,5);
+    SetPropertyFloat(WSC_PROP_PID_MAXOUTPUT,10);
     SetPropertyBool(WSC_PROP_PID_MAXOUTPUT NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_MAXOUTPUT NSSUBPROP_DESCRIPTION, "The maximum allowed output for the wheel speed controller (speed in m/sec^2)");
 
-    SetPropertyFloat(WSC_PROP_PID_MINOUTPUT,-5);
+    SetPropertyFloat(WSC_PROP_PID_MINOUTPUT,-10);
     SetPropertyBool(WSC_PROP_PID_MINOUTPUT NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_MINOUTPUT NSSUBPROP_DESCRIPTION, "The minimum allowed output for the wheel speed controller (speed in m/sec^2)");
 
     SetPropertyBool(WSC_PROP_DEBUG_MODE, tFalse);
-    SetPropertyStr(WSC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to registry");
-
-    SetPropertyFloat(WSC_PROP_PT1_OUTPUT_FACTOR, 1);
-    SetPropertyBool(WSC_PROP_PT1_OUTPUT_FACTOR NSSUBPROP_ISCHANGEABLE, tTrue);
-    SetPropertyStr(WSC_PROP_PT1_OUTPUT_FACTOR NSSUBPROP_DESCRIPTION, "The factor to normalize the output value");
-
-    SetPropertyFloat(WSC_PROP_PT1_TIMECONSTANT, 1.5);
-    SetPropertyBool(WSC_PROP_PT1_TIMECONSTANT NSSUBPROP_ISCHANGEABLE, tTrue);
-    SetPropertyStr(WSC_PROP_PT1_TIMECONSTANT NSSUBPROP_DESCRIPTION, "Time Constant for PT1 Controller");
-
-    SetPropertyFloat(WSC_PROP_PT1_CORRECTION_FACTOR, 1.15);
-    SetPropertyBool(WSC_PROP_PT1_CORRECTION_FACTOR NSSUBPROP_ISCHANGEABLE, tTrue);
-    SetPropertyStr(WSC_PROP_PT1_CORRECTION_FACTOR NSSUBPROP_DESCRIPTION, "Correction factor for input set point");
-
-    SetPropertyFloat(WSC_PROP_PT1_GAIN, 6);
-    SetPropertyBool(WSC_PROP_PT1_GAIN NSSUBPROP_ISCHANGEABLE, tTrue);
-    SetPropertyStr(WSC_PROP_PT1_GAIN NSSUBPROP_DESCRIPTION, "Gain for PT1 Controller");
-
-    SetPropertyInt("Controller Typ", 2);
-    SetPropertyStr("Controller Typ" NSSUBPROP_VALUELISTNOEDIT, "1@P|2@PI|3@PID|4@PT1");
+    SetPropertyStr(WSC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are written to output");
 
     //m_pISignalRegistry = NULL;
+
+    m_f64LastOutput = 0;
+    m_f64LastMeasuredError = 0;
+    m_f64SetPoint = 0;
+    m_lastSampleTime = GetTime();
+    m_f64LastSpeedValue = 0;
+    m_f64accumulatedVariable = 0;
 }
 
 cWheelSpeedController::~cWheelSpeedController()
@@ -132,38 +112,9 @@ tResult cWheelSpeedController::ReadProperties(const tChar* strPropertyName)
         m_f64PIDKi = GetPropertyFloat(WSC_PROP_PID_KI);
     }
 
-    if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PID_SAMPLE_TIME))
-    {
-        m_f64PIDSampleTime = GetPropertyFloat(WSC_PROP_PID_SAMPLE_TIME);
-    }
-
-    if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PT1_OUTPUT_FACTOR))
-    {
-        m_f64PT1OutputFactor = GetPropertyFloat(WSC_PROP_PT1_OUTPUT_FACTOR);
-    }
-
-    if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PT1_GAIN))
-    {
-        m_f64PT1Gain = GetPropertyFloat(WSC_PROP_PT1_GAIN);
-    }
-
-    if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PT1_TIMECONSTANT))
-    {
-        m_f64PT1TimeConstant = GetPropertyFloat(WSC_PROP_PT1_TIMECONSTANT);
-    }
-
-    if (NULL == strPropertyName || cString::IsEqual(strPropertyName, "Controller Typ"))
-    {
-        m_i32ControllerMode = GetPropertyInt("Controller Typ");
-    }
-
     if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_DEBUG_MODE))
     {
         m_bShowDebug = static_cast<tBool>(GetPropertyBool(WSC_PROP_DEBUG_MODE));
-    }
-    if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PT1_CORRECTION_FACTOR))
-    {
-        m_f64PT1CorrectionFactor = GetPropertyFloat(WSC_PROP_PT1_CORRECTION_FACTOR);
     }
 
     if (NULL == strPropertyName || cString::IsEqual(strPropertyName, WSC_PROP_PID_MINOUTPUT))
@@ -225,6 +176,17 @@ tResult cWheelSpeedController::CreateOutputPins(__exception)
     RETURN_NOERROR;
 }
 
+tResult cWheelSpeedController::GetInterface(const tChar* idInterface,
+        tVoid** ppvObject)
+{
+
+    return cFilter::GetInterface(idInterface, ppvObject);
+
+    Ref();
+
+    RETURN_NOERROR;
+}
+
 tResult cWheelSpeedController::Init(tInitStage eStage, __exception)
 {
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
@@ -240,44 +202,7 @@ tResult cWheelSpeedController::Init(tInitStage eStage, __exception)
 
         if (m_bShowDebug)
         {
-            // create a kernel mutex
-            THROW_IF_FAILED(m_oLock.Create(adtf_util::cString(OIGetInstanceName()) + ".active_signals"));
-
-            // get the signal registry object
-            RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_SIGNAL_REGISTRY,
-                                                 IID_ADTF_SIGNAL_REGISTRY_EXTENDED,
-                                                 (tVoid**) &m_pISignalRegistry,
-                                                 __exception_ptr));
-
-            // register the provider at the registry
-            RETURN_IF_FAILED(m_pISignalRegistry->RegisterProvider(this, OIGetInstanceName(), __exception_ptr));
-
-            RETURN_IF_FAILED(m_pISignalRegistry->RegisterSignal(this,
-                             WSC_SIGREG_ID_WHEELSPEED_SETVALUE,
-                             WSC_SIGREG_NAME_WHEELSPEED_SETVALUE,
-                             WSC_SIGREG_UNIT_WHEELSPEED_SETVALUE,
-                             "the set value of the speed value",
-                             -35,
-                             +35.0,
-                             __exception_ptr));
-
-            RETURN_IF_FAILED(m_pISignalRegistry->RegisterSignal(this,
-                             WSC_SIGREG_ID_WHEELSPEED_MEASVALUE,
-                             WSC_SIGREG_NAME_WHEELSPEED_MEASVALUE,
-                             WSC_SIGREG_UNIT_WHEELSPEED_MEASVALUE,
-                             "the measured value of the wheel speed controller",
-                             -50.0,
-                             +50.0,
-                             __exception_ptr));
-
-            RETURN_IF_FAILED(m_pISignalRegistry->RegisterSignal(this,
-                             WSC_SIGREG_ID_WHEELSPEED_OUTPUTVALUE,
-                             WSC_SIGREG_NAME_WHEELSPEED_OUTPUTVALUE,
-                             WSC_SIGREG_UNIT_WHEELSPEED_OUTPUTVALUE,
-                             "the output value of the wheel speed controller",
-                             -50.0,
-                             +50.0,
-                             __exception_ptr));
+            printf("Speed Controller started\n");
         }
     }
     else if(eStage == StageGraphReady)
@@ -298,7 +223,7 @@ tResult cWheelSpeedController::Start(__exception)
     m_f64LastOutput = 0;
     m_f64LastMeasuredError = 0;
     m_f64SetPoint = 0;
-    m_lastSampleTime = 0;
+    m_lastSampleTime = GetTime();
     m_f64LastSpeedValue = 0;
     m_f64accumulatedVariable = 0;
 
@@ -314,14 +239,6 @@ tResult cWheelSpeedController::Shutdown(tInitStage eStage, __exception)
 {
     if (eStage == StageNormal)
     {
-        ucom::cObjectPtr<ISignalRegistry> pSignalRegistry;
-        if (IS_OK(_runtime->GetObject(OID_ADTF_SIGNAL_REGISTRY,
-                                      IID_ADTF_SIGNAL_REGISTRY,
-                                      (tVoid**)&pSignalRegistry)))
-        {
-            // Unregister the provider
-            pSignalRegistry->UnregisterSignalProvider(this);
-        }
         m_oActive.clear();
 
         m_oLock.Release();
@@ -337,10 +254,6 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
         RETURN_IF_POINTER_NULL( pMediaSample);
         if (pSource == &m_oInputMeasWheelSpeed)
         {
-            // the controller here works only with 10 Hz therefore only every fourth value is used
-            /*static tUInt64 ui64_modCounter=0;
-            ui64_modCounter++;
-            if (ui64_modCounter%2!=0) RETURN_NOERROR;*/
 
             //write values with zero
             tFloat32 f32Value = 0;
@@ -367,14 +280,15 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
             //calculation
             // if speed = 0 is requested output is immediately set to zero
-            if (m_f64SetPoint==0)
-            {
+            if (m_f64SetPoint==0) {
                 m_f64LastOutput = 0;
                 m_f64accumulatedVariable = 0;
                 m_f64LastMeasuredError = 0;
+                m_lastSampleTime = GetTime();
             }
-            else
-                m_f64LastOutput= getControllerValue(f32Value)*m_f64PT1OutputFactor;
+            else {
+                m_f64LastOutput= getControllerValue(f32Value);
+            }
 
             //create new media sample
             cObjectPtr<IMediaSample> pNewMediaSample;
@@ -429,58 +343,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
                 // write to member variable
                 m_f64SetPoint = static_cast<tFloat64>(f32Value);
-                if (m_i32ControllerMode==4)
-                    m_f64SetPoint = m_f64SetPoint* m_f64PT1CorrectionFactor;
             }
-        }
-
-        if (m_bShowDebug)
-        {
-            SendSignalData();
-        }
-
-
-    }
-    RETURN_NOERROR;
-}
-tResult cWheelSpeedController::SendSignalData()
-{
-    __synchronized_kernel(m_oLock);
-    tTimeStamp tsStreamTime = _clock->GetStreamTime();
-
-    for (tActiveSignals::iterator oSignal = m_oActive.begin();
-            oSignal != m_oActive.end();
-            ++oSignal)
-    {
-        if (*oSignal == WSC_SIGREG_ID_WHEELSPEED_MEASVALUE)
-        {
-            tSignalValue sValue;
-            sValue.nRawValue = 0;
-            sValue.nTimeStamp = tsStreamTime;
-            sValue.strTextValue = 0;
-            sValue.f64Value = m_f64MeasuredVariable;
-            m_pISignalRegistry->UpdateSignal(this, *oSignal, sValue);
-        }
-        else if (*oSignal == WSC_SIGREG_ID_WHEELSPEED_SETVALUE)
-        {
-            tSignalValue sValue;
-            sValue.nRawValue = 0;
-            sValue.nTimeStamp = tsStreamTime;
-            sValue.strTextValue = 0;
-            sValue.f64Value = m_f64SetPoint;
-
-            m_pISignalRegistry->UpdateSignal(this, *oSignal, sValue);
-        }
-
-        else if (*oSignal == WSC_SIGREG_ID_WHEELSPEED_OUTPUTVALUE)
-        {
-            tSignalValue sValue;
-            sValue.nRawValue = 0;
-            sValue.nTimeStamp = tsStreamTime;
-            sValue.strTextValue = 0;
-            sValue.f64Value = m_f64LastOutput;
-
-            m_pISignalRegistry->UpdateSignal(this, *oSignal, sValue);
         }
     }
     RETURN_NOERROR;
@@ -495,88 +358,46 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
 
     //m_f64LastSpeedValue = i_f64MeasuredValue;
 
+    // calculate time delta since last sample
+    tTimeStamp deltaT = GetTime() - m_lastSampleTime;
+    m_lastSampleTime = GetTime();
+
+    if (m_bShowDebug) {
+      std::cout << "deltaT -> " <<  deltaT << '\n';
+      std::cout << "current Speed -> " << i_f64MeasuredValue << '\n';
+      std::cout << "Set Value: " << m_f64SetPoint << " Measured Value: " << i_f64MeasuredValue << '\n';
+    }
+
     tFloat f64Result = 0;
 
-    //the three controller algorithms
-    if (m_i32ControllerMode==1)
-    {
-        //m_lastSampleTime = GetTime();
+    //error:
+    tFloat64 f64Error = (m_f64SetPoint - i_f64MeasuredValue);
 
-        //algorithm:
-        //y = Kp * e
-        //error:
-        tFloat64 f64Error = (m_f64SetPoint-i_f64MeasuredValue);
+    //algorithm:
+    //esum = esum + e
+    //y = Kp * e + Ki * Ta * esum + Kd * (e � ealt)/Ta
+    //ealt = e
 
-        f64Result = m_f64PIDKp * f64Error;
+    // accumulated error:
+    m_f64accumulatedVariable += f64Error * deltaT / 1e6;
+
+    tFloat64 y_p = m_f64PIDKp * f64Error;
+    tFloat64 y_i = m_f64PIDKi * m_f64accumulatedVariable;
+    tFloat64 y_d = m_f64PIDKd * (f64Error - m_f64LastMeasuredError) / deltaT;
+
+    f64Result =  y_p + y_i + y_d;
+
+    m_f64LastMeasuredError = f64Error;
+
+    if (m_bShowDebug) {
+      std::cout << "Error: " << f64Error << " Accumulated Error " << m_f64accumulatedVariable << '\n';
     }
-    else if(m_i32ControllerMode==2) //PI- Regler
-    {
-        //m_lastSampleTime = GetTime();
 
-        //algorithm:
-        //esum = esum + e
-        //y = Kp * e + Ki * Ta * esum
-        //error:
-        tFloat64 f64Error = (m_f64SetPoint-i_f64MeasuredValue);
-        // accumulated error:
 
-        m_f64accumulatedVariable +=(f64Error*m_f64PIDSampleTime);
-
-        f64Result = m_f64PIDKp*f64Error
-                    +(m_f64PIDKi*m_f64accumulatedVariable);
-
+    if (m_bShowDebug) {
+      std::cout << "Output Value before limit " << f64Result  << '\n';
     }
-    else if(m_i32ControllerMode==3)
-    {
-        m_lastSampleTime = GetTime();
-        tFloat64 f64SampleTime = m_f64PIDSampleTime;
 
-        //algorithm:
-        //esum = esum + e
-        //y = Kp * e + Ki * Ta * esum + Kd * (e � ealt)/Ta
-        //ealt = e
-
-        //error:
-        tFloat64 f64Error = (m_f64SetPoint-i_f64MeasuredValue);
-        // accumulated error:
-        m_f64accumulatedVariable +=f64Error*m_f64PIDSampleTime;
-
-        f64Result =  m_f64PIDKp*f64Error
-                     +(m_f64PIDKi*m_f64accumulatedVariable)
-                     +m_f64PIDKd*(f64Error-m_f64LastMeasuredError)/f64SampleTime;
-
-        m_f64LastMeasuredError = f64Error;
-    }
-    else if (m_i32ControllerMode==4)
-    {
-        /*********************************
-        * PT 1 discrete algorithm
-        *
-        *               Tau
-        *       In +    ---  * LastOut
-        *             Tsample
-        * Out = ---------------------
-        *               Tau
-        *       1 +     ---
-        *             Tsample
-        *
-        *                           Tau
-        * here with     PT1Gain =   ---
-        *                         Tsample
-        *
-        *                  T
-        * y(k) = y(k-1) + --- ( v * e(k)  - y(k-1))
-        *                  T1
-        *
-        * e(k):  input
-        * y(k-1) : last output
-        * v : gain
-        * T/T1: time constant
-        ********************************************/
-        f64Result = m_f64LastOutput + m_f64PT1TimeConstant * (m_f64PT1Gain *
-                    (m_f64SetPoint-i_f64MeasuredValue) - m_f64LastOutput);
-
-    }
     // checking for minimum and maximum limits
     if (f64Result>m_f64PIDMaximumOutput)
     {
@@ -589,98 +410,19 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue)
 
     m_f64LastOutput = f64Result;
 
+    if (m_bShowDebug) {
+      std::cout << "Output Value after limit " << f64Result  << '\n';
+    }
+
     return f64Result;
 }
+
 
 tTimeStamp cWheelSpeedController::GetTime()
 {
     return (_clock != NULL) ? _clock->GetTime () : cSystem::GetTime();
 }
 
-
-/**
-*   Returns the current value of a Signal.
-*/
-tResult cWheelSpeedController::GetSignalValue(tSignalID nSignalID, tSignalValue * pValue)
-{
-    if (nSignalID == WSC_SIGREG_ID_WHEELSPEED_MEASVALUE)
-    {
-        pValue->f64Value = m_f64MeasuredVariable;
-        tTimeStamp nStreamTime = _clock->GetStreamTime();
-        pValue->nRawValue = 0;
-        pValue-> nTimeStamp = nStreamTime;
-        pValue->strTextValue = 0;
-    }
-    else if (nSignalID == WSC_SIGREG_ID_WHEELSPEED_SETVALUE)
-    {
-        pValue->f64Value = m_f64SetPoint;
-        tTimeStamp nStreamTime = _clock->GetStreamTime();
-        pValue->nRawValue = 0;
-        pValue-> nTimeStamp = nStreamTime;
-        pValue->strTextValue = 0;
-    }
-    else if (nSignalID == WSC_SIGREG_ID_WHEELSPEED_OUTPUTVALUE)
-    {
-        pValue->f64Value = m_f64LastOutput;
-        tTimeStamp nStreamTime = _clock->GetStreamTime();
-        pValue->nRawValue = 0;
-        pValue-> nTimeStamp = nStreamTime;
-        pValue->strTextValue = 0;
-    }
-    else
-    {
-        RETURN_ERROR(ERR_NOT_FOUND);
-    }
-
-
-    RETURN_NOERROR;
-}
-
-/**
-*   Activates a signal.
-*   Activated signals send their values to the Signal Registry Service.
-*/
-tResult cWheelSpeedController::ActivateSignalEvents(tSignalID nSignalID, tTimeStamp nUpdateRate)
-{
-    if (nSignalID == WSC_SIGREG_ID_WHEELSPEED_MEASVALUE || nSignalID == WSC_SIGREG_ID_WHEELSPEED_SETVALUE || nSignalID == WSC_SIGREG_ID_WHEELSPEED_OUTPUTVALUE)
-    {
-        __synchronized_kernel(m_oLock);
-        m_oActive.insert(nSignalID);
-    }
-    else
-    {
-        RETURN_ERROR(ERR_NOT_FOUND);
-    }
-
-    RETURN_NOERROR;
-}
-
-/**
-*   Deactivates a signal.
-*/
-tResult cWheelSpeedController::DeactivateSignalEvents(tSignalID nSignalID)
-{
-    __synchronized_kernel(m_oLock);
-    m_oActive.erase(nSignalID);
-    RETURN_NOERROR;
-}
-
-tResult cWheelSpeedController::GetInterface(const tChar* idInterface,
-        tVoid** ppvObject)
-{
-    if (idmatch(idInterface, IID_ADTF_SIGNAL_PROVIDER))
-    {
-        *ppvObject = static_cast<ISignalProvider*> (this);
-    }
-    else
-    {
-        return cFilter::GetInterface(idInterface, ppvObject);
-    }
-
-    Ref();
-
-    RETURN_NOERROR;
-}
 
 tUInt cWheelSpeedController::Ref()
 {

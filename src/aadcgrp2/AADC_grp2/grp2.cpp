@@ -61,7 +61,7 @@ tResult hoeFilter::Init(tInitStage eStage, __exception)
         RETURN_IF_FAILED(RegisterPin(&m_oVideoInputPin));
 
 
-        // Video Input
+        // Video Output
         RETURN_IF_FAILED(m_oVideoOutputPin.Create("Video_Output", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
         RETURN_IF_FAILED(RegisterPin(&m_oVideoOutputPin));
 

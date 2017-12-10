@@ -13,16 +13,16 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 **********************************************************************/
 
-#ifndef _RadiusToAngleConverter_H_
-#define _RadiusToAngleConverter_H_
+#ifndef _MedianFilter_H_
+#define _MedianFilter_H_
 
 #include "stdafx.h"
 
-#define UNIQUE_FILTER_ID "adtf.aadc.felix.RadiusToAngleConverter"
-#define FILTER_NAME "Felix RadiusToAngle Converter"
+#define UNIQUE_FILTER_ID "adtf.aadc.felix.MedianFilter"
+#define FILTER_NAME "Felix MedianFilter"
 
 /*! this is the main class for the steering controller filter */
-class cRadiusToAngleConverter : public adtf::cFilter {
+class cMedianFilter : public adtf::cFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -30,20 +30,26 @@ class cRadiusToAngleConverter : public adtf::cFilter {
     */
     ADTF_DECLARE_FILTER_VERSION(UNIQUE_FILTER_ID, FILTER_NAME, OBJCAT_DataFilter, FILTER_NAME, 1, 0, 0, "");
 
-    /* the radius */
-    cInputPin m_InputRadius;
-    /* the angle */
-    cOutputPin m_OutputAngle;
+    /* the input value which is fed into the linear function. */
+    cInputPin m_InputValue;
+
+    /* the gain */
+    cInputPin m_InputGain;
+    /* the offset */
+    cInputPin m_InputOffset;
+
+    /* the value */
+    cOutputPin m_OutputValue;
 
 public:
 
     /*! constructor for template class
     *    \param __info   [in] This is the name of the filter instance.
     */
-    cRadiusToAngleConverter(const tChar* __info);
+    cMedianFilter(const tChar* __info);
 
     /*! Destructor. */
-    virtual ~cRadiusToAngleConverter();
+    virtual ~cMedianFilter();
 
 protected: // overwrites cFilter
     /*! Implements the default cFilter state machine call. It will be
@@ -79,22 +85,15 @@ protected: // overwrites cFilter
 
     /*! the struct with all the properties*/
     struct filterProperties {
-        /*! the distance between axles (Radstand). */
-        tFloat32 wheelbase;
 
-        /*! the distance between the middle of left and right tires (Spurweite). */
-        tFloat32 tread;
-    }
-    /*! the filter properties*/
-    m_filterProperties;
+        tInt windowSize;
+
+    } m_filterProperties;
 
 
-// TIME TRIGGERED Filter
-/*
-    tResult Cycle(__exception=NULL);
+    /*! the most up to date value */
+    std::vector<tFloat32> m_storedValues;
 
-    tResult SetInterval(tTimeStamp nInterval);
-*/
 private:
     /*! creates all the input Pins
     * \param __exception_ptr the exception pointer
@@ -108,15 +107,13 @@ private:
     */
     tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
 
-// For decoding radius input
+// Coding
 
-    /*! media description for the Radius input pin */
-    cObjectPtr<IMediaTypeDescription> m_RadiusDescription;
+    /*! media description for the input pin */
+    cObjectPtr<IMediaTypeDescription> m_InputValueDescription;
 
-// For encoding angle output
-
-    /*! media description for the Angle output pin  */
-    cObjectPtr<IMediaTypeDescription> m_AngleDescription;
+    /*! media description for the output pin  */
+    cObjectPtr<IMediaTypeDescription> m_OutputValueDescription;
 
 // Debug
 
@@ -125,14 +122,16 @@ private:
 
 // Own Helper Functions
 
-    tFloat32 readRadius(IMediaSample* pMediaSample);
-    tFloat32 convertRadiusToAngle(tFloat32 radius);
+    tResult OnValueChanged(tFloat32 value);
 
-    tResult transmitAngle(tFloat32 angle);
+    tFloat32 calculateMedian(std::vector<tFloat32> values);
+
+    tFloat32 readInputValue(IMediaSample* pMediaSample);
+    tResult transmitValue(tFloat32 value);
 
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
 
 };
 /*! @} */ // end of group
-#endif // _RadiusToAngleConverter_H_
+#endif // _MedianFilter_H_

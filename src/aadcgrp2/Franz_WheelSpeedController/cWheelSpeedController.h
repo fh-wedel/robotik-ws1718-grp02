@@ -22,7 +22,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 
 #include "stdafx.h"
 
-#define OID_ADTF_WHEELSPEEDCONTROLLER "adtf.aadc.wheelSpeedController"
+#define OID_ADTF_WHEELSPEEDCONTROLLER "adtf.aadc.franz.wheelSpeedController"
 /*! @defgroup WheelSpeedController Wheel Speed Controller
 *  @{
 *
@@ -78,8 +78,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 
 
 /*! the main class for the wheel speed controller plugin */
-class cWheelSpeedController : public adtf::cFilter,
-    public adtf::ISignalProvider
+class cWheelSpeedController : public adtf::cFilter
 {
     /*! This macro does all the plugin setup stuff
     * Warning: This macro opens a "protected" scope see UCOM_IMPLEMENT_OBJECT_INFO(...) in object.h
@@ -261,77 +260,13 @@ private:
     tFloat64    m_f64PIDKi;
     /*! differential factor for PID Controller */
     tFloat64    m_f64PIDKd;
-    /*! the sampletime for the pid controller */
-    tFloat64 m_f64PIDSampleTime;
     /*! the minimum output value for the controller */
     tFloat64 m_f64PIDMinimumOutput;
     /*! the maximum output value for the controller */
     tFloat64 m_f64PIDMaximumOutput;
 
-    // PT1-Controller values
-    /*! tau value for PT1 controller */
-    tFloat64    m_f64PT1Tau;
-    /*! sample time for PT1 Controller */
-    tFloat64    m_f64PT1Sampletime;
-    /*! gain factor for PT1 controller */
-    tFloat64    m_f64PT1Gain;
-    /*! time constant for pt1 controller */
-    tFloat64 m_f64PT1TimeConstant;
-    /*! input factor for PT1 */
-    tFloat64 m_f64PT1OutputFactor;
-    /*! input factor for PT1 */
-    tFloat64 m_f64PT1InputErrorFactor;
-
-    /*! the set point is multiplied with this factor, otherwise the set point is not reached by the controller. */
-    tFloat64 m_f64PT1CorrectionFactor;
-
     /*! holds the last speed value */
     tFloat64 m_f64LastSpeedValue;
-
-    /*! defines whether PID or PT1 is used */
-    tInt32 m_i32ControllerMode;
-
-
-public: // implements ISignalProvider
-    /*!
-    *  Returns the current signal value.
-    *
-    *  \param  nSignalID [in]  ID of signal
-    *  \param  pValue    [out] Value of signal
-    *
-    *  \result Standard Result Code
-    */
-    virtual tResult GetSignalValue(tSignalID nSignalID, tSignalValue* pValue);
-
-    /*!
-    *  Activates events for specific signal.
-    *  After this call is made the signal listener will receive notifications when a new
-    *  signal value was received.
-    *
-    *  \param  nSignalID   [in] ID of signal
-    *  \param  nUpdateRate [in] Update rate in microseconds
-    *
-    *  \result Standard Result Code
-    */
-    virtual tResult ActivateSignalEvents(tSignalID nSignalID, tTimeStamp nUpdateRate = 0);
-
-
-    /*!
-    *  Deletes a link between signal provider and signal listener.
-    *  After this call is made the signal listener will receive no further notifications.
-    *
-    *  \param  nSignalID [in] ID of signal
-    *
-    *  \result Standard Result Code
-    */
-    virtual tResult DeactivateSignalEvents(tSignalID nSignalID);
-
-    /*!
-     * this functions sends the signal data to the registry.
-     *
-     * \return  Standard Result Code
-     */
-    tResult SendSignalData();
 
 
 

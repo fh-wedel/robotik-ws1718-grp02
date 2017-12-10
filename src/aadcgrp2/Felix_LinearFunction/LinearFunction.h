@@ -13,16 +13,16 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 **********************************************************************/
 
-#ifndef _RadiusToAngleConverter_H_
-#define _RadiusToAngleConverter_H_
+#ifndef _LinearFunction_H_
+#define _LinearFunction_H_
 
 #include "stdafx.h"
 
-#define UNIQUE_FILTER_ID "adtf.aadc.felix.RadiusToAngleConverter"
-#define FILTER_NAME "Felix RadiusToAngle Converter"
+#define UNIQUE_FILTER_ID "adtf.aadc.felix.LinearFunction"
+#define FILTER_NAME "Felix LinearFunction"
 
 /*! this is the main class for the steering controller filter */
-class cRadiusToAngleConverter : public adtf::cFilter {
+class cLinearFunction : public adtf::cFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -30,20 +30,26 @@ class cRadiusToAngleConverter : public adtf::cFilter {
     */
     ADTF_DECLARE_FILTER_VERSION(UNIQUE_FILTER_ID, FILTER_NAME, OBJCAT_DataFilter, FILTER_NAME, 1, 0, 0, "");
 
-    /* the radius */
-    cInputPin m_InputRadius;
-    /* the angle */
-    cOutputPin m_OutputAngle;
+    /* the input value which is fed into the linear function. */
+    cInputPin m_InputValue;
+
+    /* the gain */
+    cInputPin m_InputGain;
+    /* the offset */
+    cInputPin m_InputOffset;
+
+    /* the value */
+    cOutputPin m_OutputValue;
 
 public:
 
     /*! constructor for template class
     *    \param __info   [in] This is the name of the filter instance.
     */
-    cRadiusToAngleConverter(const tChar* __info);
+    cLinearFunction(const tChar* __info);
 
     /*! Destructor. */
-    virtual ~cRadiusToAngleConverter();
+    virtual ~cLinearFunction();
 
 protected: // overwrites cFilter
     /*! Implements the default cFilter state machine call. It will be
@@ -79,22 +85,19 @@ protected: // overwrites cFilter
 
     /*! the struct with all the properties*/
     struct filterProperties {
-        /*! the distance between axles (Radstand). */
-        tFloat32 wheelbase;
 
-        /*! the distance between the middle of left and right tires (Spurweite). */
-        tFloat32 tread;
-    }
-    /*! the filter properties*/
-    m_filterProperties;
+        tFloat32 gain;
+        tFloat32 offset;
+
+        tBool overwriteGain;
+        tBool overwriteOffset;
+
+    } m_filterProperties;
 
 
-// TIME TRIGGERED Filter
-/*
-    tResult Cycle(__exception=NULL);
+    /*! the most up to date value */
+    tFloat32 m_mostRecentValue;
 
-    tResult SetInterval(tTimeStamp nInterval);
-*/
 private:
     /*! creates all the input Pins
     * \param __exception_ptr the exception pointer
@@ -108,15 +111,21 @@ private:
     */
     tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
 
-// For decoding radius input
+// For decoding input
 
-    /*! media description for the Radius input pin */
-    cObjectPtr<IMediaTypeDescription> m_RadiusDescription;
+    /*! media description for the input pin */
+    cObjectPtr<IMediaTypeDescription> m_InputValueDescription;
 
-// For encoding angle output
+    /*! media description for the input gain pin */
+    cObjectPtr<IMediaTypeDescription> m_InputGainDescription;
 
-    /*! media description for the Angle output pin  */
-    cObjectPtr<IMediaTypeDescription> m_AngleDescription;
+    /*! media description for the input offset pin */
+    cObjectPtr<IMediaTypeDescription> m_InputOffsetDescription;
+
+// For encoding output
+
+    /*! media description for the output pin  */
+    cObjectPtr<IMediaTypeDescription> m_OutputValueDescription;
 
 // Debug
 
@@ -125,14 +134,17 @@ private:
 
 // Own Helper Functions
 
-    tFloat32 readRadius(IMediaSample* pMediaSample);
-    tFloat32 convertRadiusToAngle(tFloat32 radius);
+    tResult OnValueChanged();
 
-    tResult transmitAngle(tFloat32 angle);
+    tFloat32 readInputValue(IMediaSample* pMediaSample);
+    tFloat32 readGain(IMediaSample* pMediaSample);
+    tFloat32 readOffset(IMediaSample* pMediaSample);
+
+    tResult transmitValue(tFloat32 value);
 
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
 
 };
 /*! @} */ // end of group
-#endif // _RadiusToAngleConverter_H_
+#endif // _LinearFunction_H_

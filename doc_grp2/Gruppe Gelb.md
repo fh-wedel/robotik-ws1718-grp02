@@ -128,7 +128,9 @@ Als wir dies nun alles zum Laufen gebracht hatten, klebten einigen blaue Streife
 
 Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
 
+
 ----
+
 
 ### Dienstag, 21.11.
 **09:30 bis 10:55 Uhr - Frauke, Franz, Felix:**  
@@ -147,6 +149,10 @@ Dann haben wir ein Szenario **'Links Abbiegen'** aufgenommen.
 **15:30 bis 17:15 Uhr - Jan:**
 
 Jan hat ein Model für eine Halterung der RealSense Kamera in TinkerCAD gebaut, und mit kurzer Hilfe von Timm Bostelmann gedruckt. Leider ist die Passform etwas zu eng. Ein weiterer versuch, mit angepasstem Modell erfolgt warscheinlich morgen. 
+
+
+----
+
 
 ### Mittwoch, 22.11.
 **14:00 bis 15:30 Uhr - Jan, Franz, Felix:**  
@@ -203,18 +209,30 @@ Letztendlich ist es nur ein *"Nimm mal diese Daten (Void\*) und baller sie in de
 
 **17:00 bis 19:15 - Franz und Frauke**
 
-Da wir heute aufgrund des anstehenden Besuchs der Ministerin im Projektraum gearbeitet haben und wir unsere blaue Straße nicht mitgenommen haben, mussten wir rot/orange Riesen-Steckerleisten zum Testen gewählt. Für die Erkennung der Farben mussten wir nur an den Parametern `hueLow` und `hueHigh` schrauben. Wir haben den Bereich zwischen 0 und 10° gewählt.
+Da wir heute aufgrund des anstehenden Besuchs der Ministerin im Projektraum gearbeitet haben und wir unsere blaue Straße nicht mitgenommen haben, mussten wir rot/orange Riesen-Steckerleisten zum Testen zu Rate ziehen. Für die Erkennung der Farben mussten wir nur an den Parametern `hueLow` und `hueHigh` schrauben. Wir haben den Bereich zwischen 0 und 10° gewählt.
 
-Wir haben uns mit der GPU-Implementierung der Hough-Transformation beschäftigt. Es stellte sich heraus, dass das gar nicht so schwierig ist, man muss nur die richtigen Header (gute Kandidaten sind `<opencv2/cudaarithm.hpp>`, `<opencv2/core/cuda.hpp>` und `<opencv2/cudaimgproc.hpp>`) kennen und in vielen Fällen nur die `cv::Mat`'s per `upload` auf die GPU laden. Ergebnis ist eine `cv::cuda::GpuMat`. Ist man fertig mit allen GPU-Operationen, muss die `cv::cuda::GpuMat` wieder heruntergeladen werden und auf eine `cv::Mat` geschrieben werden. Vor viele Funktionen muss man auch nur `cv::cuda::` + `Funktionsname` schreiben. Fies wird es, wenn das gerade nicht reicht, und sich die komplette Signatur ändert! So ist das zum Beispiel bei der Funktion `cv::HoughLines`. Die wird in der GPU-Implementierung durch einen Pointer auf eine abstrakte Klasse repräsentiert. Eine Variable dieses Typs sieht dann so aus: `cv::Ptr<cv::cuda::HoughLinesDetector> hough`. Auf diesen Pointer kann man dann beispielsweise die Funktion `detect` aufrufen. Beide Operationen zusammen haben eine ähnliche Signatur wie die CPU-Implementierung von `cv::HoughLines`. Einige Funktionen gibt es auch nicht mit Hardware-Unterstützung, zum Beispiel `cv::line`.
+Wir haben uns mit der GPU-Implementierung der Hough-Transformation beschäftigt. Es stellte sich heraus, dass das gar nicht so schwierig ist, man muss nur die richtigen Header (gute Kandidaten sind `<opencv2/cudaarithm.hpp>`, `<opencv2/core/cuda.hpp>` und `<opencv2/cudaimgproc.hpp>`) kennen und in vielen Fällen nur die `cv::Mat`'s per `upload` auf die GPU laden. Ergebnis ist eine `cv::cuda::GpuMat`. Ist man fertig mit allen GPU-Operationen, muss die `cv::cuda::GpuMat` wieder heruntergeladen werden und auf eine `cv::Mat` geschrieben werden. Vor viele Funktionen muss man auch nur `cv::cuda::` + `Funktionsname` schreiben. Fies wird es, wenn das gerade nicht reicht, und sich die komplette Signatur ändert! So ist das zum Beispiel bei der Funktion `cv::HoughLines`. Die wird in der GPU-Implementierung durch einen Pointer auf eine abstrakte Klasse repräsentiert. Eine Variable dieses Typs sieht dann so aus: `cv::Ptr<cv::cuda::HoughLinesDetector> hough`. Auf diesen Pointer kann man dann beispielsweise die Funktion `detect` aufrufen. Beide Operationen zusammen haben eine ähnliche Signatur wie die CPU-Implementierung von `cv::HoughLines`. Einige Funktionen gibt es auch nicht mit GPU-Unterstützung, zum Beispiel `cv::line`.
 
-Nachdem alle Komplier- und Laufzeitfehler behoben wurden, funktionierte es auch! **Und wir haben einen deutlichen Unterschied zwischen CPU- und GPU-Implementierung gemerkt**, sodass die GPU-Variante -- je nach Auflösung des Videos -- nahezu in Echtzeit abläuft. Dazu können wir aber gerne noch genauere Messungen vornehmen. Leider haben wir die CPU-Variante nicht committed, sodass wir die erst einmal wieder rekonstruieren müssen :-(.
+Nachdem alle Kompilier- und Laufzeitfehler behoben wurden, funktionierte es auch! **Und wir haben einen deutlichen Unterschied zwischen CPU- und GPU-Implementierung gemerkt**, sodass die GPU-Variante -- je nach Auflösung des Videos -- nahezu in Echtzeit abläuft. Dazu können wir aber gerne noch genauere Messungen vornehmen. Leider haben wir die CPU-Variante nicht committed, sodass wir die erst einmal wieder rekonstruieren müssen :-(.
 
 Jetzt steht nur noch die Frage im Raum, wie man damit arbeiten kann, wenn man keine nVidia-Grafikkarte, oder keinen stationären PC hat (wie Frauke). Implementiert man erst für die CPU, und muss man dann alles ändern? Oder implementiert man "blind" in der GPU-API und testet dann Live am Auto? Vielleicht haben wir uns damit doch selbst ins Bein geschossen...
+
+
+----
+
 
 ### Freitag, 24.11.
 **16:00 bis - Felix, Franz und Frauke:**
 
 Wir haben Franz die GPU-Implementierung gezeigt, die Farbwerte wieder an Blau angepasst.
+
+Unsere alten Werte waren:
+```
+hueHigh:    120
+hueLow:     90
+Saturation: 120
+Value:      ??
+```
 
 Unsere neuen Werte sind:
 ```
@@ -223,8 +241,10 @@ hueLow:     100
 Saturation: 80
 Value:      2
 ```
-Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...
+~~Unsere alten Werte haben wir wohl nie committed, deshalb sind sie verloren gegangen. Vielleicht weiß Jan sie noch ...~~ Frauke hat sie in einem Kommentar gefunden (bis auf `Value` -- siehe oben)!
 
+
+----
 
 
 ### Montag, 27.11.
@@ -233,7 +253,7 @@ Fertigstellung des `FloatValueGenerator` und Fehlersuche für den `RadiusToAngle
 
 **14:00 bis 15:30 Uhr - Felix, Franz, Frauke und Jan:**  
 Mapping von Angle auf ServoValue im `RadiusToAngleConverter` erstellt.
-Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien zusammenzufassen, da auf einem Fahrstreifen Mehrere Linien erkannt werden. Hierzu wird cv::partition() und eine eigene hilfsmethode isEqual() verwendet. 
+Frauke und Jan haben sich weiter mit der Fahrbahnerkennung beschäftigt. Es wurde ein Algorithmus zur Bündelung ähnlicher Linien erstellt, da für eine Fahrbahnmarkierung mehrere Linien erkannt werden. Hierzu wird `cv::partition()` und eine eigene Hilfsmethode `isEqual()` verwendet. 
 
 **15:30 bis 16:45 Uhr - Frauke und Jan:**  
 S.o.
@@ -243,3 +263,121 @@ Test des `RadiusToAngleConverter`.
 Inbetriebnahme des Fahrzeugs war geplant. Jedoch hat die Hardware versagt. Erst wollte Ubuntu nich mehr booten (im Recovery-Mode gings :]), danach klappte VNC nicht mehr.
 
 Insofern muss der Test auf morgen verschoben werden.
+
+
+----
+
+
+### Dienstag, 28.11.
+**21:00 bis 22:30 Uhr - Felix:**  
+Felix hat den Converter in zwei Teile aufgetrennt. Wir können nun sowohl von einem **Radius zu einem Winkel**, als auch von einem **Winkel zu einem Servo-Stellwert** konvertieren.  
+Diese Auftrennung ist sinnvoll, da Jan und Frauke anstatt Radien lieber Winkel ausgeben möchten.
+
+
+----
+
+
+### Mittwoch, 29.11.
+**13:00 bis 14:15 Uhr - Jan:**  
+Die Linienerkennug mit der Hough transformation funktioniert nur unzureichend. 
+Jan hat nun wieder die ADTF Demo Variante mit den Grünen Punkten aktiviert und die parameter im Video Playback angepasst. 
+Die Linien werden hier gut erkannt. Als nächstes müssen die gefundenen Punkte zu Linien zusammengefasst werden. 
+
+### Freitag, 01.12.
+**12:45 bis 13:50 Uhr - Frauke:**  
+Frauke hat sich noch einmal die Bildverarbeitung angeschaut, um zu schauen, ob es nicht doch ohne die grünen Punkte geht (siehe Jan's Eintrag oben). Bisher ist aber noch nicht wirklich etwas dabei herumgekommen.
+
+----
+
+
+### Montag, 04.12.
+**09:00 bis 09:20 Uhr - Frauke, Felix:**  
+Unser Stick wird nicht mehr vom System erkannt. Sowohl im BIOS/Boot-Menü als auch aus einem laufenden Linux ist dieser nicht mehr zu sehen. Anscheinend hat die **Hardware versagt**. Hermann ist informiert und kümmert sich um Ersatz.  
+Übergangsweise dürfen wir nun seinen *blauen* Stick verwenden.
+
+
+----
+
+
+### Dienstag, 05.12.
+**08:00 bis 09:00 - Frauke**  
+Frauke hat sich weiter mit der Trennung von Bildverarbeitungsteil für den ADTF-Filter und die Bildverarbeitung in der LaneDetection gekümmert. Die beiden Dinge sind nun getrennt, OpenCV-Operationen wurden in die `bva._pp` ausgelagert.
+Darüber hinaus hat sie im git-Repo den Ordner `config/hoe/` zu `config/grp2/` und die Projektdatei `config/hoe/hoe.prj` zu `config/grp2/grp2.prj` umbenannt, damit es nicht zu Konflikten oder Überschreibungen kommt, wenn wir auf Hermanns Stick arbeiten (git hat übrigens ganz schlau bemerkt, dass ich den Ordner und die Datei nur umbenannt habe :) ). Das Builden funktioniert weiterhin.
+Beim Ausprobieren (Ausführen in ADTF) auf dem Auto fliegt die Exception: "CUDA driver version is insufficient for CUDA runtime version in function allocate". Anscheinend ist auf Hermanns Stick eine andere Version von CUDA installert, denn auf unserem Stick hatten wir keine Probleme mit der Version. Jetzt ist die Frage, wie wir damit umgehen ...
+
+**09:00 bis 10:50 - Franz, Frauke, Felix, Hermann**  
+Hermann hat den nVidia-Treiber wieder zum laufen gebracht. Was nach langem Suchen schlussendlich geholfen hat, war das `purge`n des nVidia-Treibers und die komplette Neuinstallation. Die BVA auf der GPU funktionierte dann wieder :)
+Danach haben wir uns entschieden, Franz' SSD auf Hermann's alsten USB-Stick zu klonen. Das hat dank Hermanns Hilfe auch schnell funktioniert. Danke Hermann! :)
+Danach haben wir aber einen git-Konflikt ausgelöst, der durch uncommittete Änderungen von Franz kam.
+
+**12:30 bis 15:20 - Alle**
+In der Mittagspause wurde der Stick an Fraukes Laptop angeschlossen, damit wir ihn dort booten können und das "kaputte" git wieder gerade zu biegen.
+Oben in der Robotik gab es wieder den gleichen CUDA-Fehler wie vorher. Hermann hat das wieder geradegebogen. Danke Hermann x2.
+Lenkwinkel neu vermessen, Hermann hillft bei NVidia Treibern, Aufnahme.
+
+**15:20 bis 17:00 - Frauke, Jan**  
+Es wurde weiter an der Linienerkennung und der Bündelung der Linien gearbeitet. Nachdem die Parameter verstanden und angepasst wurden, funktionierte dies auch recht gut. 
+
+
+----
+
+### Mittwoch, 06.12.
+**11:00 bis 13:30 - Jan**  
+Das verarbeitete canny Bild `contours` wird nun in eine Vogelperspektive mit Hilfe von  `cv::cuda::warpPerspective()` verzerrt.
+In Versuchen sieht das Resultat besser aus, wenn man das Warping auf das `contours` anstatt auf `src` anwendet. Dies muss aber nicht immer so sein...
+
+Die ROI Eingrenzung muss nun warscheinlich nicht mehr durchgeführt werden, da das Bild nun eh größtenteils nur die Fahrbahn abbildet.
+Da parallele Fahrstreifen nun auch im Bild parallel sind, wird in der Funktion `isEqual()` nun auch die Distanz berücksichtigt. 
+Aus den `clusteredLines` wird nun mit Hilfe von `getAngle()` provisorisch ein erster Lenkwinkel auf der Konsole ausgegeben.  
+Dieser ist jedoch noch **anfällig für ausreißende Linien**.
+Eine Idee zur Lösung des Problems ist, die Hough-Transformation anzupassen. Eine Vernachlässigung dieser Ausreißer könnte Probleme bei Kurven verursachen.
+
+Ein Kommentar von Frauke: Vielleicht können wir **einen Median-Filter** verwenden, um die Ausreißer loszuwerden?
+
+
+----
+
+### Donnerstag, 07.12.
+**10:30 - 12:00 Uhr - Felix, Franz**  
+Zuerst haben wir das Repository wieder auf den Benutzer des Autos umgestellt. Jetzt funktioniert es wieder einwandfrei. 
+Da noch einige commits auf dem Auto waren, wir aber schon zuhause weiter gemacht hatten, haben wir das lokale Repository auf den origin zurückgesetzt. Dazu sind die nicht hochgeladenen commits in den lokalen branch `bva-save` gesichert worden.
+
+Danach haben wir noch den aktuellen Stand der bva getestet in dem wir das Auto auf die Straße gestellt haben. Um den Lenkwinkel anzuzeigen haben wir mit OpenCV den aktuellen Lenkwinkel in die Ausgabe gemalt.
+
+Felix hat darüberhinaus die **Lineare Funktion** fertiggestellt. Sie hat 3 Inputs (`x`: Input, `g`: Gain, `o`: Offset) und einen Output (y).  
+Der Output wird wie folgt berechnet: `y = gx + o`  
+Sowohl Gain als auch Offset können durch Parameter in der Filterkonfiguration gesetzt und überschrieben werden.
+
+Dieser Filter soll später eine Möglichkeit bieten, um die Geschwindigkeit innerhalb von Kurven herabzusetzen:
+    
+    Input = Geschwindigkeit
+    Gain = Lenkwinkel
+    Offset = 0
+
+**17:00 - 19:00 Uhr - Felix**
+Am Abend habe ich einen Median-Filter erstellt. Dieser führte allerdings noch zu einem **Segmentation Fault**.  
+Der Filter besitzt eine variable Fenstergröße, die auch **live** während des Betriebes über die Filterparameter angepasst werden kann.
+
+
+----
+
+
+### Freitag, 08.12.
+**14:20 - 16:00 Uhr - Felix, Franz**  
+Gemeinsam haben wir die Ursache für den SegFault ausfindig machen können und ihn behoben. Letztendlich war es nur eine umgekehrte Subtraktion, was zu einem **Zugriff auf negative Array-Indizes** führte.  
+Dies war leicht behoben und der Filter funktionierte hervorragend.
+
+Wir setzen diesen Filter jetzt hinter der BVA für den Lenkwinkel ein. **Eine gute Fenstergröße scheint ~10 zu sein.**
+
+Dann haben wir uns die Motorsteuerung genauer angesehen.
+Den Code von Audi kann man echt in die Tonne treten. Er ist **durchzogen von Flüchtigkeitsfehlern** und hat unübersichtlich **viele Redundanzen**.
+
+Der wohl schönste Fehler ist, dass wenn das Auto sich der genwünschten Geschwindigkeit annähert, die berechnete Regelabweichung dich vergrößert.
+**Excuse me, Sir:** *What the \*\*\*\*?*
+
+Es ist uns rätselhaft wie Audi da sagen kann, dass die Werte schon ganz gut passen und der Regler vernünftig funktionieren würde.
+
+**16:00 - 19:00 Uhr - Frauke, Franz, Felix**  
+Am Nachmittag haben wir Frauke die Auswirkung des Median-Filters gezeigt und weiter an der BVA rumgeschraubt.
+
+----

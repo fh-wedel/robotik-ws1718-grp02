@@ -19,7 +19,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #ifndef _AADC_REALSENSE_FILTER_H_
 #define _AADC_REALSENSE_FILTER_H_
 
-#define OID_ADTF_REALSENSE_FILTER "adtf.aadc.aadc_realsense"
+#define OID_ADTF_REALSENSE_FILTER "adtf.aadc.felix.aadc_realsense"
 
 #include "stdafx.h"
 #include "Realsensehelper.h"
@@ -147,17 +147,17 @@ public:
         tBool Colour;
         /*! stores if Depth Stream is Enabled */
         tBool Depth;
-        
+
         int maxDepth;
         int minDepth;
-        
+
         int blurRadius;
     }
     /*! the filter properties*/
     m_filterProperties;
-    
+
     tResult PropertyChanged(const tChar* strName);
-    
+
 
     /*!  context for librealsense */
     rs::context* m_ctx;
@@ -270,8 +270,8 @@ protected:
     *	\return Standard Result Code
     */
     tResult ThreadFunc(adtf::cKernelThread* Thread, tVoid* data, tSize size);
-    
-    
+
+
 	void initStaticPins();
 	void initDynamicPins();
 
