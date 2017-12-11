@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Wheel_Converter" />
+  <property name="active_configuration" type="String" value="Playback" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -126,7 +126,7 @@
     </filter>
     <filter alias="AADC_Lane_Detection_Custom2" idref="adtf.aadc_LaneDetection_Custom" priority="2">
      <settings>
-      <property name="Algorithm::HueLow" type="Int" value="100" />
+      <property name="Algorithm::HueLow" type="Int" value="90" />
       <property name="Algorithm::Image Binarization Threshold" type="Int" value="2" />
       <property name="Algorithm::Maximum Line Width" type="Int" value="200" />
       <property name="Algorithm::Saturation" type="Int" value="100" />
@@ -202,7 +202,7 @@
       <property name="Algorithm::Maximum Line Width" type="Int" value="400" />
       <property name="Algorithm::Saturation" type="Int" value="80" />
       <property name="Algorithm::Value" type="Int" value="40" />
-      <property name="Algorithm::HueLow" type="Int" value="100" />
+      <property name="Algorithm::HueLow" type="Int" value="90" />
      </settings>
     </filter>
     <filter alias="Video_Display" idref="adtf.visual.video_display" priority="3" />

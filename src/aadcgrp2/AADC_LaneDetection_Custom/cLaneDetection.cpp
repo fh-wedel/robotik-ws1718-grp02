@@ -252,10 +252,10 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
 		m_filterProperties.thresholdImageBinarization = GetPropertyInt("Algorithm::Image Binarization Threshold");
 
 	//eigene properties
-	else if (cString::IsEqual(strName, "Algorithm::HueLow"))
-		m_filterProperties.hueLow = GetPropertyInt("Algorithm::HueLow");
-	else if (cString::IsEqual(strName, "Algorithm::HueHigh"))
-		m_filterProperties.hueHigh = GetPropertyInt("Algorithm::HueHigh");
+	else if (cString::IsEqual(strName, "Algorithm::Hue Low"))
+		m_filterProperties.hueLow = GetPropertyInt("Algorithm::Hue Low");
+	else if (cString::IsEqual(strName, "Algorithm::Hue High"))
+		m_filterProperties.hueHigh = GetPropertyInt("Algorithm::Hue High");
 	else if (cString::IsEqual(strName, "Algorithm::Saturation"))
 		m_filterProperties.saturation = GetPropertyInt("Algorithm::Saturation");
 	else if (cString::IsEqual(strName, "Algorithm::Value"))

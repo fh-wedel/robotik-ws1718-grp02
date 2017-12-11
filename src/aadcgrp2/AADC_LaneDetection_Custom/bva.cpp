@@ -3,7 +3,7 @@
 #define rad2deg(x) (x) * 180.0f / CV_PI
 
 //returns true if two vectors are similar
-static bool isEqual(Vec2f a, Vec2f b) {
+static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
 	float dist = fabs(a[0] - b[0]);
 
@@ -11,17 +11,17 @@ static bool isEqual(Vec2f a, Vec2f b) {
 }
 
 //calculate steering angle
-static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
+static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 	tFloat32 sum = 0;
 	if (clusteredLines.size() == 0) return 0; //no lane was detected
 	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
 	// Car: "Just go straight and full speed :]"
 	int lines = 0;
 
-	for (Vec3f v : clusteredLines) {
+	for (cv::Vec3f v : clusteredLines) {
 			lines += v[2];
 	}
-	for (Vec3f v : clusteredLines) {
+	for (cv::Vec3f v : clusteredLines) {
 		float angle = rad2deg(v[1]);
 		printf("CalculatedAngle; %.2f\n", angle);
 		if (angle > 90) angle -= 180;
@@ -33,7 +33,7 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 };
 
 //weight saved in clusteredLines[2]
-/*static*/ void clusterLines(std::vector<Vec2f>& lines, std::vector<Vec3f>& clusteredLines) {
+/*static*/ void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
 	std::vector<int> labels;
 	int amountOfClasses = cv::partition(lines, labels, isEqual);
 
@@ -53,10 +53,10 @@ static tFloat32 getAngle(std::vector<Vec3f> clusteredLines) {
 			}
 		}
 		//printf("sumDist: %.1f sumAngle: %.1f\n", sumDist, sumAngle);
-		clusteredLines.push_back(Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize));
+		clusteredLines.push_back(cv::Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize));
 	}
 	printf("Clustered:\n");
-	for (Vec3f v : clusteredLines) {
+	for (cv::Vec3f v : clusteredLines) {
 		printf("dist: %.3f angle: %.3f weight: %.1f\n", v[0], rad2deg(v[1]), v[2]);
 	}
 
@@ -128,7 +128,7 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 
 	//---------------hough transformation---------------------------
 	cv::cuda::GpuMat GpuMatLines;
-	vector<Vec2f> lines;
+	std::vector<cv::Vec2f> lines;
 
 	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, houghThresh);
 
@@ -145,11 +145,11 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 	// the intermediary result and use the CPU.
 	result.download(out);
 
-	std::vector<Vec3f> clusteredLines;
+	std::vector<cv::Vec3f> clusteredLines;
 	clusterLines(lines, clusteredLines);
 
 	// Draw the lines
-	std::vector<Vec3f>::const_iterator it = clusteredLines.begin();
+	std::vector<cv::Vec3f>::const_iterator it = clusteredLines.begin();
 	while (it != clusteredLines.end()) {
 
 		float rho = (*it)[0];   // first element is distance rho
@@ -157,11 +157,11 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 
 
     // point of intersection of the line with first row
-		Point pt1(rho / cos(theta), 0);
+		cv::Point pt1(rho / cos(theta), 0);
 		// point of intersection of the line with last row
-		Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
+		cv::Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
 		// draw a line: Color = Scalar(R, G, B), thickness
-		cv::line(out, pt1, pt2, Scalar(255, 255, 255), 3);
+		cv::line(out, pt1, pt2, cv::Scalar(255, 255, 255), 3);
 
 		++it;
 	}
@@ -171,11 +171,11 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 
 	// Write current angle to screen for visualization
 	string text = std::to_string(angle);
-  int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
+  int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
   double fontScale = 2;
   int thickness = 3;
   cv::Point textOrg(10, 130);
-  cv::putText(out, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
+  cv::putText(out, text, textOrg, fontFace, fontScale, cv::Scalar::all(255), thickness,8);
 
 	return angle;
 }
@@ -185,20 +185,20 @@ void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
 {
 	cv::Mat hsv;
 	//convert to HSV colorspace
-	cvtColor(input_img, hsv, CV_BGR2HSV);
+	cv::cvtColor(input_img, hsv, CV_BGR2HSV);
 
 	//Filter blue color (range: ~90-120 saturation: ~120-255)
-	inRange(hsv, Scalar(hueLow,
+	cv::inRange(hsv, cv::Scalar(hueLow,
 		saturation,
 		value)
-		, Scalar(hueHigh, 255, 255), out);
+		, cv::Scalar(hueHigh, 255, 255), out);
 
 	//closing
 	int kernelSize = 6;
-	Mat kernel = getStructuringElement(0, Size(2 * kernelSize + 1, 2 * kernelSize + 1), Point(kernelSize, kernelSize));
+	cv::Mat kernel = cv::getStructuringElement(0, cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1), cv::Point(kernelSize, kernelSize));
 	int operation = 3;
-	morphologyEx(out, out, operation, kernel);
+	cv::morphologyEx(out, out, operation, kernel);
 
 	//Gauss filter for flattening edges after closing
-	cv::GaussianBlur(out, out, Size(5, 5), 0, 0);
+	cv::GaussianBlur(out, out, cv::Size(5, 5), 0, 0);
 }
