@@ -380,4 +380,38 @@ Es ist uns rätselhaft wie Audi da sagen kann, dass die Werte schon ganz gut pas
 **16:00 - 19:00 Uhr - Frauke, Franz, Felix**  
 Am Nachmittag haben wir Frauke die Auswirkung des Median-Filters gezeigt und weiter an der BVA rumgeschraubt.
 
+
+----
+
+
+### Montag, 11.12.
+**14:20 - 15:20 Uhr - Felix, Franz, Frauke, Jan**  
+Wir haben uns weitere Fortschritte der BVA angesehen und Franz' Regler weiter verbessert.
+
+**15:20 - 18:20 Uhr - Frauke, Jan**  
+Neues Konzept für die BVA. Es werden nun die **schwarz-weiß-schwarz Übergänge** markiert und aus den entstehenden Punkten die Linien erstellt. Wir erhoffen uns von dieser Methode, dass weniger 'FalsePositives' auftreten.
+
+Grundsätzlich **klappt der Ansatz** schon ganz gut. Lediglich die **gestrichelten Leitlinien** werden noch etwas schlecht erkannt. Hier müssen die Parameter noch etwas getweakt werden.
+
+**18:20 - 19:15 Uhr - Felix, Franz**  
+Wir haben kurz eine Sprungfunktion für die Motorregelung aufgenommen.
+Gemessen haben wir Beschleunigungswerte von bis zu **0.5G beim Anfahren** und sogar bis zu **0.7G bei einer Vollbremsung**. Ganz schön beträchtlich.
+Die Höchstgeschwindigkeit lag relativ konstant bei 4.8m/s.
+
+Was uns aufgefallen ist: Die **Z-Beschleunigung fluktuiert stark**. Dies liegt wohl an dem nicht ganz ebenen Fliesenboden.
+Hier wird Thorger gute Werte für seinen Accelerometer basierten Nothalt finden.
+
+*Übrigens:* Donuts sind auch möglich. Höhö ;-)
+
+
+----
+
+### Dienstag, 12.12.
+**09:00 - 10:50 Uhr - Felix, Franz, Frauke**  
+
+
+
+**12:30 bis 15:20 - Alle**  
+
+
 ----
