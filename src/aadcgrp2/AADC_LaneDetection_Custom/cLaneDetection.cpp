@@ -28,6 +28,7 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 	cLaneDetection)
 
 
+cv::Mat linePoints;
 
 cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 {
@@ -265,6 +266,16 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
 	RETURN_NOERROR;
 }
 
+tResult cLaneDetection::getDetectionLines(vector<tInt>& detectionLines)
+{
+    tInt distanceBetweenDetectionLines = m_filterProperties.ROIHeight / (m_filterProperties.detectionLines + 1);
+
+    for (int i = 1; i <= m_filterProperties.detectionLines; i++)
+    {
+        detectionLines.push_back(m_filterProperties.ROIOffsetY + i * distanceBetweenDetectionLines);
+    }
+    RETURN_NOERROR;
+}
 
 tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 {
@@ -292,9 +303,18 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
 				m_filterProperties.saturation, m_filterProperties.value);
 
-			//find the lines in image and calculate the desired steering angle
+			//calculate the detectionlines in image
+      getDetectionLines(detectionLines);
+			linePoints = cv::Mat::zeros(outputImage.size(), CV_8U);
+      findLinePoints(detectionLines, outputImage, detectedLinePoints);
+
+			linePoints.copyTo(outputImage);
 			tFloat32 angle = -1;
 			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
+
+			//find the lines in image and calculate the desired steering angle
+			//tFloat32 angle = -1;
+			//angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
 			printf("Winkel %f\n", angle);
 			transmitValue(angle);
 		}
@@ -348,6 +368,65 @@ tResult cLaneDetection::UpdateInputImageFormat(const tBitmapFormat* pFormat)
 		RETURN_IF_FAILED(BmpFormat2Mat(m_sInputFormat, m_inputImage));
 	}
 	RETURN_NOERROR;
+}
+
+tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const cv::Mat& image, vector<cPoint>& detectedLinePoints)
+{
+    //iterate through the calculated horizontal lines
+    for (vector<tInt>::const_iterator nline = detectionLines.begin(); nline != detectionLines.end(); nline++)
+    {
+        uchar ucLastVal = 0;
+
+        // create vector with line data
+        const uchar* p = image.ptr<uchar>(*nline, m_filterProperties.ROIOffsetX);
+        std::vector<uchar> lineData(p, p + m_filterProperties.ROIWidth);
+
+        tBool detectedStartCornerLine = tFalse;
+        tInt columnStartCornerLine = 0;
+
+        for (std::vector<uchar>::iterator lineIterator = lineData.begin(); lineIterator != lineData.end(); lineIterator++)
+        {
+            uchar ucCurrentVal = *lineIterator;
+            tInt currentIndex = tInt(std::distance(lineData.begin(), lineIterator));
+            //look for transition from dark to bright -> start of line corner
+            if ((ucCurrentVal - ucLastVal) > m_filterProperties.minLineContrast)
+            {
+                detectedStartCornerLine = tTrue;
+                columnStartCornerLine = currentIndex;
+            }//look for transition from bright to dark -> end of line
+            else if ((ucLastVal - ucCurrentVal) > m_filterProperties.minLineContrast && detectedStartCornerLine)
+            {
+                //we already have the start corner of line, so check the width of detected line
+                if ((abs(columnStartCornerLine - currentIndex) > m_filterProperties.minLineWidth)
+                    && (abs(columnStartCornerLine - currentIndex) < m_filterProperties.maxLineWidth))
+                {
+										int y = *nline ;
+										int x = tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
+											m_filterProperties.ROIOffsetX);
+
+										printf("x: %d, y: %d\n", x, y);
+										//linePoints.at<uchar>(y, x) = 255;
+										cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
+
+                    detectedLinePoints.push_back(cPoint(tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
+                        m_filterProperties.ROIOffsetX), *nline));
+
+                    detectedStartCornerLine = tFalse;
+                    columnStartCornerLine = 0;
+                }
+            }
+            //we reached maximum line width limit, stop looking for end of line
+            if (detectedStartCornerLine &&
+                abs(columnStartCornerLine - currentIndex) > m_filterProperties.maxLineWidth)
+            {
+                detectedStartCornerLine = tFalse;
+                columnStartCornerLine = 0;
+            }
+            ucLastVal = ucCurrentVal;
+        }
+    }
+
+    RETURN_NOERROR;
 }
 
 tResult cLaneDetection::transmitGCL(const vector<tInt>& detectionLines, const vector<cPoint>& detectedLinePoints)

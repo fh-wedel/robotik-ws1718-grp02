@@ -207,6 +207,26 @@ public:
 
 private: // private methods
 
+    /*!
+     * Searches for the lanes.
+     *
+     * \param           detectionLines      The detection lines.
+     * \param           image               The image.
+     * \param [in,out]  detectedLinePoints  The left lane pixels.
+     * \return  Returns a standard result code.
+     *
+     */
+    tResult findLinePoints(const vector<tInt>& detectionLines, const cv::Mat& image, vector <cPoint>& detectedLinePoints);
+
+    /*!
+     * Gets detection lines.
+     *
+     * \param [in,out]  detectionLines  The detection lines.
+     *
+     * \return  The detection lines.
+     */
+     tResult getDetectionLines(vector<tInt>& detectionLines);
+
     /*! function to set the m_sProcessFormat and the  m_sInputFormat variables
     *   \param pFormat the new format for the input pin
     *   \return Standard Result Code.

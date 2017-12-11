@@ -90,6 +90,7 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 
 	cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(0, 10, 3, false);
 	canny->detect(image, contours);
+	//image.copyTo(contours);
 
 	//--------------perspective warp------------------
 	cv::Mat transform_matrix;
@@ -118,13 +119,13 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 	dest_points[3] = cv::Point2f(contours.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
-	cv::cuda::GpuMat contoursWarped;
+	/*cv::cuda::GpuMat contoursWarped;
 	cv::cuda::warpPerspective(
 		contours,
 		contoursWarped,
 		transform_matrix,
 		contours.size()
-	);
+	);*/
 
 	//---------------hough transformation---------------------------
 	cv::cuda::GpuMat GpuMatLines;
@@ -132,12 +133,12 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 
 	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, houghThresh);
 
-	hough->detect(contoursWarped, GpuMatLines);
+	hough->detect(contours, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);
 
 	// Create our final mat on GPU and write the contours to it.
 	cv::cuda::GpuMat result(image.size(), CV_8U);
-	contoursWarped.copyTo(result);
+	contours.copyTo(result);
 
 	// Cluster the detected hough lines and draw them onto the mat
 	//
@@ -154,6 +155,7 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 
 		float rho = (*it)[0];   // first element is distance rho
 		float theta = (*it)[1]; // second element is angle theta
+		float weight = (*it)[2];
 
 
     // point of intersection of the line with first row
@@ -161,7 +163,7 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 		// point of intersection of the line with last row
 		cv::Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
 		// draw a line: Color = Scalar(R, G, B), thickness
-		cv::line(out, pt1, pt2, cv::Scalar(255, 255, 255), 3);
+		cv::line(out, pt1, pt2, cv::Scalar(255, 255, 255), weight / 2.0f);
 
 		++it;
 	}
