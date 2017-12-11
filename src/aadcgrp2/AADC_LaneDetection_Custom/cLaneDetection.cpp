@@ -294,7 +294,7 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 
 			//find the lines in image and calculate the desired steering angle
 			tFloat32 angle = -1;
-			bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
+			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
 			printf("Winkel %f\n", angle);
 			transmitValue(angle);
 		}

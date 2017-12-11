@@ -40,15 +40,15 @@
   </folder>
   <folder name="windows">
    <folder Height="366" PosX="-6" PosY="0" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Floating="true" Height="500" PosX="1401" PosY="24" Visible="true" Width="698" name="Lane_Detection_Display" />
-   <folder Floating="true" Height="500" PosX="2101" PosY="24" Visible="true" Width="698" name="Realsense_RGB_Proc_Display" />
+   <folder Floating="true" Height="500" PosX="0" PosY="184" Visible="false" Width="698" name="Lane_Detection_Display" />
+   <folder Floating="true" Height="500" PosX="669" PosY="199" Visible="false" Width="698" name="Realsense_RGB_Proc_Display" />
   </folder>
  </folder>
  <folder name="Live2">
   <folder name="windows">
    <folder Height="340" Visible="false" Width="717" name="AADC_Sensor_Visualization" />
-   <folder Floating="true" Height="285" PosX="698" PosY="158" TopOfMain="true" Visible="true" Width="537" name="Hough_Display" />
-   <folder Floating="true" Height="290" PosX="631" PosY="420" TopOfMain="true" Visible="true" Width="532" name="RGB_Display" />
+   <folder Floating="true" Height="285" PosX="705" PosY="218" TopOfMain="true" Visible="true" Width="537" name="Hough_Display" />
+   <folder Floating="true" Height="290" PosX="699" PosY="546" TopOfMain="true" Visible="true" Width="532" name="RGB_Display" />
   </folder>
   <folder name="components">
    <folder name="FilterTraceView" />
@@ -59,12 +59,9 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="396" Minimized="true" Visible="true" Width="304" name="Live-AADC_Car_Controller" />
-   <folder Height="510" Minimized="true" Visible="true" Width="304" name="Live-AADC_Driver_Module" />
-   <folder Height="340" Minimized="false" Visible="true" Width="717" name="Live-AADC_Sensor_Visualization" />
-   <folder Height="548" Minimized="false" PosX="-129" PosY="79" Visible="false" Width="784" name="Live-Realsense_RGB_Proc_Display" />
-   <folder Height="548" Minimized="false" PosX="-152" PosY="31" Visible="false" Width="784" name="Live-Realsense_Depth_Display" />
-   <folder Height="548" Minimized="false" PosX="-158" PosY="35" Visible="true" Width="784" name="Live-RearCam_Display" />
+   <folder Height="340" Visible="true" Width="717" name="Live2-AADC_Sensor_Visualization" />
+   <folder Height="548" Visible="true" Width="784" name="Live2-Hough_Display" />
+   <folder Height="645" PosX="145" PosY="54" Visible="true" Width="1081" name="Live2-RGB_Display" />
   </folder>
  </folder>
  <folder name="Marker_Detection">

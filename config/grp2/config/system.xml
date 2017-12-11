@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Marker_Detection" />
+  <property name="active_configuration" type="String" value="Wheel_Converter" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -110,7 +110,7 @@
    <graph>
     <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="1">
      <settings>
-      <property name="filename" type="String" value="../../../../Desktop/recording/unten_try3_split_000.dat" />
+      <property name="filename" type="String" value="../../../../Desktop/recording/unten_try3_split_001.dat" />
      </settings>
     </filter>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="1">
@@ -176,13 +176,13 @@
       <property name="trace_external_clocks" type="Bool" value="false" />
      </settings>
     </filter>
-    <connection connection_priority="50" dest="Harddisk_Recorder.UltrasonicStruct" interface="" source="Live.UltrasonicStruct" />
-    <connection connection_priority="50" dest="Harddisk_Recorder.InerMeasUnitStruct" interface="" source="Live.InerMeasUnitStruct" />
-    <connection connection_priority="50" dest="Harddisk_Recorder.WheelLeftStruct" interface="" source="Live.WheelLeftStruct" />
-    <connection connection_priority="50" dest="Harddisk_Recorder.WheelRightStruct" interface="" source="Live.WheelRightStruct" />
-    <connection connection_priority="50" dest="Harddisk_Recorder.VoltageStruct" interface="" source="Live.VoltageStruct" />
-    <subgraph alias="Live" idref="Live" priority="2" />
-    <connection connection_priority="50" dest="Harddisk_Recorder.Realsense_RGB" interface="" source="Live.Realsense_outputRGB" />
+    <subgraph alias="Live2" idref="Live2" priority="2" />
+    <connection connection_priority="50" dest="Harddisk_Recorder.InerMeasUnitStruct" interface="" source="Live2.InerMeasUnitStruct" />
+    <connection connection_priority="50" dest="Harddisk_Recorder.UltrasonicStruct" interface="" source="Live2.UltrasonicStruct" />
+    <connection connection_priority="50" dest="Harddisk_Recorder.WheelLeftStruct" interface="" source="Live2.WheelLeftStruct" />
+    <connection connection_priority="50" dest="Harddisk_Recorder.WheelRightStruct" interface="" source="Live2.WheelRightStruct" />
+    <connection connection_priority="50" dest="Harddisk_Recorder.VoltageStruct" interface="" source="Live2.VoltageStruct" />
+    <connection connection_priority="50" dest="Harddisk_Recorder.Realsense_RGB" interface="" source="Live2.rgb" />
    </graph>
   </configuration>
   <configuration description="" name="Lane_Detection">
@@ -235,13 +235,16 @@
     <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="5">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
+      <property name="PID::Maxiumum output" type="Float" value="10.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
     <connection connection_priority="50" dest="Felix_LinearFunction.input" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="Felix_LinearFunction" />
-    <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="5" />
+    <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="5">
+     <settings />
+    </filter>
     <filter alias="Float_Value_Generator2" idref="adtf.aadc.FloatValueGenerator" priority="6">
      <settings>
       <property name="outputValue" type="Float" value="0,1.0" />
@@ -270,7 +273,9 @@
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="AADC_Arduino_Communication.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="AADC_Arduino_Communication.WheelRightStruct" />
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="2">
-     <settings />
+     <settings>
+      <property name="outputValue" type="Float" value="0,5.0" />
+     </settings>
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="3">
@@ -289,6 +294,8 @@
       <property name="PID::Kp_value" type="Float" value="0.0" />
       <property name="Controller Typ" type="Int" value="3" />
       <property name="PID::Kd_value" type="Float" value="0.0" />
+      <property name="PID::Maxiumum output" type="Float" value="10.0" />
+      <property name="PID::Minimum output" type="Float" value="-100.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
@@ -337,9 +344,6 @@
     <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="7">
      <settings />
     </filter>
-    <connection connection_priority="50" dest="Felix_MedianFilter.input" interface="" source="AADC_Lane_Detection_Custom.steeringAngle" />
-    <connection connection_priority="50" dest="Base_Config.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
-    <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="Felix_MedianFilter" />
     <connection connection_priority="50" dest="AADC_Lane_Detection_Custom.Video_Input" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
     <filter alias="Hough_Display" idref="adtf.visual.video_display" priority="8" />
     <connection connection_priority="50" dest="Hough_Display.input" interface="" source="AADC_Lane_Detection_Custom.Video_Output_Debug" />
@@ -350,6 +354,11 @@
     </filter>
     <filter alias="RGB_Display" idref="adtf.visual.video_display" priority="10" />
     <connection connection_priority="50" dest="RGB_Display.input" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
+    <connection connection_priority="50" dest="Felix_MedianFilter.input" interface="" source="AADC_Lane_Detection_Custom.steeringAngle" />
+    <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="Felix_MedianFilter" />
+    <connection connection_priority="50" dest="Base_Config.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
+    <outport alias="rgb" />
+    <connection connection_priority="50" dest="rgb" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
    </graph>
   </configuration>
  </configurations>
