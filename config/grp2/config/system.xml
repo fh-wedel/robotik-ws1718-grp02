@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Playback" />
+  <property name="active_configuration" type="String" value="Marker_Detection" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -218,33 +218,37 @@
   </configuration>
   <configuration description="" name="Marker_Detection">
    <graph>
-    <filter alias="Basler_RGB_Marker_Display" idref="adtf.visual.video_display" priority="21">
+    <filter alias="Felix_LinearFunction" idref="adtf.aadc.felix.LinearFunction" priority="2">
      <settings>
-      <property name="active" type="Bool" value="true" />
+      <property name="Gain::Gain" type="Float" value="0,1.0" />
+      <property name="Gain::OverwriteGain" type="Bool" value="true" />
      </settings>
     </filter>
-    <filter alias="AADC_Marker_Detector" idref="adtf.aadc.markerDetector" priority="9">
+    <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="3">
      <settings>
-      <property name="Calibration File for used Camera" type="String" value="../../../configuration_files/basler_afterFisheye_intrinsic_calibration.yml" />
-      <property name="Detector Paramater File" type="String" value="../../../configuration_files/detector_params.yml" />
-      <property name="Size of Markers" type="Float" value="0,117.0" />
+      <property name="outputValue" type="Float" value="1.0" />
      </settings>
     </filter>
-    <connection connection_priority="50" dest="Basler_RGB_Marker_Display.gcl_input" interface="" source="AADC_Marker_Detector.GCL_Markers" />
-    <filter alias="AADC_Realsense_Camera" idref="adtf.aadc.aadc_realsense" priority="3">
-     <settings>
-      <property name="ColourStream::Colour Stream FPS" type="Int" value="60" />
-      <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-      <property name="Enable Infrared 1 Stream" type="Bool" value="true" />
-      <property name="Enable Infrared 2 Stream" type="Bool" value="true" />
-     </settings>
-    </filter>
-    <connection connection_priority="50" dest="AADC_Marker_Detector.Video_RGB_input" interface="" source="AADC_Realsense_Camera.outputRGB" />
-    <connection connection_priority="50" dest="Basler_RGB_Marker_Display.input" interface="" source="AADC_Realsense_Camera.outputRGB" />
-    <filter alias="AADC_Marker_Evaluator" idref="adtf.aadc.markerEvaluator" priority="4">
+    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="4">
      <settings />
     </filter>
-    <connection connection_priority="50" dest="AADC_Marker_Evaluator.Road_Sign" interface="" source="AADC_Marker_Detector.RoadSign" />
+    <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="5">
+     <settings>
+      <property name="Debug Mode" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
+    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
+    <connection connection_priority="50" dest="Felix_LinearFunction.input" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
+    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="Felix_LinearFunction" />
+    <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="5" />
+    <filter alias="Float_Value_Generator2" idref="adtf.aadc.FloatValueGenerator" priority="6">
+     <settings>
+      <property name="outputValue" type="Float" value="0,1.0" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="Float_Value_Generator2.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger2.WatchdogAliveSignal" />
+    <connection connection_priority="50" dest="Felix_LinearFunction.gain" interface="" source="Float_Value_Generator2.floatValue" />
    </graph>
   </configuration>
   <configuration description="" name="Wheel_Converter">

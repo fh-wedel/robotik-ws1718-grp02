@@ -73,6 +73,7 @@ cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__in
     SetPropertyStr(WSC_PROP_PID_MINOUTPUT NSSUBPROP_DESCRIPTION, "The minimum allowed output for the wheel speed controller (speed in m/sec^2)");
 
     SetPropertyBool(WSC_PROP_DEBUG_MODE, tFalse);
+    SetPropertyBool(WSC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are written to output");
 
     //m_pISignalRegistry = NULL;
@@ -226,6 +227,8 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
         if (pSource == &m_oInputMeasWheelSpeed) {
 
+          // Receive new measured Speed
+
             //write values with zero
             tFloat32 f32Value = 0;
             tUInt32 Ui32TimeStamp = 0;
@@ -262,6 +265,8 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
                 m_f64LastOutput = getControllerValue(f32Value);
             }
 
+            // Send signal to controller
+
             //create new media sample
             cObjectPtr<IMediaSample> pNewMediaSample;
             AllocMediaSample((tVoid**)&pNewMediaSample);
@@ -290,7 +295,11 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
             //transmit media sample over output pin
             RETURN_IF_FAILED(pNewMediaSample->SetTime(_clock->GetStreamTime()));
             RETURN_IF_FAILED(m_oOutputActuator.Transmit(pNewMediaSample));
+
         } else if (pSource == &m_oInputSetWheelSpeed) {
+
+          // Receive new target Speed
+
             //write values with zero
             tFloat32 f32Value = 0;
             tUInt32 ui32TimeStamp = 0;
@@ -314,7 +323,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
             m_f64SetPoint = static_cast<tFloat64>(f32Value);
         }
     }
-    
+
     RETURN_NOERROR;
 }
 
@@ -339,7 +348,7 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
 
     //algorithm:
     //esum = esum + e
-    //y = Kp * e + Ki * Ta * esum + Kd * (e � ealt)/Ta
+    //y = Kp * e + Ki * Ta * esum + Kd * (e - ealt) / deltaT
     //ealt = e
 
     // accumulated error (in m/s):
@@ -359,7 +368,9 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
     }
 
     // checking for minimum and maximum limits
-    f64Result = min(m_f64PIDMaximumOutput, max(m_f64PIDMinimumOutput, f64Result));
+    //f64Result = min(m_f64PIDMaximumOutput, max(m_f64PIDMinimumOutput, f64Result));
+    if(f64Result > m_f64PIDMaximumOutput) f64Result = m_f64PIDMaximumOutput;
+    if(f64Result < m_f64PIDMinimumOutput) f64Result = m_f64PIDMinimumOutput;
 
     if (m_bShowDebug) {
         std::cout << "Output Value after limit " << f64Result  << '\n';

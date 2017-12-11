@@ -67,4 +67,9 @@
    <folder Height="548" Minimized="false" PosX="-158" PosY="35" Visible="true" Width="784" name="Live-RearCam_Display" />
   </folder>
  </folder>
+ <folder name="Marker_Detection">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+ </folder>
 </adtf:export>
