@@ -355,10 +355,12 @@ tFloat32 cConverterWheels::calculateSpeed(const tUInt32 &ui32CurrentTimeStamp, c
     //          circumference      SlotsInTimeDiff
     // speed =  -------------- *  -------------
     //           TotalSlots*          TimeDiff
-    return (m_f32wheelCircumference /
-			     CW_SLOT_COUNT
-										                  * static_cast<tFloat32>(ui32Ticks)) /
-											                (static_cast<tFloat32>(ui32CurrentTimeStamp - ui32LastTimeStamp) / static_cast<tFloat32>(1e6)) * (m_szIDWheelDataLeftI8WheelDir = 0 ? -1 : 1);
+    tFloat32 speed =  (m_f32wheelCircumference /
+			                 CW_SLOT_COUNT
+										                          * static_cast<tFloat32>(ui32Ticks)) /
+											                         (static_cast<tFloat32>(ui32CurrentTimeStamp - ui32LastTimeStamp) / static_cast<tFloat32>(1e6)) * (m_szIDWheelDataLeftI8WheelDir = 0 ? -1 : 1);
+    printf("Current Speed: %f\n", speed);
+    return speed;
 }
 
 tResult cConverterWheels::TransmitSamples()

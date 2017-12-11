@@ -2,13 +2,47 @@
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
   <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="1" zoomfactor="1,000000">
-   <component height="194" name="Harddisk_Player" width="172" x="16" y="48">
+   <component height="74" name="Table_Display" width="172" x="226" y="735">
+    <input_pin name="WheelLeftStruct" />
+   </component>
+   <component height="122" name="Felix_LinearFunction" width="172" x="1182" y="555">
+    <input_pin name="input" />
+    <input_pin name="gain" />
+    <input_pin name="offset" />
+    <output_pin name="output" />
+   </component>
+   <component height="74" name="Float_Value_Generator" width="172" x="760" y="537">
+    <input_pin name="WatchdogAlive" />
+    <output_pin name="floatValue" />
+   </component>
+   <component height="74" name="AADC_Watchdog_Trigger2" width="172" x="686" y="449">
+    <output_pin name="WatchdogAliveSignal" />
+   </component>
+   <component height="98" name="Franz_Wheel_Speed_Controller" width="238" x="914" y="621">
+    <input_pin name="set_WheelSpeed" />
+    <input_pin name="measured_wheelSpeed" />
+    <output_pin name="actuator_output" />
+   </component>
+   <component height="170" name="AADC_Converter_Wheels_Custom_" width="280" x="400" y="552">
+    <input_pin name="SpeedController_Struct" />
+    <input_pin name="WheelLeft_Struct" />
+    <input_pin name="WheelRight_Struct" />
+    <output_pin name="WheelLeft_StructPlaus" />
+    <output_pin name="WheelRight_StructPlaus" />
+    <output_pin name="car_speed" />
+    <output_pin name="distance_lastSample" />
+    <output_pin name="distance_overall" />
+   </component>
+   <component height="266" name="Harddisk_Player" width="172" x="16" y="48">
     <output_pin name="InerMeasUnitStruct" />
-    <output_pin name="Realsense_RGB" />
     <output_pin name="UltrasonicStruct" />
     <output_pin name="VoltageStruct" />
     <output_pin name="WheelLeftStruct" />
     <output_pin name="WheelRightStruct" />
+    <output_pin name="Realsense_DepthRaw" />
+    <output_pin name="Realsense_DepthVis" />
+    <output_pin name="Realsense_outputRGB" />
+    <output_pin name="RearView_outputRGB" />
     <property name="alias" type="string" value="Harddisk_Player" />
     <property name="ask_for_references" type="bool" value="false" />
     <property name="cached_sectors" type="int" value="2048" />
@@ -21,7 +55,7 @@
     <property name="emulate_external_clocks" type="bool" value="true" />
     <property name="enable_loop_mode" type="bool" value="false" />
     <property name="enable_perf_log" type="bool" value="false" />
-    <property name="filename" timestamp="212379288032000000" type="file" value="/home/aadc/Desktop/recording/unten_try3_split_000.dat" />
+    <property name="filename" type="file" value="/media/aadc/Samsung_T5/AADC/Beschleunigen_split_000.dat" />
     <property name="Identifier" type="string" value="adtf.stg.harddisk_player" />
     <property name="idref" type="string" value="adtf.stg.harddisk_player" />
     <property name="ignore_unkown_classes" type="bool" value="false" />
@@ -101,13 +135,20 @@
     <input_pin name="WheelRightStruct" />
     <input_pin name="VoltageStruct" />
    </component>
-   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="Realsense_RGB" x_p2="204" x_p3="204" x_p4="264" x_p5="264" y_p2="0" y_p3="431" y_p4="431" y_p5="0" />
+   <connection dest="Table_Display" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelLeftStruct" x_p2="212" x_p3="212" x_p4="214" x_p5="214" y_p2="0" y_p3="777" y_p4="777" y_p5="0" />
+   <connection dest="Felix_LinearFunction" dest_pin="input" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1164" x_p3="1164" x_p4="1170" x_p5="1170" y_p2="0" y_p3="597" y_p4="597" y_p5="0" />
+   <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="1" source="AADC_Watchdog_Trigger2" source_pin="WatchdogAliveSignal" x_p2="870" x_p3="870" x_p4="748" x_p5="748" y_p2="491" y_p3="535" y_p4="535" y_p5="579" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="1" source="Float_Value_Generator" source_pin="floatValue" x_p2="944" x_p3="944" x_p4="902" x_p5="902" y_p2="579" y_p3="621" y_p4="621" y_p5="663" />
+   <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelRight_Struct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelRightStruct" x_p2="216" x_p3="216" x_p4="380" x_p5="380" y_p2="0" y_p3="674" y_p4="674" y_p5="0" />
+   <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelLeft_Struct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelLeftStruct" x_p2="212" x_p3="212" x_p4="384" x_p5="384" y_p2="0" y_p3="634" y_p4="634" y_p5="0" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="3" source="AADC_Converter_Wheels_Custom_" source_pin="car_speed" x_p2="700" x_p3="700" x_p4="898" x_p5="898" y_p2="0" y_p3="687" y_p4="687" y_p5="0" />
+   <connection dest="AADC_Lane_Detection_Custom2" dest_pin="Video_Input" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="Realsense_outputRGB" x_p2="232" x_p3="232" x_p4="251" x_p5="251" y_p2="0" y_p3="71" y_p4="71" y_p5="0" />
+   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="Realsense_outputRGB" x_p2="232" x_p3="232" x_p4="264" x_p5="264" y_p2="0" y_p3="431" y_p4="431" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelRightStruct" x_p2="220" x_p3="220" x_p4="234" x_p5="234" y_p2="0" y_p3="300" y_p4="300" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelLeftStruct" x_p2="216" x_p3="216" x_p4="238" x_p5="238" y_p2="0" y_p3="276" y_p4="276" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="VoltageStruct" x_p2="212" x_p3="212" x_p4="230" x_p5="230" y_p2="0" y_p3="324" y_p4="324" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="UltrasonicStruct" x_p2="208" x_p3="208" x_p4="246" x_p5="246" y_p2="0" y_p3="228" y_p4="228" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="InerMeasUnitStruct" x_p2="200" x_p3="200" x_p4="242" x_p5="242" y_p2="0" y_p3="252" y_p4="252" y_p5="0" />
-   <connection dest="AADC_Lane_Detection_Custom2" dest_pin="Video_Input" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="Realsense_RGB" x_p2="204" x_p3="204" x_p4="233" x_p5="233" y_p2="0" y_p3="71" y_p4="71" y_p5="0" />
    <connection dest="Lane_Detection_Display" dest_pin="gcl_input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom2" source_pin="GCL" x_p2="480" x_p3="480" x_p4="511" x_p5="511" y_p2="0" y_p3="209" y_p4="209" y_p5="0" />
    <connection dest="Lane_Detection_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom2" source_pin="Video_Output_Debug" x_p2="476" x_p3="476" x_p4="515" x_p5="515" y_p2="0" y_p3="185" y_p4="185" y_p5="0" />
    <connection dest="Felix_AngleToServo_Converter" dest_pin="angle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="709" x_p3="709" x_p4="709" x_p5="709" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
@@ -116,21 +157,27 @@
    <connection dest="AADC_Arduino_Communication" dest_pin="SteeringController" reldiff="0" shape_type="3" source="Felix_AngleToServo_Converter" source_pin="servoValue" x_p2="938" x_p3="938" x_p4="938" x_p5="938" y_p2="0" y_p3="104" y_p4="104" y_p5="0" />
   </configuration>
   <configuration horizontal_scrollbar_value="1" name="Recording" show="true" tab_pos="1" vertical_scrollbar_value="1" zoomfactor="1,000000">
-   <component height="194" name="Live2" width="172" x="71" y="78" />
-   <component height="218" name="Harddisk_Recorder" width="172" x="416" y="77">
+   <component height="266" name="Live" width="172" x="74" y="82" />
+   <component height="290" name="Harddisk_Recorder" width="172" x="416" y="77">
     <input_pin name="UltrasonicStruct" />
     <input_pin name="InerMeasUnitStruct" />
     <input_pin name="WheelLeftStruct" />
     <input_pin name="WheelRightStruct" />
     <input_pin name="VoltageStruct" />
-    <input_pin name="Realsense_RGB" />
+    <input_pin name="Realsense_outputRGB" />
+    <input_pin name="RearView_outputRGB" />
+    <input_pin name="Realsense_DepthRaw" />
+    <input_pin name="Realsense_DepthVis" />
    </component>
-   <connection dest="Harddisk_Recorder" dest_pin="Realsense_RGB" reldiff="0" shape_type="3" source="Live2" source_pin="rgb" x_p2="275" x_p3="275" x_p4="347" x_p5="347" y_p2="0" y_p3="239" y_p4="239" y_p5="0" />
-   <connection dest="Harddisk_Recorder" dest_pin="VoltageStruct" reldiff="0" shape_type="3" source="Live2" source_pin="VoltageStruct" x_p2="271" x_p3="271" x_p4="351" x_p5="351" y_p2="0" y_p3="215" y_p4="215" y_p5="0" />
-   <connection dest="Harddisk_Recorder" dest_pin="WheelRightStruct" reldiff="0" shape_type="3" source="Live2" source_pin="WheelRightStruct" x_p2="267" x_p3="267" x_p4="355" x_p5="355" y_p2="0" y_p3="191" y_p4="191" y_p5="0" />
-   <connection dest="Harddisk_Recorder" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="Live2" source_pin="WheelLeftStruct" x_p2="263" x_p3="263" x_p4="359" x_p5="359" y_p2="0" y_p3="167" y_p4="167" y_p5="0" />
-   <connection dest="Harddisk_Recorder" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Live2" source_pin="UltrasonicStruct" x_p2="255" x_p3="255" x_p4="267" x_p5="267" y_p2="0" y_p3="119" y_p4="119" y_p5="0" />
-   <connection dest="Harddisk_Recorder" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="Live2" source_pin="InerMeasUnitStruct" x_p2="259" x_p3="259" x_p4="259" x_p5="259" y_p2="0" y_p3="143" y_p4="143" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="Realsense_DepthVis" reldiff="0" shape_type="4" source="Live" source_pin="Realsense_DepthVis" x_p2="290" x_p3="290" x_p4="372" x_p5="372" y_p2="0" y_p3="311" y_p4="311" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="Realsense_DepthRaw" reldiff="0" shape_type="4" source="Live" source_pin="Realsense_DepthRaw" x_p2="286" x_p3="286" x_p4="376" x_p5="376" y_p2="0" y_p3="287" y_p4="287" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="RearView_outputRGB" reldiff="0" shape_type="4" source="Live" source_pin="RearView_outputRGB" x_p2="282" x_p3="282" x_p4="380" x_p5="380" y_p2="0" y_p3="263" y_p4="263" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="Realsense_outputRGB" reldiff="0" shape_type="4" source="Live" source_pin="Realsense_outputRGB" x_p2="278" x_p3="278" x_p4="384" x_p5="384" y_p2="0" y_p3="239" y_p4="239" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="Live" source_pin="VoltageStruct" x_p2="274" x_p3="274" x_p4="388" x_p5="388" y_p2="0" y_p3="215" y_p4="215" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="WheelRightStruct" reldiff="0" shape_type="4" source="Live" source_pin="WheelRightStruct" x_p2="270" x_p3="270" x_p4="392" x_p5="392" y_p2="0" y_p3="191" y_p4="191" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="WheelLeftStruct" reldiff="0" shape_type="4" source="Live" source_pin="WheelLeftStruct" x_p2="266" x_p3="266" x_p4="396" x_p5="396" y_p2="0" y_p3="167" y_p4="167" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="4" source="Live" source_pin="InerMeasUnitStruct" x_p2="262" x_p3="262" x_p4="400" x_p5="400" y_p2="0" y_p3="143" y_p4="143" y_p5="0" />
+   <connection dest="Harddisk_Recorder" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Live" source_pin="UltrasonicStruct" x_p2="258" x_p3="258" x_p4="404" x_p5="404" y_p2="0" y_p3="119" y_p4="119" y_p5="0" />
   </configuration>
   <configuration horizontal_scrollbar_value="1" name="Base_Config" show="true" tab_pos="2" vertical_scrollbar_value="1" zoomfactor="0,833333">
    <component height="50" name="UltrasonicStruct" width="106" x="768" y="32" />
@@ -346,7 +393,8 @@
    <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="UltrasonicStruct" x_p2="1356" x_p3="1356" x_p4="1666" x_p5="1666" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
   </configuration>
   <configuration horizontal_scrollbar_value="1" name="Live" show="true" tab_pos="6" vertical_scrollbar_value="1" zoomfactor="0,694444">
-   <component height="50" name="Realsense_DepthRaw" width="135" x="1083" y="355" />
+   <component height="50" name="Realsense_DepthVis" width="128" x="1107" y="390" />
+   <component height="50" name="Realsense_DepthRaw" width="135" x="1107" y="337" />
    <component height="50" name="RearView_outputRGB" width="133" x="252" y="1172" />
    <component height="50" name="Realsense_outputRGB" width="138" x="1076" y="288" />
    <component height="50" name="VoltageStruct" width="91" x="935" y="721" />
@@ -355,9 +403,10 @@
    <component height="50" name="InerMeasUnitStruct" width="126" x="935" y="967" />
    <component height="50" name="UltrasonicStruct" width="106" x="935" y="1049" />
    <component height="482" name="Base_Config" width="304" x="342" y="234" />
-   <component height="98" name="AADC_Realsense_Camera" width="172" x="800" y="273">
+   <component height="122" name="AADC_Realsense_Camera_Felix" width="195" x="784" y="290">
     <output_pin name="outputRGB" />
     <output_pin name="outputDepthRaw" />
+    <output_pin name="outputDepthVisualization" />
    </component>
    <component height="98" name="GRP2_Test_Filter" width="184" x="509" y="1228">
     <input_pin name="Video_Input" />
@@ -407,11 +456,6 @@
     <input_pin name="WheelRightStruct" />
     <input_pin name="VoltageStruct" />
    </component>
-   <component height="98" name="Realsense_Depth_Display" width="172" x="845" y="84">
-    <input_pin name="input" />
-    <input_pin name="gcl_input" />
-    <output_pin name="video_output" />
-   </component>
    <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="1348" y="284">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -420,9 +464,10 @@
    <component height="74" name="AADC_Watchdog_Trigger" width="172" x="50" y="592">
     <output_pin name="WatchdogAliveSignal" />
    </component>
-   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="984" x_p3="984" x_p4="1336" x_p5="1336" y_p2="0" y_p3="326" y_p4="326" y_p5="0" />
-   <connection dest="" dest_pin="Realsense_DepthRaw" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputDepthRaw" x_p2="988" x_p3="988" x_p4="989" x_p5="989" y_p2="0" y_p3="368" y_p4="368" y_p5="0" />
-   <connection dest="" dest_pin="Realsense_outputRGB" reldiff="0" shape_type="4" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="984" x_p3="984" x_p4="1064" x_p5="1064" y_p2="0" y_p3="301" y_p4="301" y_p5="0" />
+   <connection dest="" dest_pin="Realsense_DepthVis" reldiff="0" shape_type="3" source="AADC_Realsense_Camera_Felix" source_pin="outputDepthVisualization" x_p2="999" x_p3="999" x_p4="1144" x_p5="1144" y_p2="0" y_p3="403" y_p4="403" y_p5="0" />
+   <connection dest="" dest_pin="Realsense_DepthRaw" reldiff="0" shape_type="4" source="AADC_Realsense_Camera_Felix" source_pin="outputDepthRaw" x_p2="995" x_p3="995" x_p4="1108" x_p5="1108" y_p2="0" y_p3="350" y_p4="350" y_p5="0" />
+   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="4" source="AADC_Realsense_Camera_Felix" source_pin="outputRGB" x_p2="991" x_p3="991" x_p4="1321" x_p5="1321" y_p2="0" y_p3="326" y_p4="326" y_p5="0" />
+   <connection dest="" dest_pin="Realsense_outputRGB" reldiff="0" shape_type="4" source="AADC_Realsense_Camera_Felix" source_pin="outputRGB" x_p2="991" x_p3="991" x_p4="1103" x_p5="1103" y_p2="0" y_p3="301" y_p4="301" y_p5="0" />
    <connection dest="RearCam_Display" dest_pin="input" reldiff="0" shape_type="4" source="GRP2_Test_Filter" source_pin="Video_Output" x_p2="705" x_p3="705" x_p4="710" x_p5="710" y_p2="0" y_p3="1269" y_p4="1269" y_p5="0" />
    <connection dest="GRP2_Test_Filter" dest_pin="UltrasonicStruct" reldiff="0" shape_type="1" source="Base_Config" source_pin="UltrasonicStruct" x_p2="726" x_p3="726" x_p4="289" x_p5="289" y_p2="684" y_p3="1014" y_p4="1014" y_p5="1294" />
    <connection dest="GRP2_Test_Filter" dest_pin="Video_Input" reldiff="0" shape_type="3" source="RearCam" source_pin="output" x_p2="217" x_p3="217" x_p4="223" x_p5="223" y_p2="0" y_p3="1270" y_p4="1270" y_p5="0" />
