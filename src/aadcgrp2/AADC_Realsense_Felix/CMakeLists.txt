@@ -1,6 +1,6 @@
 # declare our filter
 if(UNIX)
-	set(FILTER_NAME aadc_realsensefilter)
+	set(FILTER_NAME aadc_felix_realsensefilter)
 
 	# add the include directory of the filter
 	include_directories(/home/aadc/ADTF/include

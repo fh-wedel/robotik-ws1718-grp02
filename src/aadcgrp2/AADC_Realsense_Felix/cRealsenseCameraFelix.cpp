@@ -19,26 +19,26 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 #include "cRealsenseCameraFelix.h"
 
 
-const cString cRealsenseCamera::PropEnableDebugName = "Enable Debug Logging";
-const tBool cRealsenseCamera::PropEnableDebugDefault = false;
+const cString cRealsenseCameraFelix::PropEnableDebugName = "Enable Debug Logging";
+const tBool cRealsenseCameraFelix::PropEnableDebugDefault = false;
 
-const cString cRealsenseCamera::PropFPSDepthName = "DepthStream::Depth Stream FPS";
-const cString cRealsenseCamera::PropFPSColourName = "ColourStream::Colour Stream FPS";
-const int cRealsenseCamera::PropFPSDefault = 30;
+const cString cRealsenseCameraFelix::PropFPSDepthName = "DepthStream::Depth Stream FPS";
+const cString cRealsenseCameraFelix::PropFPSColourName = "ColourStream::Colour Stream FPS";
+const int cRealsenseCameraFelix::PropFPSDefault = 30;
 
-const cString cRealsenseCamera::PropResolutionDepthName = "DepthStream::Depth Stream Resolution";
-const cString cRealsenseCamera::PropResolutionColourName = "ColourStream::Colour Stream Resolution";
-const cString cRealsenseCamera::PropResolutionDefault = "640x480";
+const cString cRealsenseCameraFelix::PropResolutionDepthName = "DepthStream::Depth Stream Resolution";
+const cString cRealsenseCameraFelix::PropResolutionColourName = "ColourStream::Colour Stream Resolution";
+const cString cRealsenseCameraFelix::PropResolutionDefault = "640x480";
 
-const cString cRealsenseCamera::PropEnableColourName = "ColourStream::Enable Colour Stream";
-const cString cRealsenseCamera::PropEnableDepthName = "DepthStream::Enable Depth Stream";
-const tBool cRealsenseCamera::PropEnableStreamDefault = true;
+const cString cRealsenseCameraFelix::PropEnableColourName = "ColourStream::Enable Colour Stream";
+const cString cRealsenseCameraFelix::PropEnableDepthName = "DepthStream::Enable Depth Stream";
+const tBool cRealsenseCameraFelix::PropEnableStreamDefault = true;
 
 
 /// Create filter shell
-ADTF_FILTER_PLUGIN("AADC Realsense Camera Felix", OID_ADTF_REALSENSE_FILTER, cRealsenseCamera);
+ADTF_FILTER_PLUGIN("AADC Realsense Camera Felix", OID_ADTF_FELIX_REALSENSE_FILTER, cRealsenseCameraFelix);
 
-tResult cRealsenseCamera::PropertyChanged(const tChar* strName) {
+tResult cRealsenseCameraFelix::PropertyChanged(const tChar* strName) {
     RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
     //associate the properties to the member
     if (cString::IsEqual(strName, "Algorithm::minDepth"))
@@ -52,7 +52,7 @@ tResult cRealsenseCamera::PropertyChanged(const tChar* strName) {
 }
 
 
-cRealsenseCamera::cRealsenseCamera(const tChar* __info) :cFilter(__info), m_cameraFound(tFalse) {
+cRealsenseCameraFelix::cRealsenseCameraFelix(const tChar* __info) :cFilter(__info), m_cameraFound(tFalse) {
     // Setting Property for Debug Output
     SetPropertyBool(PropEnableDebugName, PropEnableDebugDefault);
     // Setting Properties for Framerates of Depth and Colour Stream
@@ -111,12 +111,12 @@ cRealsenseCamera::cRealsenseCamera(const tChar* __info) :cFilter(__info), m_came
 
 }
 
-cRealsenseCamera::~cRealsenseCamera()
+cRealsenseCameraFelix::~cRealsenseCameraFelix()
 {
 
 }
 /*
-void cRealsenseCamera::initStaticPins() {
+void cRealsenseCameraFelix::initStaticPins() {
 
     // Video Pin for RGB Video
     m_outputVideoRGB.Create("outputRGB", IPin::PD_Output, static_cast<IPinEventSink*>(this));
@@ -132,7 +132,7 @@ void cRealsenseCamera::initStaticPins() {
 }
 
 
-void cRealsenseCamera::initDynamicPins() {
+void cRealsenseCameraFelix::initDynamicPins() {
 
     // In this stage you would do further initialisation and/or create your dynamic pins.
     // Please take a look at the demo_dynamicpin example for further reference.
@@ -212,7 +212,7 @@ void cRealsenseCamera::initDynamicPins() {
 }
 
 
-tResult cRealsenseCamera::Init(tInitStage eStage, __exception) {
+tResult cRealsenseCameraFelix::Init(tInitStage eStage, __exception) {
     // never miss calling the parent implementation!!
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
 
@@ -239,7 +239,7 @@ tResult cRealsenseCamera::Init(tInitStage eStage, __exception) {
 
 
 
-tResult cRealsenseCamera::Init(tInitStage eStage, __exception)
+tResult cRealsenseCameraFelix::Init(tInitStage eStage, __exception)
 {
     // never miss calling the parent implementation!!
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
@@ -397,7 +397,7 @@ tResult cRealsenseCamera::Init(tInitStage eStage, __exception)
 }
 
 
-tResult cRealsenseCamera::Start(__exception) {
+tResult cRealsenseCameraFelix::Start(__exception) {
     if (m_cameraFound)
     {
         // Start the Camera
@@ -411,7 +411,7 @@ tResult cRealsenseCamera::Start(__exception) {
     return cFilter::Start(__exception_ptr);
 }
 
-tResult cRealsenseCamera::Stop(__exception) {
+tResult cRealsenseCameraFelix::Stop(__exception) {
     //suspend the thread
     if (m_Thread.GetState() == cKernelThread::TS_Running)
     {
@@ -426,7 +426,7 @@ tResult cRealsenseCamera::Stop(__exception) {
     return cFilter::Stop(__exception_ptr);
 }
 
-tResult cRealsenseCamera::Shutdown(tInitStage eStage, __exception) {
+tResult cRealsenseCameraFelix::Shutdown(tInitStage eStage, __exception) {
     // In each stage clean up everything that you initiaized in the corresponding stage during Init.
     // Pins are an exception:
     // - The base class takes care of static pins that are members of this class.
@@ -449,7 +449,7 @@ tResult cRealsenseCamera::Shutdown(tInitStage eStage, __exception) {
 }
 
 // Waits for the Streams to send a Frame
-tResult cRealsenseCamera::ThreadFunc(adtf::cKernelThread* Thread, tVoid* data, tSize size) {
+tResult cRealsenseCameraFelix::ThreadFunc(adtf::cKernelThread* Thread, tVoid* data, tSize size) {
     if (m_cameraFound) {
         // Waiting for the Frame
         m_dev->wait_for_frames();
@@ -474,7 +474,7 @@ tResult cRealsenseCamera::ThreadFunc(adtf::cKernelThread* Thread, tVoid* data, t
 
 // Automatically creates Property from Camera Options
 // Option Number is connected to enum of camera options provided by librealsense
-void cRealsenseCamera::CreateProperty(int OptionNumber) {
+void cRealsenseCameraFelix::CreateProperty(int OptionNumber) {
     // Savign the Min, Max, Step, and Default Values of the Option and putting them into the Description of the Property
     double min, max, step, def;
     cString name = OptionName(OptionNumber);
@@ -489,7 +489,7 @@ void cRealsenseCamera::CreateProperty(int OptionNumber) {
 }
 
 // Converting Raw Depth Data to Depth Visualization
-tResult cRealsenseCamera::ConvertDepth(void *pData) {
+tResult cRealsenseCameraFelix::ConvertDepth(void *pData) {
     cv::Mat depthImage = cv::Mat(
 	    cv::Size(m_BitmapFormatDepthOut.nWidth, m_BitmapFormatDepthOut.nHeight),
 	    CV_16U,
@@ -513,7 +513,7 @@ tResult cRealsenseCamera::ConvertDepth(void *pData) {
 }
 
 // Transmit Function for RGB Video
-tResult cRealsenseCamera::TransmitRGB(const void *pData) {
+tResult cRealsenseCameraFelix::TransmitRGB(const void *pData) {
     //Creating new media sample
     cObjectPtr<IMediaSample> pMediaSample;
     RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
@@ -528,7 +528,7 @@ tResult cRealsenseCamera::TransmitRGB(const void *pData) {
 }
 
 // Transmit Function for Raw Depth Data
-tResult cRealsenseCamera::TransmitDepthRaw(const void *pData) {
+tResult cRealsenseCameraFelix::TransmitDepthRaw(const void *pData) {
     //Creating new media sample
     cObjectPtr<IMediaSample> pMediaSample;
     RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
@@ -545,7 +545,7 @@ tResult cRealsenseCamera::TransmitDepthRaw(const void *pData) {
 }
 
 // Transmit Function for Visualized Depth Video
-tResult cRealsenseCamera::TransmitDepthVis(const void *pData) {
+tResult cRealsenseCameraFelix::TransmitDepthVis(const void *pData) {
     //Creating new media sample
     cObjectPtr<IMediaSample> pMediaSample;
     RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
@@ -561,7 +561,7 @@ tResult cRealsenseCamera::TransmitDepthVis(const void *pData) {
 
 
 // Returns int Height from cString Resolution
-int cRealsenseCamera::HeightOutOfResolution(cString Resolution) {
+int cRealsenseCameraFelix::HeightOutOfResolution(cString Resolution) {
     int Height = 0;
     if (Resolution == "1920x1080")
     {
@@ -583,7 +583,7 @@ int cRealsenseCamera::HeightOutOfResolution(cString Resolution) {
 }
 
 // Returns int Width from cString Resolution
-int cRealsenseCamera::WidthOutOfResolution(cString Resolution) {
+int cRealsenseCameraFelix::WidthOutOfResolution(cString Resolution) {
 
     int Width = 0;
     if (Resolution == "1920x1080")

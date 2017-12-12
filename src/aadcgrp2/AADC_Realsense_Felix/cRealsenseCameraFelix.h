@@ -16,10 +16,10 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 * $Author:: spiesra $  $Date:: 2017-05-16 10:06:17#$ $Rev:: 63289   $
 **********************************************************************/
 
-#ifndef _AADC_REALSENSE_FILTER_H_
-#define _AADC_REALSENSE_FILTER_H_
+#ifndef _AADC_FELIX_REALSENSE_FILTER_H_
+#define _AADC_FELIX_REALSENSE_FILTER_H_
 
-#define OID_ADTF_REALSENSE_FILTER "adtf.aadc.felix.aadc_realsense"
+#define OID_ADTF_FELIX_REALSENSE_FILTER "adtf.aadc.felix.aadc_realsense"
 
 #include "stdafx.h"
 #include "Realsensehelper.h"
@@ -80,10 +80,10 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 /*!
 * This is the main class of the Realsense Camera Filter
 */
-class cRealsenseCamera : public adtf::cFilter, adtf::IKernelThreadFunc
+class cRealsenseCameraFelix : public adtf::cFilter, adtf::IKernelThreadFunc
 {
     /*! set the filter id and version etc */
-    ADTF_DECLARE_FILTER_VERSION(OID_ADTF_REALSENSE_FILTER,
+    ADTF_DECLARE_FILTER_VERSION(OID_ADTF_FELIX_REALSENSE_FILTER,
         "AADC Realsense Camera Felix",
         OBJCAT_SensorDevice,
         "librealsense",
@@ -102,10 +102,10 @@ public:
     /*! constructor for Realsense class
         \param __info   [in] This is the name of the filter instance.
         */
-    cRealsenseCamera(const tChar* __info);
+    cRealsenseCameraFelix(const tChar* __info);
     /*! the destructor for this class
     */
-    virtual ~cRealsenseCamera();
+    virtual ~cRealsenseCameraFelix();
 
     /*! enables Debug output to Console */
     static const cString PropEnableDebugName;
@@ -294,4 +294,4 @@ private:
 
 
 //*************************************************************************************************
-#endif // _AADC_REALSENSE_FILTER_H_
+#endif // _AADC_FELIX_REALSENSE_FILTER_H_
