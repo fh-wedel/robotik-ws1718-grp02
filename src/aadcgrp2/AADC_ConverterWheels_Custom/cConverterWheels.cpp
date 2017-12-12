@@ -26,6 +26,8 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define CW_ERROR_DIFFERENCE_SIDES 0.30f
 #define CW_MIN_LIMIT_IGNORE 0.01f
 
+#define WSC_PROP_DEBUG_MODE "Debug Mode"
+
 ADTF_FILTER_PLUGIN("AADC Converter Wheels Custom", OID_ADTF_CONVERTER_WHEEL, cConverterWheels)
 
 cConverterWheels::cConverterWheels(const tChar* __info) : cFilter(__info)
@@ -46,6 +48,10 @@ cConverterWheels::cConverterWheels(const tChar* __info) : cFilter(__info)
     SetPropertyFloat("Filtering enabled" NSSUBPROP_REQUIRED, tTrue);
     SetPropertyStr("Filtering enabled" NSSUBPROP_DESCRIPTION, "Enables or disables the low pass filtering of speed result");
     SetPropertyBool("Filtering enabled" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    SetPropertyBool(WSC_PROP_DEBUG_MODE, tFalse);
+    SetPropertyBool(WSC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
+    SetPropertyStr(WSC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are written to output");
 }
 
 cConverterWheels::~cConverterWheels()
@@ -180,8 +186,17 @@ tResult cConverterWheels::OnPinEvent(    IPin* pSource, tInt nEventCode, tInt nP
                 m_tLastSpeedControllerValue.ui32ArduinoTimestamp = ui32Timestamp;
             }
         }
-        else if (pSource == &m_oInputWheelLeft)
+        else if (pSource == &m_oInputWheelLeft && false)
         {
+          // 888               .d888 888         888       888 888                        888      8888888b.  d8b                   888      888               888 888
+          // 888              d88P"  888         888   o   888 888                        888      888  "Y88b Y8P                   888      888               888 888
+          // 888              888    888         888  d8b  888 888                        888      888    888                       888      888               888 888
+          // 888      .d88b.  888888 888888      888 d888b 888 88888b.   .d88b.   .d88b.  888      888    888 888  8888b.  .d8888b  88888b.  888  .d88b.   .d88888 888
+          // 888     d8P  Y8b 888    888         888d88888b888 888 "88b d8P  Y8b d8P  Y8b 888      888    888 888     "88b 88K      888 "88b 888 d8P  Y8b d88" 888 888
+          // 888     88888888 888    888         88888P Y88888 888  888 88888888 88888888 888      888    888 888 .d888888 "Y8888b. 888  888 888 88888888 888  888 Y8P
+          // 888     Y8b.     888    Y88b.       8888P   Y8888 888  888 Y8b.     Y8b.     888      888  .d88P 888 888  888      X88 888 d88P 888 Y8b.     Y88b 888  "
+          // 88888888 "Y8888  888     "Y888      888P     Y888 888  888  "Y8888   "Y8888  888      8888888P"  888 "Y888888  88888P' 88888P"  888  "Y8888   "Y88888 888
+                      
             // save the last struct to the struct beforeLast if it is not the first one
             if (m_bfirstSampleReceivedLeftWheel==tTrue)
             {
@@ -234,6 +249,11 @@ tResult cConverterWheels::OnPinEvent(    IPin* pSource, tInt nEventCode, tInt nP
                 m_tLastStructLeft.i8WheelDir = i8Direction;
                 m_tLastStructLeft.ui32ArduinoTimestamp = ui32Timestamp;
                 m_tLastStructLeft.ui32WheelTach = ui32Tach;
+
+                if (m_bShowDebug)
+                {
+                    printf("Left Wheel: Direction: %d; TimeStamp: %d; Tach: %d\n", i8Direction, ui32Timestamp,ui32Tach);
+                }
             }
 
         }
@@ -288,6 +308,11 @@ tResult cConverterWheels::OnPinEvent(    IPin* pSource, tInt nEventCode, tInt nP
                 m_tLastStructRight.i8WheelDir = i8Direction;
                 m_tLastStructRight.ui32ArduinoTimestamp = ui32Timestamp;
                 m_tLastStructRight.ui32WheelTach = ui32Tach;
+
+                if (m_bShowDebug)
+                {
+                    printf("Right Wheel: Direction: %d; TimeStamp: %d; Tach: %d\n", i8Direction, ui32Timestamp,ui32Tach);
+                }
 
                 unsigned int temp = 0;
                 if(m_bEnableSpeedControllerDirection && m_bIDsSpeedControllerSet)
