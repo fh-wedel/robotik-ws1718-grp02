@@ -393,6 +393,35 @@ Neues Konzept für die BVA. Es werden nun die **schwarz-weiß-schwarz Übergäng
 
 Grundsätzlich **klappt der Ansatz** schon ganz gut. Lediglich die **gestrichelten Leitlinien** werden noch etwas schlecht erkannt. Hier müssen die Parameter noch etwas getweakt werden.
 
+Es gibt verschiedene Versionen, die wir ausprobiert haben:
+
+**1)** Die Hough Line Transformation wird auf dem Binärbild angewandt, nachdem ein Canny-Filter angewandt wurde. Ergebnis sind 2 - 3 (manchmal sieht man die linke Linie nicht) gebündelte Linien wie in folgendem Bild:
+```
+/¦| bzw. / \
+je nach Kameraposition und -ausrichtung
+```
+Das Problem hier ist, dass auch **viele Linien im Hintergrund** erkannt werden (z.B. Fenster/ Stühle). Dieses Problem soll mit Herangehensweise **1a)** und **1b)** gelöst werden. Ein weiteres Problem ist, dass die **gestrichelte Mittellinie meistens nur schwach** (= kleines Gewicht nach der Bündelung) oder gar nicht erkannt wird. Dieses Problem propagiert sich auf Varianten **1a)** und **1b)**.
+
+**1a)** Wir wählen uns mit einer Trapezform eine binäre Maske, die wir auf das Binärbild der Straße anwenden. Das funktioniert sehr gut bei geraden Stücken. Bei Kurven hingegen wird auch ein Teil der Kurve **abgeschnitten**.
+
+**1b)** Wir transformieren das mit mit `cv::warpPerspective` auf eine Art **"Vogelperspektive"**. Das Ergebnis sieht so ähnlich aus wie folgendes Bild:
+```
+|¦| bzw. ¦|
+je nach Kameraposition und -ausrichtung
+```
+Vorteil: Der Lenkwinkel ist relativ leicht zu berechnen (ist dann aber auch etwas vereinfacht).
+Nachteil: Wieder wird die Mittellinie nicht immer zuverlässig erkannt.
+
+**2)** Wir nutzen die von Audi/ADTF vorgegebene LaneDetection, die in einem Interessenbereich (Region of Interest, ROI) Zeilenweise nach **Intensitätssprüngen** von Schwarz zu Weiß und zurück sucht und dort einen Punkt setzt, wo ein solcher Intensitätssprung erkannt wurde. Auf diese Punkte wenden wir wiederrum die Hough Line Transformation an und haben ein ähnliches Resultat wie in **1), nur mit weniger "Rauschen"** im Bild, sodass tatsächlich vor allem nur die Fahrbahnmarkierungen erkannt werden. Trotzdem ist die **Erkennung der Mittellinie weiterhin ein Problem**. Auch auf dieses Bild könnte man zur leichteren Winkelberechnung eine Perspektiven-Transformation wie in **1b)** beschrieben, anwenden.
+
+Leider liefert keine der Varianten besonders gute Ergebnisse. Die Herangehensweise in **2)** liefert allerdings schon einmal ein viel sauberes Bild als in **1)**. Ein Problem, welches beiden Varianten gemein ist, ist, dass die Linien auf dem "untransformierten" Bild leider noch **zu flach erkannt** werden, weshalb u.A. extreme Lenkwinkel ausgegeben werden (**TODO -> Bild einfügen**). Außerdem ist in beiden Varianten die gestrichelte Mittellinie ein Problem.
+
+**Eine Idee, die Frauke gerade beim Tippen kam:** Vielleicht können wir die Mittellinie auch durchgezogen lassen, damit wir zumindest testweise damit arbeiten können? Hermann hat gesagt, dass wir uns an einigen Stellen Sachen leichter machen können. Durchgezogene Mittellinien sind ja auch nicht ungewöhnlich.
+
+Darüber hinaus haben wir die erkannten Linien nach der **Bündelung mit einem Gewicht** versehen, welches angibt, wie viele Linien zu einer Linie zusammengefasst wurden. Bei der Darstellung haben wir die **Linienbreite einer Linie entsprechend ihrer Gewichtung** (= Anzahl zusammengefasster Linien) berechnet, damit das ganze anschaulich wird.
+
+Außerdem kam Hermann mit einem Päckchen vorbei, in dem sich die neue **Basler-Kamera** befand! Wir haben sie ausgepackt und sofort ausprobiert. Die Anbindung an ADTF hat super geklappt: Man muss nur den `BaslerCamera`-Block in die Konfiguration ziehen (z.B. indem man den `RealsenseCamera`-Block ersetzt) und nach Neustart der Konfiguration usw. auf Play drücken: Das Kamerabild wird ohne weitere Treiberinstallation o.Ä. angezeigt, da die Treiber schon vorinstalliert waren. Leider haben wir festgestellt, dass das **Sichtfeld der Kamera stark eingeschränkt ist** (ca. ~10°, entgegen der vermeintlichen 50 (?)°): Die mitgeliferte Linse hat eine Brennweite von 16mm. Hermann hat sich daran gemacht, weitere Objektive mit Brennweiten von 8 und 4 mm zu bestellen. Die Rückkamera hat eine Brennweite von 8mm. In der Zwischenzeit können wir uns Gedanken machen, **wo und wie wir die Basler-Kamera am Auto befestigen** können (vorne wie die Realsense? Schräg über dem Auto mit ca 45°-Blick auf die Straße? Über dem Auto, parallel zur Straße?). Außerdem stellt sich die Frage bei der Platzierung über dem Auto, ob und wie stark die Kamera dort **wackeln** könnte.
+
 **18:20 - 19:15 Uhr - Felix, Franz**  
 Wir haben kurz eine Sprungfunktion für die Motorregelung aufgenommen.
 Gemessen haben wir Beschleunigungswerte von bis zu **0.5G beim Anfahren** und sogar bis zu **0.7G bei einer Vollbremsung**. Ganz schön beträchtlich.
@@ -408,10 +437,15 @@ Hier wird Thorger gute Werte für seinen Accelerometer basierten Nothalt finden.
 
 ### Dienstag, 12.12.
 **09:00 - 10:50 Uhr - Felix, Franz, Frauke**  
+Wir haben das Problem der zu flachen Linien in der BVA erkannt. Da könnte unseres Erachtens daran liegen, dass die Kamera **nicht richtig kalibriert** wurde. Also haben wir uns den ADTF-Filter `CameraCalibration` geschnappt und mit der Konfiguration für die Realsense-Kamera gefüttert. Leider stürzt ADTF nach dem Start aufgrund eines in dem `CameraCalibration`-Filter ausgelösten **OpenCV-Assertion-Errors** ab. In der Hoffnung, dieses Problem eventuell mit dem erneuten Komplieren der ADTF-Standard-Filter lösen zu können, haben wir das gemacht.
 
+Wir haben das ADTF kaputt gemacht, indem wir `./build_all_eclipse` ausgeführt haben. Genauer gesagt wurden geraume Komponenten als `not available` und in Rot angezeigt. Wie sich später herausgestellt hat, **muss man die ADTF-Standard-Filter mit GCC Version 4.x kompilieren**, und nicht wie wir es getan haben, mit GCC Version 5.x. Es stellte sich auch wieder die Frage, warum der Wechsel zwischen den Versionen nochmal notwendig war ...?
 
+**12:30 bis 15:20 - Felix, Franz, Frauke und Jan**  
+Wir haben uns von Hermann zu unseren Problemen in der BVA beraten lassen. Er sagt: **"Macht es euch an einigen Stellen leichter"**. Wir möchten also nun vielleicht im Bild die erkannten Linien/Punkte als **linke und rechte Fahrbahnmarkierung** erkennen und mithilfe dieses Wissens (hoffentlich) bessere Winkel ausgeben. Darüber hinaus möchte Felix nun auch in der BVA mithelfen, da er mit seinen sonstigen Aufgaben fertig ist.
 
-**12:30 bis 15:20 - Alle**  
+Danach hat sich Felix mit der **genaueren perspektivischen Transformation** beschäftigt, indem er die **Kalibrierung mit einem Schachbrettmuster** vornimmt. Dazu haben wir auch das RGB-Bild der Kamera perspektivisch transformiert. Wir sind allerdings nicht fertig gewordern; Felix wollte sich das am Abend noch einmal anschauen.
 
+Weil die Ausgabe von debug-Videostreams momentan ziemlich mühselig ist, hatte Frauke folgende Idee: Man könnte auf verschiedenen Stufen die entsprechenden Bilder als `outputStream` ausgeben, sodass man sie sich im ADTF anzeigen kann. Alternativ könnte man einzelne **OpenCV-Funktionen auch als eigenen ADTF-Filter** implementieren (z.B. `cv::warpPerspective()`, `cv::threshold` oder `cv::houghLines()` usw.), sodass wir eine Modularität schaffen. Da können natürlich viele Filter entstehen. Vielleicht kann man auch mehrere Operationen in einem Filter zusammenfassen.
 
 ----
