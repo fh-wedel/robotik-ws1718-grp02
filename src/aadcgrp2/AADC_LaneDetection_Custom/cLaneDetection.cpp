@@ -100,6 +100,14 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 	SetPropertyStr("Algorithm::Hough Threshold" NSSUBPROP_DESCRIPTION, "Threshold for hough votes");
 	SetPropertyBool("Algorithm::Hough Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
 
+	SetPropertyFloat("Algorithm::Angle Threshold", 2.0f);
+	SetPropertyStr("Algorithm::Angle Threshold" NSSUBPROP_DESCRIPTION, "Threshold for angles in line clustering");
+	SetPropertyBool("Algorithm::Angle Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+	SetPropertyFloat("Algorithm::Distance Threshold", 200.0f);
+	SetPropertyStr("Algorithm::Distance Threshold" NSSUBPROP_DESCRIPTION, "Threshold for distance in line clustering");
+	SetPropertyBool("Algorithm::Distance Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
+
 }
 
 cLaneDetection::~cLaneDetection() {}
@@ -263,6 +271,10 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
 		m_filterProperties.value = GetPropertyInt("Algorithm::Value");
 	else if (cString::IsEqual(strName, "Algorithm::Hough Threshold"))
 		m_filterProperties.houghThresh = GetPropertyInt("Algorithm::Hough Threshold");
+	else if (cString::IsEqual(strName, "Algorithm::Angle Threshold"))
+		m_filterProperties.angleThresh = GetPropertyInt("Algorithm::Angle Threshold");
+	else if (cString::IsEqual(strName, "Algorithm::Distance Threshold"))
+		m_filterProperties.distanceThresh = GetPropertyInt("Algorithm::Distance Threshold");
 	RETURN_NOERROR;
 }
 
@@ -308,9 +320,10 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			linePoints = cv::Mat::zeros(outputImage.size(), CV_8U);
       findLinePoints(detectionLines, outputImage, detectedLinePoints);
 
-			linePoints.copyTo(outputImage);
+			//linePoints.copyTo(outputImage);
 			tFloat32 angle = -1;
-			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
+			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
+								m_filterProperties.angleThresh, m_filterProperties.distanceThresh);
 
 			//find the lines in image and calculate the desired steering angle
 			//tFloat32 angle = -1;
@@ -351,7 +364,7 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 	}
 
 	if (m_SteeringPin.IsConnected()) {
-
+		// TODO hier transmitValue(angle) ?
 	}
 
 	RETURN_NOERROR;

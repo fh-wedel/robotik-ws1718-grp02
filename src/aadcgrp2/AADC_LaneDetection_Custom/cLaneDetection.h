@@ -283,6 +283,8 @@ private: // private methods
         int saturation;
         int value;
         int houghThresh;
+        float angleThresh;
+        float distanceThresh;
 
     }
     /*! the filter properties of this class */

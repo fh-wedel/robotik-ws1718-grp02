@@ -2,12 +2,16 @@
 
 #define rad2deg(x) (x) * 180.0f / CV_PI
 
+static float bva_angleThresh;
+
+static float bva_distanceThresh;
+
 //returns true if two vectors are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
 	float dist = fabs(a[0] - b[0]);
 
-	return (angle < 10.0f) && (dist < 200.0f);
+	return (angle < bva_angleThresh) && (dist < bva_distanceThresh);
 }
 
 //calculate steering angle
@@ -74,7 +78,8 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 //}
 
 //own implementation of line detection
-tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
+tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
+													float angleThresh, float distanceThresh)
 {
 	//----------------------ROI------------------------------
 	//cv::Mat mask = cv::Mat::zeros(src.size(), CV_8U);
@@ -146,6 +151,8 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 	// the intermediary result and use the CPU.
 	result.download(out);
 
+	bva_angleThresh = angleThresh;
+	bva_distanceThresh = distanceThresh;
 	std::vector<cv::Vec3f> clusteredLines;
 	clusterLines(lines, clusteredLines);
 
@@ -153,9 +160,9 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh)
 	std::vector<cv::Vec3f>::const_iterator it = clusteredLines.begin();
 	while (it != clusteredLines.end()) {
 
-		float rho = (*it)[0];   // first element is distance rho
-		float theta = (*it)[1]; // second element is angle theta
-		float weight = (*it)[2];
+		float rho = (*it)[0];    // first element is distance rho
+		float theta = (*it)[1];  // second element is angle theta
+		float weight = (*it)[2]; // third element is the weight of the line
 
 
     // point of intersection of the line with first row
