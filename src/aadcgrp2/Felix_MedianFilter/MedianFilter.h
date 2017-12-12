@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define _MedianFilter_H_
 
 #include "stdafx.h"
+#include "median.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.MedianFilter"
 #define FILTER_NAME "Felix MedianFilter"
@@ -32,11 +33,6 @@ class cMedianFilter : public adtf::cFilter {
 
     /* the input value which is fed into the linear function. */
     cInputPin m_InputValue;
-
-    /* the gain */
-    cInputPin m_InputGain;
-    /* the offset */
-    cInputPin m_InputOffset;
 
     /* the value */
     cOutputPin m_OutputValue;
@@ -91,8 +87,8 @@ protected: // overwrites cFilter
     } m_filterProperties;
 
 
-    /*! the most up to date value */
-    std::vector<tFloat32> m_storedValues;
+    /*! median filter instance */
+    cMedian medianFilter;
 
 private:
     /*! creates all the input Pins
@@ -123,8 +119,6 @@ private:
 // Own Helper Functions
 
     tResult OnValueChanged(tFloat32 value);
-
-    tFloat32 calculateMedian(std::vector<tFloat32> values);
 
     tFloat32 readInputValue(IMediaSample* pMediaSample);
     tResult transmitValue(tFloat32 value);

@@ -28,16 +28,13 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cMedianFilter)
 
-cMedianFilter::cMedianFilter(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
+cMedianFilter::cMedianFilter(const tChar* __info) : cFilter(__info), medianFilter(1), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
 
     SetPropertyInt("Filter::WindowSize", 40);
     SetPropertyStr("Filter::WindowSize" NSSUBPROP_DESCRIPTION, "Number of values to keep in storage.");
     SetPropertyBool("Filter::WindowSize" NSSUBPROP_ISCHANGEABLE, tTrue);
-
-    m_storedValues.push_back(7);
-    std::cout << "m_storedValues: " << m_storedValues[0] << '\n';
 }
 
 cMedianFilter::~cMedianFilter() {}
@@ -128,39 +125,13 @@ tResult cMedianFilter::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, 
 
 tResult cMedianFilter::OnValueChanged(tFloat32 newValue) {
 
-    // erase oldest values if window size has been reached
-    int amountOfOverflownElements = m_storedValues.size() - m_filterProperties.windowSize;
-    if (amountOfOverflownElements > 0) {
-        m_storedValues.erase(
-            m_storedValues.begin(),
-            m_storedValues.begin() + amountOfOverflownElements
-        );
-    }
-
-    // append new value
-    m_storedValues.push_back(newValue);
+    medianFilter.addValue(newValue);
 
     // apply median filter and transmit
-    tFloat32 median = calculateMedian(m_storedValues);
+    tFloat32 median = medianFilter.calculateMedian();
     transmitValue(median);
 
     RETURN_NOERROR;
-}
-
-tFloat32 cMedianFilter::calculateMedian(std::vector<tFloat32> values) {
-
-    // sort values ascending
-    std::sort(values.begin(), values.end());
-
-    // 0 / 2 = 0    -> 0
-    // 1 / 2 = 0.5  -> 0
-    // 2 / 2 = 1    -> 1
-    // 3 / 2 = 1.5  -> 1
-    // 4 / 2 = 2    -> 2
-    // 5 / 2 = 2.5  -> 2
-    int medianIndex = values.size() / 2;
-
-    return values[medianIndex];
 }
 
 

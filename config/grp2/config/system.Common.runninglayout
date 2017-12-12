@@ -19,7 +19,7 @@
   </folder>
   <folder name="windows">
    <folder Height="366" Maximized="false" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="304" PosX="384" PosY="24" Visible="true" Width="399" name="RGB_Display" />
+   <folder Height="304" PosX="178" PosY="-31" Visible="true" Width="399" name="RGB_Display" />
    <folder Height="548" PosX="25" PosY="142" Visible="true" Width="784" name="Video_Display" />
   </folder>
  </folder>
