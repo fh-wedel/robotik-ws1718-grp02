@@ -59,6 +59,7 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 		//printf("sumDist: %.1f sumAngle: %.1f\n", sumDist, sumAngle);
 		clusteredLines.push_back(cv::Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize));
 	}
+
 	printf("Clustered:\n");
 	for (cv::Vec3f v : clusteredLines) {
 		printf("dist: %.3f angle: %.3f weight: %.1f\n", v[0], rad2deg(v[1]), v[2]);
@@ -103,7 +104,7 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	cv::Point2f dest_points[4];
 
 	// Parameters
-	cv::Point2f refPoint = cv::Point(680, 650);
+	cv::Point2f refPoint = cv::Point(550, 800);
 	int bottomCornerInset = 250;
 
 	/*	TODO: refPoint.x < imageSize.width / 2
@@ -124,13 +125,13 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	dest_points[3] = cv::Point2f(contours.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
-	/*cv::cuda::GpuMat contoursWarped;
+	cv::cuda::GpuMat contoursWarped;
 	cv::cuda::warpPerspective(
 		contours,
 		contoursWarped,
 		transform_matrix,
 		contours.size()
-	);*/
+	);
 
 	//---------------hough transformation---------------------------
 	cv::cuda::GpuMat GpuMatLines;
@@ -138,12 +139,12 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, houghThresh);
 
-	hough->detect(contours, GpuMatLines);
+	hough->detect(contoursWarped, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);
 
 	// Create our final mat on GPU and write the contours to it.
 	cv::cuda::GpuMat result(image.size(), CV_8U);
-	contours.copyTo(result);
+	contoursWarped.copyTo(result);
 
 	// Cluster the detected hough lines and draw them onto the mat
 	//

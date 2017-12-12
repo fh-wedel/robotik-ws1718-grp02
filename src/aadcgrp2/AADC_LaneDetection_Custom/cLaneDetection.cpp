@@ -312,33 +312,69 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		if (tInt32(m_inputImage.total() * m_inputImage.elemSize()) == m_sInputFormat.nSize)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
+
+			cv::Mat transform_matrix;
+			cv::Point2f source_points[4];
+			cv::Point2f dest_points[4];
+			int bottomCornerInset = 250;
+			cv::cuda::GpuMat image(m_inputImage);
+
+			// Schachbrettmuster: 24.7 / 14.3
+			cv::Point2f refPoint = cv::Point(550, 800);
+			source_points[0] = refPoint;
+			source_points[1] = cv::Point(0, image.rows - 1); // bottom left corner
+			source_points[2] = cv::Point(image.cols - 1, image.rows - 1); // bottom right corner
+			source_points[3] = cv::Point(image.cols - 1 - refPoint.x, refPoint.y);
+
+			dest_points[0] = cv::Point2f(0, 0);
+			dest_points[1] = cv::Point2f(bottomCornerInset, image.rows - 1);
+			dest_points[2] = cv::Point2f(image.cols - bottomCornerInset, image.rows - 1);
+			dest_points[3] = cv::Point2f(image.cols - 1, 0);
+
+			transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
+			cv::cuda::GpuMat imageWarped;
+			cv::cuda::warpPerspective(
+				image,
+				imageWarped,
+				transform_matrix,
+				image.size()
+			);
+			imageWarped.download(outputImage);
 			// Binarization of specified range
-			bva::lineBinarization(m_inputImage, outputImage,
+			/*bva::lineBinarization(m_inputImage, outputImage,
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
 				m_filterProperties.saturation, m_filterProperties.value);
 
 			//calculate the detectionlines in image
-    			getDetectionLines(detectionLines);
+    	getDetectionLines(detectionLines);
 			linePoints = cv::Mat::zeros(outputImage.size(), CV_8U);
 			rightPoints.clear();
-			leftPoints.clear();
-      			findLinePoints(detectionLines, outputImage, detectedLinePoints);
+			leftPoints.clear();*/
 
-			cv::Vec4f leftLine;
+      //findLinePoints(detectionLines, outputImage, detectedLinePoints);
+
+			/*cv::Vec4f leftLine;
 			cv::Vec4f rightLine;
-			cv::fitLine(leftPoints, leftLine, 1, 0, 0.01, 0.01);
-			cv::fitLine(rightPoints, rightLine, 1, 0, 0.01, 0.01);
+			if(leftPoints.size() > 0){
+				cv::fitLine(leftPoints, leftLine, CV_DIST_L2, 0, 0.01, 0.01);
+				printf("leftLine:  x0: %.2f y0: %.2f x1: %.2f y1: %.2f\n", leftLine[0], leftLine[1], leftLine[2], leftLine[3]);
+			}
+			if(rightPoints.size() > 0){
+				cv::fitLine(rightPoints, rightLine, CV_DIST_L2, 0, 0.01, 0.01);
+				printf("rightLine: x0: %.2f y0: %.2f x1: %.2f y1: %.2f\n", rightLine[0], rightLine[1], rightLine[2], rightLine[3]);
+			}*/
+
 
 			//linePoints.copyTo(outputImage);
-			tFloat32 angle = -1;
+			/*tFloat32 angle = -1;
 			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
-								m_filterProperties.angleThresh, m_filterProperties.distanceThresh);
+								m_filterProperties.angleThresh, m_filterProperties.distanceThresh);*/
 
 			//find the lines in image and calculate the desired steering angle
 			//tFloat32 angle = -1;
 			//angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
-			printf("Winkel %f\n", angle);
-			transmitValue(angle);
+			/*printf("Winkel %f\n", angle);
+			transmitValue(angle);*/
 		}
 		pSample->Unlock(l_pSrcBuffer);
 	}
@@ -430,7 +466,7 @@ tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const
 			//linePoints.at<uchar>(y, x) = 255;
 			cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
 
-			if(x < image.cols){
+			if(x < image.cols / 2){
 				leftPoints.push_back(cv::Point(x,y));
 			}else{
 				rightPoints.push_back(cv::Point(x,y));

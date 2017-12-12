@@ -7,10 +7,10 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="366" Maximized="false" PosX="0" PosY="0" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="345" Maximized="false" PosX="90" PosY="13" Visible="true" Width="443" name="Realsense_RGB_Proc_Display" />
+   <folder Height="366" Maximized="false" PosX="64" PosY="106" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="229" Maximized="false" PosX="5" PosY="-1" Visible="true" Width="425" name="Realsense_RGB_Proc_Display" />
    <folder Height="599" PosX="22" PosY="78" Visible="false" Width="818" name="Table_Display" />
-   <folder Height="341" Maximized="false" PosX="93" PosY="356" Visible="true" Width="435" name="Video_Display" />
+   <folder Height="421" Maximized="false" PosX="4" PosY="238" Visible="true" Width="487" name="Video_Display" />
   </folder>
  </folder>
  <folder name="Live2">
