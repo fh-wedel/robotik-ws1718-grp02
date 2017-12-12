@@ -2,6 +2,8 @@ set(FILTER_NAME MedianFilter)
 
 # Specify the filter module target
 adtf_add_filter(${FILTER_NAME}
+                median.h
+                median.cpp
                 stdafx.h
                 MedianFilter.h
                 MedianFilter.cpp
