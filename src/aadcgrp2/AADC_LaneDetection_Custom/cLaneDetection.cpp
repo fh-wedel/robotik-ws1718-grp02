@@ -29,8 +29,8 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 
 
 cv::Mat linePoints;
-std::vector<cv::point> rightPoints
-std::vector<cv::point> leftPoints
+std::vector<cv::Point> rightPoints;
+std::vector<cv::Point> leftPoints;
 
 cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 {
@@ -323,12 +323,12 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			rightPoints.clear();
 			leftPoints.clear();
       			findLinePoints(detectionLines, outputImage, detectedLinePoints);
-			
+
 			cv::Vec4f leftLine;
 			cv::Vec4f rightLine;
 			cv::fitLine(leftPoints, leftLine, 1, 0, 0.01, 0.01);
 			cv::fitLine(rightPoints, rightLine, 1, 0, 0.01, 0.01);
-			
+
 			//linePoints.copyTo(outputImage);
 			tFloat32 angle = -1;
 			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
@@ -429,13 +429,13 @@ tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const
 			printf("x: %d, y: %d\n", x, y);
 			//linePoints.at<uchar>(y, x) = 255;
 			cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
-			
-			if(x < image.cols()){
-				leftPints.pushBack(cv::Point(x,y));
+
+			if(x < image.cols){
+				leftPoints.push_back(cv::Point(x,y));
 			}else{
-				rightPints.pushBack(cv::Point(x,y));
+				rightPoints.push_back(cv::Point(x,y));
 			}
-			
+
                         detectedLinePoints.push_back(cPoint(tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
                         m_filterProperties.ROIOffsetX), *nline));
 
