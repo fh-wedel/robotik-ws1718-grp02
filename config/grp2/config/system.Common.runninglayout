@@ -7,10 +7,10 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="366" Maximized="false" PosX="8" PosY="316" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="338" Maximized="false" PosX="119" PosY="-12" Visible="true" Width="426" name="Realsense_RGB_Proc_Display" />
-   <folder Height="366" PosX="124" PosY="326" Visible="true" Width="449" name="Lane_Detection_Display" />
+   <folder Height="366" Maximized="false" PosX="0" PosY="0" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="345" Maximized="false" PosX="90" PosY="13" Visible="true" Width="443" name="Realsense_RGB_Proc_Display" />
    <folder Height="599" PosX="22" PosY="78" Visible="false" Width="818" name="Table_Display" />
+   <folder Height="341" Maximized="false" PosX="93" PosY="356" Visible="true" Width="435" name="Video_Display" />
   </folder>
  </folder>
  <folder name="Live2">
@@ -19,7 +19,7 @@
   </folder>
   <folder name="windows">
    <folder Height="366" Maximized="false" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="304" PosX="430" PosY="15" Visible="true" Width="399" name="RGB_Display" />
+   <folder Height="304" PosX="384" PosY="24" Visible="true" Width="399" name="RGB_Display" />
    <folder Height="548" PosX="25" PosY="142" Visible="true" Width="784" name="Video_Display" />
   </folder>
  </folder>

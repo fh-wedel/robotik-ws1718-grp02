@@ -86,7 +86,9 @@
     <connection connection_priority="50" dest="GRP2_Test_Filter.Video_Input" interface="" source="RearCam" />
     <connection connection_priority="50" dest="GRP2_Test_Filter.UltrasonicStruct" interface="" source="Base_Config.UltrasonicStruct" />
     <connection connection_priority="50" dest="RearCam_Display.input" interface="" source="GRP2_Test_Filter.Video_Output" />
-    <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="11" />
+    <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="11">
+     <settings />
+    </filter>
     <outport alias="Realsense_DepthVis" />
     <connection connection_priority="50" dest="Realsense_outputRGB" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
     <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
@@ -102,49 +104,29 @@
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="1">
      <settings />
     </filter>
-    <filter alias="AADC_Lane_Detection_Custom2" idref="adtf.aadc_LaneDetection_Custom" priority="1">
-     <settings>
-      <property name="Algorithm::HueLow" type="Int" value="90" />
-      <property name="Algorithm::Image Binarization Threshold" type="Int" value="2" />
-      <property name="Algorithm::Maximum Line Width" type="Int" value="200" />
-      <property name="Algorithm::Saturation" type="Int" value="100" />
-      <property name="Algorithm::Value" type="Int" value="80" />
-      <property name="ROI::Height" type="Int" value="450" />
-      <property name="ROI::Width" type="Int" value="1920" />
-      <property name="ROI::XOffset" type="Int" value="1" />
-      <property name="Algorithm::Detection Lines" type="Int" value="80" />
-      <property name="ROI::YOffset" type="Int" value="630" />
-      <property name="Algorithm::Hough Threshold" type="Int" value="50" />
-      <property name="active" type="Bool" value="false" />
-     </settings>
-    </filter>
-    <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="4">
+    <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="3">
      <settings>
       <property name="active" type="Bool" value="true" />
      </settings>
     </filter>
-    <filter alias="AADC_Arduino_Communication" idref="adtf.aadc.arduinoCommunication" priority="4">
+    <filter alias="AADC_Arduino_Communication" idref="adtf.aadc.arduinoCommunication" priority="3">
      <settings />
     </filter>
-    <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="5">
+    <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="4">
      <settings />
     </filter>
-    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="6">
+    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="5">
      <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Arduino_Communication.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
     <connection connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
-    <filter alias="Felix_MedianFilter" idref="adtf.aadc.felix.MedianFilter" priority="6">
+    <filter alias="Felix_MedianFilter" idref="adtf.aadc.felix.MedianFilter" priority="5">
      <settings />
     </filter>
-    <connection active="false" connection_priority="50" dest="Felix_MedianFilter.input" interface="" source="AADC_Lane_Detection_Custom2.steeringAngle" />
     <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="Felix_MedianFilter" />
-    <filter alias="Lane_Detection_Display" idref="adtf.visual.video_display" priority="7" />
-    <connection active="false" connection_priority="50" dest="Lane_Detection_Display.input" interface="" source="AADC_Lane_Detection_Custom2.Video_Output_Debug" />
-    <connection active="false" connection_priority="50" dest="Lane_Detection_Display.gcl_input" interface="" source="AADC_Lane_Detection_Custom2.GCL" />
-    <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="8">
+    <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="6">
      <settings>
-      <property name="filename" type="String" value="/media/aadc/Samsung_T5/AADC/Beschleunigen_split_000.dat" />
+      <property name="filename" type="String" value="/home/aadc/Desktop/recording/unten_try3_split_001.dat" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.InerMeasUnitStruct" />
@@ -152,10 +134,10 @@
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.VoltageStruct" />
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.WheelRightStruct" />
-    <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="Harddisk_Player.Realsense_outputRGB" />
-    <connection active="false" connection_priority="50" dest="AADC_Lane_Detection_Custom2.Video_Input" interface="" source="Harddisk_Player.Realsense_outputRGB" />
-    <filter alias="AADC_Converter_Wheels_Custom_" idref="adtf.aadc.converterWheels_Custom" priority="9" />
-    <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="10">
+    <filter alias="AADC_Converter_Wheels_Custom_" idref="adtf.aadc.converterWheels_Custom" priority="7">
+     <settings />
+    </filter>
+    <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="8">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
      </settings>
@@ -163,14 +145,43 @@
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="AADC_Converter_Wheels_Custom_.car_speed" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="Harddisk_Player.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="Harddisk_Player.WheelRightStruct" />
-    <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="11" />
-    <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="12" />
-    <filter alias="Felix_LinearFunction" idref="adtf.aadc.felix.LinearFunction" priority="13" />
+    <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="9">
+     <settings />
+    </filter>
+    <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="10">
+     <settings />
+    </filter>
+    <filter alias="Felix_LinearFunction" idref="adtf.aadc.felix.LinearFunction" priority="11">
+     <settings />
+    </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger2.WatchdogAliveSignal" />
     <connection connection_priority="50" dest="Felix_LinearFunction.input" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
-    <filter alias="Table_Display" idref="adtf.visual.table_display" priority="14" />
+    <filter alias="Table_Display" idref="adtf.visual.table_display" priority="12" />
     <connection connection_priority="50" dest="Table_Display.WheelLeftStruct" interface="" source="Harddisk_Player.WheelLeftStruct" />
+    <filter alias="Video_Display" idref="adtf.visual.video_display" priority="13" />
+    <filter alias="AADC_Lane_Detection_Custom" idref="adtf.aadc_LaneDetection_Custom" priority="6">
+     <settings>
+      <property name="Algorithm::Detection Lines" type="Int" value="80" />
+      <property name="Algorithm::Hough Threshold" type="Int" value="50" />
+      <property name="Algorithm::Image Binarization Threshold" type="Int" value="2" />
+      <property name="Algorithm::Maximum Line Width" type="Int" value="200" />
+      <property name="Algorithm::Saturation" type="Int" value="100" />
+      <property name="Algorithm::Value" type="Int" value="80" />
+      <property name="ROI::Height" type="Int" value="450" />
+      <property name="ROI::Width" type="Int" value="1920" />
+      <property name="ROI::XOffset" type="Int" value="1" />
+      <property name="ROI::YOffset" type="Int" value="630" />
+      <property name="Algorithm::Minimum Line Contrast" type="Int" value="25" />
+      <property name="Algorithm::Minimum Line Width" type="Int" value="10" />
+      <property name="Algorithm::Angle Threshold" type="Float" value="0.0" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="Video_Display.input" interface="" source="AADC_Lane_Detection_Custom.Video_Output_Debug" />
+    <connection connection_priority="50" dest="Video_Display.gcl_input" interface="" source="AADC_Lane_Detection_Custom.GCL" />
+    <connection connection_priority="50" dest="Felix_MedianFilter.input" interface="" source="AADC_Lane_Detection_Custom.steeringAngle" />
+    <connection connection_priority="50" dest="AADC_Lane_Detection_Custom.Video_Input" interface="" source="Harddisk_Player.Realsense_RGB" />
+    <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="Harddisk_Player.Realsense_RGB" />
    </graph>
   </configuration>
   <configuration description="" name="Recording">
