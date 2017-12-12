@@ -323,7 +323,12 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			rightPoints.clear();
 			leftPoints.clear();
       			findLinePoints(detectionLines, outputImage, detectedLinePoints);
-
+			
+			cv::Vec4f leftLine;
+			cv::Vec4f rightLine;
+			cv::fitLine(leftPoints, leftLine, 1, 0, 0.01, 0.01);
+			cv::fitLine(rightPoints, rightLine, 1, 0, 0.01, 0.01);
+			
 			//linePoints.copyTo(outputImage);
 			tFloat32 angle = -1;
 			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
