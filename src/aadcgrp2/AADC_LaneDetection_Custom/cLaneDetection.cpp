@@ -29,6 +29,8 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 
 
 cv::Mat linePoints;
+std::vector<cv::point> rightPoints
+std::vector<cv::point> leftPoints
 
 cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 {
@@ -316,10 +318,17 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				m_filterProperties.saturation, m_filterProperties.value);
 
 			//calculate the detectionlines in image
-      getDetectionLines(detectionLines);
+    			getDetectionLines(detectionLines);
 			linePoints = cv::Mat::zeros(outputImage.size(), CV_8U);
-      findLinePoints(detectionLines, outputImage, detectedLinePoints);
-
+			rightPoints.clear();
+			leftPoints.clear();
+      			findLinePoints(detectionLines, outputImage, detectedLinePoints);
+			
+			cv::Vec4f leftLine;
+			cv::Vec4f rightLine;
+			cv::fitLine(leftPoints, leftLine, 1, 0, 0.01, 0.01);
+			cv::fitLine(rightPoints, rightLine, 1, 0, 0.01, 0.01);
+			
 			//linePoints.copyTo(outputImage);
 			tFloat32 angle = -1;
 			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
@@ -413,15 +422,21 @@ tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const
                 if ((abs(columnStartCornerLine - currentIndex) > m_filterProperties.minLineWidth)
                     && (abs(columnStartCornerLine - currentIndex) < m_filterProperties.maxLineWidth))
                 {
-										int y = *nline ;
-										int x = tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
-											m_filterProperties.ROIOffsetX);
+			int y = *nline ;
+			int x = tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
+				m_filterProperties.ROIOffsetX);
 
-										printf("x: %d, y: %d\n", x, y);
-										//linePoints.at<uchar>(y, x) = 255;
-										cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
-
-                    detectedLinePoints.push_back(cPoint(tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
+			printf("x: %d, y: %d\n", x, y);
+			//linePoints.at<uchar>(y, x) = 255;
+			cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
+			
+			if(x < image.cols()){
+				leftPints.pushBack(cv::Point(x,y));
+			}else{
+				rightPints.pushBack(cv::Point(x,y));
+			}
+			
+                        detectedLinePoints.push_back(cPoint(tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
                         m_filterProperties.ROIOffsetX), *nline));
 
                     detectedStartCornerLine = tFalse;
