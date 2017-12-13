@@ -449,3 +449,10 @@ Danach hat sich Felix mit der **genaueren perspektivischen Transformation** besc
 Weil die Ausgabe von debug-Videostreams momentan ziemlich mühselig ist, hatte Frauke folgende Idee: Man könnte auf verschiedenen Stufen die entsprechenden Bilder als `outputStream` ausgeben, sodass man sie sich im ADTF anzeigen kann. Alternativ könnte man einzelne **OpenCV-Funktionen auch als eigenen ADTF-Filter** implementieren (z.B. `cv::warpPerspective()`, `cv::threshold` oder `cv::houghLines()` usw.), sodass wir eine Modularität schaffen. Da können natürlich viele Filter entstehen. Vielleicht kann man auch mehrere Operationen in einem Filter zusammenfassen.
 
 ----
+
+### Mittwoch, 13.12.
+**14:00 - 15:50 Uhr - Jan**
+Jan hat den Winkel der selbstgebauten RealSense Kamerahalterung erhöht, sodass diese nun besser auf die Straße ausgerichtet ist. 
+Dies hat zu Folge, dass das transformierte Bild nichtmehr so anfällig bei der Beschleunigung ist. 
+Ebenfalls hat Jan danach die perspektivische Transformation angepasst. Hierfür wurden zur Zeit ungenutzte Parameter im ADTF benutzt, um nicht ständig neu compilieren zu müssen. 
+Nachdem die neuen Werte gefunden wurden, wurden sie in `findLines()` übertragen. Die Sichtweite nach vorne wurde deutlich verringert, da wir nicht vorrausschauend fahren müssen, sondern uns nur für den **aktuellen** Lenkwinkel interessieren
