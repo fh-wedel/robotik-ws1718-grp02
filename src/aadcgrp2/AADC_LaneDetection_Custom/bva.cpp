@@ -1,10 +1,16 @@
 #include "bva.hpp"
 
+#define TOLERANCE 10.0f
+
 #define rad2deg(x) (x) * 180.0f / CV_PI
 
 static float bva_angleThresh;
 
 static float bva_distanceThresh;
+
+static float angleLeft = -25.0f;
+
+static float angleRight = 25.0f;
 
 //returns true if two vectors are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
@@ -16,7 +22,7 @@ static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 
 //calculate steering angle
 static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
-	tFloat32 sum = 0;
+	/*tFloat32 sum = 0;
 	if (clusteredLines.size() == 0) return 0; //no lane was detected
 	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
 	// Car: "Just go straight and full speed :]"
@@ -33,7 +39,8 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 
 	}
 
-	return sum / clusteredLines.size();
+	return sum / clusteredLines.size();*/
+	return (angleLeft + angleRight) / 2.0f;
 };
 
 //weight saved in clusteredLines[2]
@@ -57,7 +64,22 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 			}
 		}
 		//printf("sumDist: %.1f sumAngle: %.1f\n", sumDist, sumAngle);
-		clusteredLines.push_back(cv::Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize));
+		float dist = sumDist / classSize;
+		float angleRad = sumAngle / classSize;
+		float angleDeg = rad2deg(angleRad);
+		if (angleDeg > 90) angleDeg -= 180;
+
+		if (angleDeg > angleRight - TOLERANCE && angleDeg < angleRight + TOLERANCE) {
+			// TODO: Hier und unten keine festen Werte nehmen, sondern Vergleich mit
+			// aktuellem angleLeft und angleRight mit Toleranz
+			angleRight = angleDeg;
+			clusteredLines.push_back(cv::Vec3f(dist, angleRad, (float) classSize));
+		}
+
+		if (angleDeg > angleLeft - TOLERANCE && angleDeg < angleLeft + TOLERANCE) {
+			angleLeft = angleDeg;
+			clusteredLines.push_back(cv::Vec3f(dist, angleRad, (float) classSize));
+		}
 	}
 
 	printf("Clustered:\n");

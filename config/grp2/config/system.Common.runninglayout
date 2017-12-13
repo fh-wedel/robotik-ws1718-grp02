@@ -7,10 +7,10 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="366" Maximized="false" PosX="64" PosY="106" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="403" Maximized="false" PosX="174" PosY="252" Visible="true" Width="496" name="Realsense_RGB_Proc_Display" />
-   <folder Height="599" PosX="22" PosY="78" Visible="false" Width="818" name="Table_Display" />
-   <folder Height="276" Maximized="false" PosX="10" PosY="16" Visible="false" Width="377" name="Video_Display" />
+   <folder Height="366" Maximized="false" PosX="64" PosY="106" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
+   <folder Height="341" Maximized="false" PosX="0" PosY="0" Visible="true" Width="411" name="Realsense_RGB_Proc_Display" />
+   <folder Height="699" Maximized="false" PosX="0" PosY="0" Visible="false" Width="862" name="Table_Display" />
+   <folder Height="316" Maximized="false" PosX="10" PosY="346" Visible="true" Width="426" name="Hough_Display" />
   </folder>
  </folder>
  <folder name="Live2">
@@ -20,7 +20,7 @@
   <folder name="windows">
    <folder Height="366" Maximized="false" Visible="true" Width="725" name="AADC_Sensor_Visualization" />
    <folder Height="304" PosX="178" PosY="-31" Visible="true" Width="399" name="RGB_Display" />
-   <folder Height="548" PosX="25" PosY="142" Visible="true" Width="784" name="Video_Display" />
+   <folder Height="548" PosX="10" PosY="214" Visible="true" Width="784" name="Video_Display" />
   </folder>
  </folder>
  <folder name="Recording">

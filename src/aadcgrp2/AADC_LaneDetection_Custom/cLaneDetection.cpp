@@ -83,16 +83,13 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 	SetPropertyStr("Algorithm::Hue Low" NSSUBPROP_DESCRIPTION, "Low threshold for hue");
 	SetPropertyBool("Algorithm::Hue Low" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-
 	SetPropertyInt("Algorithm::Hue High", 120);
 	SetPropertyStr("Algorithm::Hue High" NSSUBPROP_DESCRIPTION, "Upper threshold for hue");
 	SetPropertyBool("Algorithm::Hue High" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-
 	SetPropertyInt("Algorithm::Saturation", 120);
 	SetPropertyStr("Algorithm::Saturation" NSSUBPROP_DESCRIPTION, "Lower threshold for saturation");
 	SetPropertyBool("Algorithm::Saturation" NSSUBPROP_ISCHANGEABLE, tTrue);
-
 
 	SetPropertyInt("Algorithm::Value", 120);
 	SetPropertyStr("Algorithm::Value" NSSUBPROP_DESCRIPTION, "Lower threshold for Value");
@@ -109,7 +106,6 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 	SetPropertyFloat("Algorithm::Distance Threshold", 200.0f);
 	SetPropertyStr("Algorithm::Distance Threshold" NSSUBPROP_DESCRIPTION, "Threshold for distance in line clustering");
 	SetPropertyBool("Algorithm::Distance Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
-
 }
 
 cLaneDetection::~cLaneDetection() {}
@@ -313,7 +309,7 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
 
-			/*cv::Mat transform_matrix;
+			cv::Mat transform_matrix;
 			cv::Point2f source_points[4];
 			cv::Point2f dest_points[4];
 			int bottomCornerInset = m_filterProperties.minLineContrast; //300
@@ -339,10 +335,10 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				transform_matrix,
 				image.size()
 			);
-			imageWarped.download(outputImage);*/
+			imageWarped.download(outputImage);
 
 			// Binarization of specified range
-			bva::lineBinarization(m_inputImage, outputImage,
+			bva::lineBinarization(outputImage, outputImage,
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
 				m_filterProperties.saturation, m_filterProperties.value);
 
@@ -459,22 +455,22 @@ tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const
                 if ((abs(columnStartCornerLine - currentIndex) > m_filterProperties.minLineWidth)
                     && (abs(columnStartCornerLine - currentIndex) < m_filterProperties.maxLineWidth))
                 {
-			int y = *nline ;
-			int x = tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
-				m_filterProperties.ROIOffsetX);
+										int y = *nline ;
+										int x = tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
+											m_filterProperties.ROIOffsetX);
 
-			printf("x: %d, y: %d\n", x, y);
-			//linePoints.at<uchar>(y, x) = 255;
-			cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
+										printf("x: %d, y: %d\n", x, y);
+										//linePoints.at<uchar>(y, x) = 255;
+										cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
 
-			if(x < image.cols / 2){
-				leftPoints.push_back(cv::Point(x,y));
-			}else{
-				rightPoints.push_back(cv::Point(x,y));
-			}
+										if (x < image.cols / 2) {
+											leftPoints.push_back(cv::Point(x,y));
+										} else {
+											rightPoints.push_back(cv::Point(x,y));
+										}
 
-                        detectedLinePoints.push_back(cPoint(tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
-                        m_filterProperties.ROIOffsetX), *nline));
+                    detectedLinePoints.push_back(cPoint(tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
+                    m_filterProperties.ROIOffsetX), *nline));
 
                     detectedStartCornerLine = tFalse;
                     columnStartCornerLine = 0;

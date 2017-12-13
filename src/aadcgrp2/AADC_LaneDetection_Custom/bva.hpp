@@ -4,9 +4,6 @@
 #include "stdafx.h"
 
 namespace bva {
-	/*tFloat32 rightLineAngle;
-
-	tFloat32 leftLineAngle;*/
 
 	tFloat32 findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 								float angleThresh, float distanceThresh);
