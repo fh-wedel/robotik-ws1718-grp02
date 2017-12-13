@@ -8,9 +8,9 @@
   </folder>
   <folder name="windows">
    <folder Height="366" Maximized="false" PosX="64" PosY="106" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="229" Maximized="false" PosX="5" PosY="-1" Visible="true" Width="425" name="Realsense_RGB_Proc_Display" />
+   <folder Height="403" Maximized="false" PosX="174" PosY="252" Visible="true" Width="496" name="Realsense_RGB_Proc_Display" />
    <folder Height="599" PosX="22" PosY="78" Visible="false" Width="818" name="Table_Display" />
-   <folder Height="421" Maximized="false" PosX="4" PosY="238" Visible="true" Width="487" name="Video_Display" />
+   <folder Height="276" Maximized="false" PosX="10" PosY="16" Visible="false" Width="377" name="Video_Display" />
   </folder>
  </folder>
  <folder name="Live2">
@@ -33,6 +33,15 @@
    <folder Height="340" Visible="true" Width="717" name="Live-AADC_Sensor_Visualization" />
    <folder Height="428" Visible="true" Width="624" name="Live-Realsense_RGB_Proc_Display" />
    <folder Height="548" Visible="true" Width="784" name="Live-RearCam_Display" />
+  </folder>
+ </folder>
+ <folder name="Lane_Detection">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="699" Maximized="true" PosX="0" PosY="0" Visible="true" Width="862" name="Video_Display" />
+   <folder Height="699" Maximized="true" PosX="0" PosY="0" Visible="true" Width="862" name="Lane_Detection_Display" />
   </folder>
  </folder>
 </adtf:export>

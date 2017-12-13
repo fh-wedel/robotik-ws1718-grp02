@@ -104,8 +104,8 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	cv::Point2f dest_points[4];
 
 	// Parameters
-	cv::Point2f refPoint = cv::Point(550, 800);
-	int bottomCornerInset = 250;
+	cv::Point2f refPoint = cv::Point(230, 270);
+	int bottomCornerInset = 550;
 
 	/*	TODO: refPoint.x < imageSize.width / 2
 	 * 	-> ansonsten wird das bild gespiegelt?!

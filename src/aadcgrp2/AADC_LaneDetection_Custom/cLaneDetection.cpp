@@ -70,7 +70,7 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 	SetPropertyStr("Algorithm::Minimum Line Contrast" NSSUBPROP_DESCRIPTION, "Mimimum line contrast in gray Values");
 	SetPropertyBool("Algorithm::Minimum Line Contrast" NSSUBPROP_ISCHANGEABLE, tTrue);
 	SetPropertyInt("Algorithm::Minimum Line Contrast" NSSUBPROP_MIN, 1);
-	SetPropertyInt("Algorithm::Minimum Line Contrast" NSSUBPROP_MAX, 255);
+	SetPropertyInt("Algorithm::Minimum Line Contrast" NSSUBPROP_MAX, 1000);
 
 	SetPropertyInt("Algorithm::Image Binarization Threshold", 100);
 	SetPropertyStr("Algorithm::Image Binarization Threshold" NSSUBPROP_DESCRIPTION, "Threshold for image binarization");
@@ -313,14 +313,14 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
 
-			cv::Mat transform_matrix;
+			/*cv::Mat transform_matrix;
 			cv::Point2f source_points[4];
 			cv::Point2f dest_points[4];
-			int bottomCornerInset = 250;
+			int bottomCornerInset = m_filterProperties.minLineContrast; //300
 			cv::cuda::GpuMat image(m_inputImage);
 
 			// Schachbrettmuster: 24.7 / 14.3
-			cv::Point2f refPoint = cv::Point(550, 800);
+			cv::Point2f refPoint = cv::Point(m_filterProperties.minLineWidth, m_filterProperties.maxLineWidth); //200, 850
 			source_points[0] = refPoint;
 			source_points[1] = cv::Point(0, image.rows - 1); // bottom left corner
 			source_points[2] = cv::Point(image.cols - 1, image.rows - 1); // bottom right corner
@@ -339,14 +339,15 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				transform_matrix,
 				image.size()
 			);
-			imageWarped.download(outputImage);
+			imageWarped.download(outputImage);*/
+
 			// Binarization of specified range
-			/*bva::lineBinarization(m_inputImage, outputImage,
+			bva::lineBinarization(m_inputImage, outputImage,
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
 				m_filterProperties.saturation, m_filterProperties.value);
 
 			//calculate the detectionlines in image
-    	getDetectionLines(detectionLines);
+    	/*getDetectionLines(detectionLines);
 			linePoints = cv::Mat::zeros(outputImage.size(), CV_8U);
 			rightPoints.clear();
 			leftPoints.clear();*/
@@ -366,15 +367,15 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 
 
 			//linePoints.copyTo(outputImage);
-			/*tFloat32 angle = -1;
+			tFloat32 angle = -1;
 			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
-								m_filterProperties.angleThresh, m_filterProperties.distanceThresh);*/
+								m_filterProperties.angleThresh, m_filterProperties.distanceThresh);
 
 			//find the lines in image and calculate the desired steering angle
 			//tFloat32 angle = -1;
 			//angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
-			/*printf("Winkel %f\n", angle);
-			transmitValue(angle);*/
+			printf("Winkel %f\n", angle);
+			transmitValue(angle);
 		}
 		pSample->Unlock(l_pSrcBuffer);
 	}
