@@ -2,6 +2,8 @@
 
 #define rad2deg(x) (x) * 180.0f / CV_PI
 
+#define deg2rad(x) (x) / 180.0f * CV_PI
+
 static float bva_angleThresh;
 
 static float bva_distanceThresh;
@@ -104,8 +106,8 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	cv::Point2f dest_points[4];
 
 	// Parameters
-	cv::Point2f refPoint = cv::Point(550, 800);
-	int bottomCornerInset = 250;
+	cv::Point2f refPoint = cv::Point(230, 270);
+	int bottomCornerInset = 550;
 
 	/*	TODO: refPoint.x < imageSize.width / 2
 	 * 	-> ansonsten wird das bild gespiegelt?!
@@ -141,6 +143,19 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 	hough->detect(contoursWarped, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);
+
+	// Apply Normalization
+	for (cv::Vec2f& line : lines) {
+		float angle = rad2deg(line[1]);
+		float dist = line[0];
+
+		if (angle > 90) {
+			line[0] = -dist;
+			line[1] = deg2rad(angle - 180.0f);
+		} else if (angle < 0 || angle > 270) {
+			printf("ALARM! %.2f\n", angle);
+		}
+	}
 
 	// Create our final mat on GPU and write the contours to it.
 	cv::cuda::GpuMat result(image.size(), CV_8U);
