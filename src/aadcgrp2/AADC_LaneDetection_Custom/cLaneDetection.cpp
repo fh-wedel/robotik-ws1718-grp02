@@ -309,7 +309,7 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
 
-			cv::Mat transform_matrix;
+			/*cv::Mat transform_matrix;
 			cv::Point2f source_points[4];
 			cv::Point2f dest_points[4];
 			int bottomCornerInset = m_filterProperties.minLineContrast; //300
@@ -335,10 +335,10 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				transform_matrix,
 				image.size()
 			);
-			imageWarped.download(outputImage);
+			imageWarped.download(outputImage);*/
 
 			// Binarization of specified range
-			bva::lineBinarization(outputImage, outputImage,
+			bva::lineBinarization(m_inputImage, outputImage,
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
 				m_filterProperties.saturation, m_filterProperties.value);
 
