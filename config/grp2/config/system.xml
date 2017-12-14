@@ -12,9 +12,7 @@
    <graph>
     <subgraph alias="Base_Config" idref="Base_Config" priority="1" />
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="2">
-     <settings>
-      <property name="Transmit rate in ms" type="Int" value="250" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="10">
      <settings>
@@ -22,14 +20,11 @@
      </settings>
     </filter>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="6">
-     <settings>
-      <property name="Desktop" type="Int" value="0" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="AADC_Car_Controller" idref="adtf.aadc.CarController" priority="3">
      <settings>
       <property name="active" type="Bool" value="true" />
-      <property name="Desktop" type="Int" value="0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="AADC_Sensor_Visualization.UltrasonicStruct" interface="" source="Base_Config.UltrasonicStruct" />
@@ -64,10 +59,7 @@
      </settings>
     </filter>
     <filter alias="AADC_Driver_Module" idref="adtf.aadc.driverModule" priority="5">
-     <settings>
-      <property name="Debug Output to Console" type="Bool" value="false" />
-      <property name="Desktop" type="Int" value="0" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Driver_Module.Jury_Struct" interface="" source="Base_Config.Jury_Struct" />
     <connection connection_priority="50" dest="AADC_Driver_Module.Maneuver_List" interface="" source="Base_Config.Jury_ManeuverList" />
@@ -95,15 +87,6 @@
     <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="11">
      <settings>
       <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-      <property name="Algorithm::blurRadius" type="Int" value="5" />
-      <property name="Algorithm::maxDepth" type="Int" value="4000" />
-      <property name="Algorithm::minDepth" type="Int" value="0" />
-      <property name="ColourStream::Colour Stream FPS" type="Int" value="30" />
-      <property name="ColourStream::Enable Colour Stream" type="Bool" value="true" />
-      <property name="DepthStream::Depth Stream FPS" type="Int" value="30" />
-      <property name="DepthStream::Depth Stream Resolution" type="String" value="640x480" />
-      <property name="DepthStream::Enable Depth Stream" type="Bool" value="true" />
-      <property name="Enable Debug Logging" type="Bool" value="false" />
       <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MAX" type="Float" value="65535.0" />
       <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MIN" type="Float" value="0.0" />
       <property name="R200::RS_OPTION_R200_DEPTH_CONTORL_TEXTURE_DIFFERENCE_THRESHOLD" type="Float" value="24.0" />
@@ -149,9 +132,7 @@
   <configuration description="" name="Playback">
    <graph>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="1">
-     <settings>
-      <property name="Desktop" type="Int" value="0" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="3">
      <settings>
@@ -160,76 +141,42 @@
     </filter>
     <filter alias="AADC_Arduino_Communication" idref="adtf.aadc.arduinoCommunication" priority="3">
      <settings>
-      <property name="Log serial communication" type="Bool" value="false" />
+      <property name="active" type="Bool" value="false" />
      </settings>
     </filter>
     <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="4">
-     <settings>
-      <property name="Algorithm::MaxLeftAngle" type="Float" value="34,2.0" />
-      <property name="Algorithm::MaxRightAngle" type="Float" value="34,2.0" />
-      <property name="Debug Mode" type="Bool" value="false" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="5">
-     <settings>
-      <property name="Transmit rate in ms" type="Int" value="250" />
-     </settings>
+     <settings />
     </filter>
-    <connection connection_priority="50" dest="AADC_Arduino_Communication.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
-    <connection connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
+    <connection active="false" connection_priority="50" dest="AADC_Arduino_Communication.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
+    <connection active="false" connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
     <filter alias="Felix_MedianFilter" idref="adtf.aadc.felix.MedianFilter" priority="5">
-     <settings>
-      <property name="Debug Mode" type="Bool" value="false" />
-      <property name="Filter::WindowSize" type="Int" value="40" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="Felix_MedianFilter" />
     <filter alias="AADC_Converter_Wheels_Custom_" idref="adtf.aadc.converterWheels_Custom" priority="6">
-     <settings>
-      <property name="Debug Mode" type="Bool" value="false" />
-      <property name="Filter constant first order" type="Float" value="0,3.0" />
-      <property name="Filtering enabled" type="Bool" value="false" />
-      <property name="Plausibilize with Direction Indicator" type="Bool" value="true" />
-      <property name="Use Speed Controller Input Direction" type="Bool" value="true" />
-      <property name="Use Speed Controller Input Direction - Deadband" type="Float" value="0,1000000015.0" />
-      <property name="Wheel circumference" type="Float" value="0,332.0" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="6">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
-      <property name="PID::Kd_value" type="Float" value="1.0" />
-      <property name="PID::Ki_value" type="Float" value="0,001.0" />
-      <property name="PID::Kp_value" type="Float" value="1,1.0" />
-      <property name="PID::Maximum output" type="Float" value="10.0" />
-      <property name="PID::Minimum output" type="Float" value="-10.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="AADC_Converter_Wheels_Custom_.car_speed" />
     <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="7">
-     <settings>
-      <property name="Transmit rate in ms" type="Int" value="250" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="8">
-     <settings>
-      <property name="Debug Mode" type="Bool" value="false" />
-      <property name="outputValue" type="Float" value="0.0" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="Felix_LinearFunction" idref="adtf.aadc.felix.LinearFunction" priority="9">
-     <settings>
-      <property name="Debug Mode" type="Bool" value="false" />
-      <property name="Gain::Gain" type="Float" value="1.0" />
-      <property name="Gain::OverwriteGain" type="Bool" value="false" />
-      <property name="Offset::Offset" type="Float" value="0.0" />
-      <property name="Offset::OverwriteOffset" type="Bool" value="false" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger2.WatchdogAliveSignal" />
     <connection connection_priority="50" dest="Felix_LinearFunction.input" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
-    <filter alias="Table_Display" idref="adtf.visual.table_display" priority="10" />
     <filter alias="AADC_Lane_Detection_Custom2" idref="adtf.aadc_LaneDetection_Custom" priority="4">
      <settings>
       <property name="Algorithm::Angle Threshold" type="Float" value="20.0" />
@@ -240,25 +187,18 @@
       <property name="Algorithm::Minimum Line Width" type="Int" value="200" />
       <property name="Algorithm::Saturation" type="Int" value="80" />
       <property name="Algorithm::Value" type="Int" value="40" />
-      <property name="Algorithm::Distance Threshold" type="Float" value="200.0" />
-      <property name="Algorithm::Hue High" type="Int" value="120" />
-      <property name="Algorithm::Hue Low" type="Int" value="90" />
-      <property name="Algorithm::Image Binarization Threshold" type="Int" value="100" />
-      <property name="ROI::Height" type="Int" value="200" />
-      <property name="ROI::Width" type="Int" value="1280" />
-      <property name="ROI::XOffset" type="Int" value="0" />
-      <property name="ROI::YOffset" type="Int" value="500" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Felix_MedianFilter.input" interface="" source="AADC_Lane_Detection_Custom2.steeringAngle" />
     <filter alias="Hough_Display" idref="adtf.visual.video_display" priority="8" />
     <connection connection_priority="50" dest="Hough_Display.input" interface="" source="AADC_Lane_Detection_Custom2.Video_Output_Debug" />
-    <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="11">
+    <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="10">
      <settings>
-      <property name="filename" type="String" value="/home/aadc/Desktop/Aufnahmen/new_camera_angle_split_000.dat" />
+      <property name="filename" type="String" value="../../hoe/files/Beschleunigen_split_000.dat" />
      </settings>
     </filter>
-    <connection connection_priority="50" dest="AADC_Lane_Detection_Custom2.Video_Input" interface="" source="Harddisk_Player.Realsense_outputRGB" />
+    <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="Harddisk_Player.WheelLeftStruct" />
+    <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="Harddisk_Player.WheelRightStruct" />
     <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="Harddisk_Player.Realsense_outputRGB" />
    </graph>
   </configuration>
@@ -296,15 +236,6 @@
     <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="3">
      <settings>
       <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-      <property name="Algorithm::blurRadius" type="Int" value="5" />
-      <property name="Algorithm::maxDepth" type="Int" value="4000" />
-      <property name="Algorithm::minDepth" type="Int" value="0" />
-      <property name="ColourStream::Colour Stream FPS" type="Int" value="30" />
-      <property name="ColourStream::Enable Colour Stream" type="Bool" value="true" />
-      <property name="DepthStream::Depth Stream FPS" type="Int" value="30" />
-      <property name="DepthStream::Depth Stream Resolution" type="String" value="640x480" />
-      <property name="DepthStream::Enable Depth Stream" type="Bool" value="true" />
-      <property name="Enable Debug Logging" type="Bool" value="false" />
       <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MAX" type="Float" value="65535.0" />
       <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MIN" type="Float" value="0.0" />
       <property name="R200::RS_OPTION_R200_DEPTH_CONTORL_TEXTURE_DIFFERENCE_THRESHOLD" type="Float" value="24.0" />
@@ -349,14 +280,6 @@
       <property name="Algorithm::Minimum Line Width" type="Int" value="230" />
       <property name="Algorithm::Saturation" type="Int" value="70" />
       <property name="Algorithm::Value" type="Int" value="70" />
-      <property name="Algorithm::Distance Threshold" type="Float" value="200.0" />
-      <property name="Algorithm::Hue High" type="Int" value="120" />
-      <property name="Algorithm::Hue Low" type="Int" value="90" />
-      <property name="Algorithm::Image Binarization Threshold" type="Int" value="100" />
-      <property name="ROI::Height" type="Int" value="200" />
-      <property name="ROI::Width" type="Int" value="1280" />
-      <property name="ROI::XOffset" type="Int" value="0" />
-      <property name="ROI::YOffset" type="Int" value="500" />
      </settings>
     </filter>
    </graph>
@@ -367,31 +290,20 @@
      <settings>
       <property name="Gain::Gain" type="Float" value="0,1.0" />
       <property name="Gain::OverwriteGain" type="Bool" value="true" />
-      <property name="Debug Mode" type="Bool" value="false" />
-      <property name="Offset::Offset" type="Float" value="0.0" />
-      <property name="Offset::OverwriteOffset" type="Bool" value="false" />
      </settings>
     </filter>
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="3">
      <settings>
       <property name="outputValue" type="Float" value="1.0" />
-      <property name="Debug Mode" type="Bool" value="false" />
      </settings>
     </filter>
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="4">
-     <settings>
-      <property name="Transmit rate in ms" type="Int" value="250" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="5">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
       <property name="PID::Maxiumum output" type="Float" value="10.0" />
-      <property name="PID::Kd_value" type="Float" value="1.0" />
-      <property name="PID::Ki_value" type="Float" value="0,001.0" />
-      <property name="PID::Kp_value" type="Float" value="1,1.0" />
-      <property name="PID::Maximum output" type="Float" value="10.0" />
-      <property name="PID::Minimum output" type="Float" value="-10.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
@@ -399,14 +311,11 @@
     <connection connection_priority="50" dest="Felix_LinearFunction.input" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="Felix_LinearFunction" />
     <filter alias="AADC_Watchdog_Trigger2" idref="adtf.aadc.watchdogTrigger" priority="5">
-     <settings>
-      <property name="Transmit rate in ms" type="Int" value="250" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="Float_Value_Generator2" idref="adtf.aadc.FloatValueGenerator" priority="6">
      <settings>
       <property name="outputValue" type="Float" value="0,1.0" />
-      <property name="Debug Mode" type="Bool" value="false" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator2.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger2.WatchdogAliveSignal" />
@@ -416,14 +325,10 @@
   <configuration description="" name="Wheel_Converter">
    <graph>
     <filter alias="AADC_Arduino_Communication" idref="adtf.aadc.arduinoCommunication" priority="1">
-     <settings>
-      <property name="Log serial communication" type="Bool" value="false" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="1">
-     <settings>
-      <property name="Desktop" type="Int" value="0" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="AADC_Arduino_Communication.UltrasonicStruct" />
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="AADC_Arduino_Communication.InerMeasUnitStruct" />
@@ -431,22 +336,13 @@
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="AADC_Arduino_Communication.WheelRightStruct" />
     <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="AADC_Arduino_Communication.VoltageStruct" />
     <filter alias="AADC_Converter_Wheels_Custom_" idref="adtf.aadc.converterWheels_Custom" priority="2">
-     <settings>
-      <property name="Debug Mode" type="Bool" value="false" />
-      <property name="Filter constant first order" type="Float" value="0,3.0" />
-      <property name="Filtering enabled" type="Bool" value="false" />
-      <property name="Plausibilize with Direction Indicator" type="Bool" value="true" />
-      <property name="Use Speed Controller Input Direction" type="Bool" value="true" />
-      <property name="Use Speed Controller Input Direction - Deadband" type="Float" value="0,1000000015.0" />
-      <property name="Wheel circumference" type="Float" value="0,332.0" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="AADC_Arduino_Communication.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="AADC_Arduino_Communication.WheelRightStruct" />
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="2">
      <settings>
       <property name="outputValue" type="Float" value="0,5.0" />
-      <property name="Debug Mode" type="Bool" value="false" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
@@ -456,9 +352,7 @@
      </settings>
     </filter>
     <filter alias="AADC_Watchdog_Trigger3" idref="adtf.aadc.watchdogTrigger" priority="2">
-     <settings>
-      <property name="Transmit rate in ms" type="Int" value="250" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="AADC_Arduino_Communication.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger3.WatchdogAliveSignal" />
     <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="4">
@@ -470,7 +364,6 @@
       <property name="PID::Kd_value" type="Float" value="0.0" />
       <property name="PID::Maxiumum output" type="Float" value="10.0" />
       <property name="PID::Minimum output" type="Float" value="-100.0" />
-      <property name="PID::Maximum output" type="Float" value="10.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
@@ -484,14 +377,10 @@
    </settings>
    <graph>
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="1">
-     <settings>
-      <property name="Transmit rate in ms" type="Int" value="250" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="2">
-     <settings>
-      <property name="Desktop" type="Int" value="0" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="AADC_AHRS_Calculator" idref="adtf.aadc.AHRSCalculator" priority="3" />
     <subgraph alias="Base_Config" idref="Base_Config" priority="4" />
@@ -515,15 +404,10 @@
     <filter alias="Felix_MedianFilter" idref="adtf.aadc.felix.MedianFilter" priority="5">
      <settings>
       <property name="Filter::WindowSize" type="Int" value="10" />
-      <property name="Debug Mode" type="Bool" value="false" />
      </settings>
     </filter>
     <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="6">
-     <settings>
-      <property name="Algorithm::MaxLeftAngle" type="Float" value="34,2.0" />
-      <property name="Algorithm::MaxRightAngle" type="Float" value="34,2.0" />
-      <property name="Debug Mode" type="Bool" value="false" />
-     </settings>
+     <settings />
     </filter>
     <filter alias="RGB_Display" idref="adtf.visual.video_display" priority="7" />
     <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="Felix_MedianFilter" />
@@ -532,15 +416,6 @@
     <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="8">
      <settings>
       <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-      <property name="Algorithm::blurRadius" type="Int" value="5" />
-      <property name="Algorithm::maxDepth" type="Int" value="4000" />
-      <property name="Algorithm::minDepth" type="Int" value="0" />
-      <property name="ColourStream::Colour Stream FPS" type="Int" value="30" />
-      <property name="ColourStream::Enable Colour Stream" type="Bool" value="true" />
-      <property name="DepthStream::Depth Stream FPS" type="Int" value="30" />
-      <property name="DepthStream::Depth Stream Resolution" type="String" value="640x480" />
-      <property name="DepthStream::Enable Depth Stream" type="Bool" value="true" />
-      <property name="Enable Debug Logging" type="Bool" value="false" />
       <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MAX" type="Float" value="65535.0" />
       <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MIN" type="Float" value="0.0" />
       <property name="R200::RS_OPTION_R200_DEPTH_CONTORL_TEXTURE_DIFFERENCE_THRESHOLD" type="Float" value="24.0" />
@@ -585,15 +460,6 @@
       <property name="Algorithm::Minimum Line Width" type="Int" value="200" />
       <property name="Algorithm::Saturation" type="Int" value="100" />
       <property name="Algorithm::Value" type="Int" value="80" />
-      <property name="Algorithm::Distance Threshold" type="Float" value="200.0" />
-      <property name="Algorithm::Hough Threshold" type="Int" value="250" />
-      <property name="Algorithm::Hue High" type="Int" value="120" />
-      <property name="Algorithm::Hue Low" type="Int" value="90" />
-      <property name="Algorithm::Image Binarization Threshold" type="Int" value="100" />
-      <property name="ROI::Height" type="Int" value="200" />
-      <property name="ROI::Width" type="Int" value="1280" />
-      <property name="ROI::XOffset" type="Int" value="0" />
-      <property name="ROI::YOffset" type="Int" value="500" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Video_Display.input" interface="" source="AADC_Lane_Detection_Custom2.Video_Output_Debug" />
