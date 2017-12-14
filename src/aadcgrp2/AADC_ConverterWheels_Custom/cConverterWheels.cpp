@@ -20,7 +20,6 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include "stdafx.h"
 #include "cConverterWheels.h"
 #include <iostream>
-#include <fstream>
 
 
 #define CW_SLOT_COUNT 60.f
@@ -379,16 +378,6 @@ tFloat32 cConverterWheels::calculateSpeed(const tUInt32 &ui32CurrentTimeStamp, c
 											                         (static_cast<tFloat32>(ui32CurrentTimeStamp - ui32LastTimeStamp) / static_cast<tFloat32>(1e6));
 
     if (m_bShowDebug) {printf("Current Speed: %f\n", speed);}
-
-    {
-      // Write speed data to file
-      static ofstream file("/home/aadc/Desktop/speedValue.txt");
-      if (file.is_open()) {
-        file << ui32CurrentTimeStamp << ";" << speed << ";\n";
-      } else {
-        std::cout << "Cant access file!\n";
-      }
-    }
 
 
     return speed;
