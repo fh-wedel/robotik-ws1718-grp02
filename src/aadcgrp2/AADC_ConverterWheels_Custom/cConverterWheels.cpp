@@ -186,17 +186,9 @@ tResult cConverterWheels::OnPinEvent(    IPin* pSource, tInt nEventCode, tInt nP
                 m_tLastSpeedControllerValue.ui32ArduinoTimestamp = ui32Timestamp;
             }
         }
-        else if (pSource == &m_oInputWheelLeft && false)
+        else if (pSource == &m_oInputWheelLeft)
         {
-          // 888               .d888 888         888       888 888                        888      8888888b.  d8b                   888      888               888 888
-          // 888              d88P"  888         888   o   888 888                        888      888  "Y88b Y8P                   888      888               888 888
-          // 888              888    888         888  d8b  888 888                        888      888    888                       888      888               888 888
-          // 888      .d88b.  888888 888888      888 d888b 888 88888b.   .d88b.   .d88b.  888      888    888 888  8888b.  .d8888b  88888b.  888  .d88b.   .d88888 888
-          // 888     d8P  Y8b 888    888         888d88888b888 888 "88b d8P  Y8b d8P  Y8b 888      888    888 888     "88b 88K      888 "88b 888 d8P  Y8b d88" 888 888
-          // 888     88888888 888    888         88888P Y88888 888  888 88888888 88888888 888      888    888 888 .d888888 "Y8888b. 888  888 888 88888888 888  888 Y8P
-          // 888     Y8b.     888    Y88b.       8888P   Y8888 888  888 Y8b.     Y8b.     888      888  .d88P 888 888  888      X88 888 d88P 888 Y8b.     Y88b 888  "
-          // 88888888 "Y8888  888     "Y888      888P     Y888 888  888  "Y8888   "Y8888  888      8888888P"  888 "Y888888  88888P' 88888P"  888  "Y8888   "Y88888 888
-                      
+
             // save the last struct to the struct beforeLast if it is not the first one
             if (m_bfirstSampleReceivedLeftWheel==tTrue)
             {
@@ -383,8 +375,11 @@ tFloat32 cConverterWheels::calculateSpeed(const tUInt32 &ui32CurrentTimeStamp, c
     tFloat32 speed =  (m_f32wheelCircumference /
 			                 CW_SLOT_COUNT
 										                          * static_cast<tFloat32>(ui32Ticks)) /
-											                         (static_cast<tFloat32>(ui32CurrentTimeStamp - ui32LastTimeStamp) / static_cast<tFloat32>(1e6)) * (m_szIDWheelDataLeftI8WheelDir = 0 ? -1 : 1);
-    printf("Current Speed: %f\n", speed);
+											                         (static_cast<tFloat32>(ui32CurrentTimeStamp - ui32LastTimeStamp) / static_cast<tFloat32>(1e6));
+
+    if (m_bShowDebug) {printf("Current Speed: %f\n", speed);}
+
+
     return speed;
 }
 
