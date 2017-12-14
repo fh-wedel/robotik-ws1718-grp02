@@ -480,7 +480,7 @@
    <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="VoltageStruct" x_p2="1352" x_p3="1352" x_p4="1648" x_p5="1648" y_p2="0" y_p3="98" y_p4="98" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="Base_Config" source_pin="UltrasonicStruct" x_p2="1356" x_p3="1356" x_p4="1666" x_p5="1666" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Wheel_Converter" show="true" tab_pos="7" vertical_scrollbar_value="1" zoomfactor="0,833333">
+  <configuration horizontal_scrollbar_value="1" name="Wheel_Converter" show="true" tab_pos="6" vertical_scrollbar_value="1" zoomfactor="0,833333">
    <component height="98" name="Franz_Wheel_Speed_Controller" width="238" x="954" y="32">
     <input_pin name="set_WheelSpeed" />
     <input_pin name="measured_wheelSpeed" />
@@ -555,7 +555,7 @@
    <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="InerMeasUnitStruct" x_p2="1213" x_p3="1213" x_p4="1213" x_p5="1213" y_p2="0" y_p3="224" y_p4="224" y_p5="0" />
    <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="UltrasonicStruct" x_p2="1208" x_p3="1208" x_p4="1208" x_p5="1208" y_p2="0" y_p3="200" y_p4="200" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Marker_Detection" show="true" tab_pos="8" vertical_scrollbar_value="1" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Marker_Detection" show="true" tab_pos="7" vertical_scrollbar_value="1" zoomfactor="1,000000">
    <component height="74" name="Float_Value_Generator2" width="172" x="255" y="143">
     <input_pin name="WatchdogAlive" />
     <output_pin name="floatValue" />
