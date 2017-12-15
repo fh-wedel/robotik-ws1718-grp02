@@ -17,6 +17,8 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define _UltraSonicObstacleDetection_H_
 
 #include "stdafx.h"
+#include "median.h"
+#include "aadc_structs.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.UltraSonicObstacleDetection"
 #define FILTER_NAME "Felix Ultrasonic Obstacle Detection"
