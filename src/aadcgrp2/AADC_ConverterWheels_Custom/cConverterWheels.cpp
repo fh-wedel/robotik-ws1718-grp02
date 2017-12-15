@@ -377,9 +377,6 @@ tFloat32 cConverterWheels::calculateSpeed(const tUInt32 &ui32CurrentTimeStamp, c
 										                          * static_cast<tFloat32>(ui32Ticks)) /
 											                         (static_cast<tFloat32>(ui32CurrentTimeStamp - ui32LastTimeStamp) / static_cast<tFloat32>(1e6));
 
-    if (m_bShowDebug) {printf("Current Speed: %f\n", speed);}
-
-
     return speed;
 }
 
@@ -415,6 +412,8 @@ tResult cConverterWheels::TransmitSamples()
         // if direction is backwards speed should be negative
         if (m_tLastStructLeft.i8WheelDir == 1 && m_tLastStructRight.i8WheelDir == 1)
             f32speed = f32speed * -1;
+
+        if (m_bShowDebug) {printf("Current Speed: %f\n", f32speed);}
     }
     // distance since last sample
     tFloat32 f32distance = 0;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Live2" />
+  <property name="active_configuration" type="String" value="Wheel_Converter" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -87,39 +87,6 @@
     <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="11">
      <settings>
       <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-<<<<<<< HEAD
-=======
-      <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MAX" type="Float" value="65535.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MIN" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTORL_TEXTURE_DIFFERENCE_THRESHOLD" type="Float" value="24.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_ESTIMATE_MEDIAN_DECREMENT" type="Float" value="5.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_ESTIMATE_MEDIAN_INCREMENT" type="Float" value="5.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_LR_THRESHOLD" type="Float" value="24.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_MEDIAN_THRESHOLD" type="Float" value="192.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_NEIGHBOR_THRESHOLD" type="Float" value="7.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SCORE_MAXIMUM_THRESHOLD" type="Float" value="512.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SCORE_MINIMUM_THRESHOLD" type="Float" value="1.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SECOND_PEAK_THRESHOLD" type="Float" value="27.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_TEXTURE_COUNT_THRESHOLD" type="Float" value="6.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_UNITS" type="Float" value="1000.0" />
-      <property name="R200::RS_OPTION_R200_EMITTER_ENABLED" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_LR_AUTO_EYPOSURE_ENABLED" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_LR_EXPOSURE" type="Float" value="164.0" />
-      <property name="R200::RS_OPTION_R200_LR_GAIN" type="Float" value="400.0" />
-      <property name="RS_OPTION_COLOR_BACKLIGHT_COMPENSATION" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_BRIGHTNESS" type="Float" value="56.0" />
-      <property name="RS_OPTION_COLOR_CONTRAST" type="Float" value="32.0" />
-      <property name="RS_OPTION_COLOR_ENABLE_AUTO_EXPOSURE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_ENABLE_AUTO_WHITE_BALANCE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_EXPOSURE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_GAIN" type="Float" value="32.0" />
-      <property name="RS_OPTION_COLOR_GAMMA" type="Float" value="220.0" />
-      <property name="RS_OPTION_COLOR_HUE" type="Float" value="0.0" />
-      <property name="RS_OPTION_COLOR_SATURATION" type="Float" value="128.0" />
-      <property name="RS_OPTION_COLOR_SHARPENSS" type="Float" value="0.0" />
-      <property name="RS_OPTION_COLOR_WHITE_BALANCE" type="Float" value="6500.0" />
-      <property name="RS_OPTION_FRAMES_QUEUE_SIZE" type="Float" value="20.0" />
->>>>>>> 3774c2e3da3058bfc9426c2d9443f050f4d27d95
      </settings>
     </filter>
     <outport alias="Realsense_DepthVis" />
@@ -143,13 +110,7 @@
      </settings>
     </filter>
     <filter alias="AADC_Arduino_Communication" idref="adtf.aadc.arduinoCommunication" priority="3">
-<<<<<<< HEAD
      <settings />
-=======
-     <settings>
-      <property name="active" type="Bool" value="false" />
-     </settings>
->>>>>>> 3774c2e3da3058bfc9426c2d9443f050f4d27d95
     </filter>
     <filter alias="Felix_AngleToServo_Converter" idref="adtf.aadc.felix.AngleToServoConverter" priority="4">
      <settings />
@@ -201,7 +162,7 @@
     <connection connection_priority="50" dest="Hough_Display.input" interface="" source="AADC_Lane_Detection_Custom2.Video_Output_Debug" />
     <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="10">
      <settings>
-      <property name="filename" type="String" value="../../hoe/files/Beschleunigen_split_000.dat" />
+      <property name="filename" type="String" value="../../../../Desktop/Aufnahmen/Beschleunigen_split_001.dat" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="Harddisk_Player.WheelLeftStruct" />
@@ -243,39 +204,6 @@
     <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="3">
      <settings>
       <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-<<<<<<< HEAD
-=======
-      <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MAX" type="Float" value="65535.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MIN" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTORL_TEXTURE_DIFFERENCE_THRESHOLD" type="Float" value="24.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_ESTIMATE_MEDIAN_DECREMENT" type="Float" value="5.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_ESTIMATE_MEDIAN_INCREMENT" type="Float" value="5.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_LR_THRESHOLD" type="Float" value="24.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_MEDIAN_THRESHOLD" type="Float" value="192.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_NEIGHBOR_THRESHOLD" type="Float" value="7.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SCORE_MAXIMUM_THRESHOLD" type="Float" value="512.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SCORE_MINIMUM_THRESHOLD" type="Float" value="1.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SECOND_PEAK_THRESHOLD" type="Float" value="27.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_TEXTURE_COUNT_THRESHOLD" type="Float" value="6.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_UNITS" type="Float" value="1000.0" />
-      <property name="R200::RS_OPTION_R200_EMITTER_ENABLED" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_LR_AUTO_EYPOSURE_ENABLED" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_LR_EXPOSURE" type="Float" value="164.0" />
-      <property name="R200::RS_OPTION_R200_LR_GAIN" type="Float" value="400.0" />
-      <property name="RS_OPTION_COLOR_BACKLIGHT_COMPENSATION" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_BRIGHTNESS" type="Float" value="56.0" />
-      <property name="RS_OPTION_COLOR_CONTRAST" type="Float" value="32.0" />
-      <property name="RS_OPTION_COLOR_ENABLE_AUTO_EXPOSURE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_ENABLE_AUTO_WHITE_BALANCE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_EXPOSURE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_GAIN" type="Float" value="32.0" />
-      <property name="RS_OPTION_COLOR_GAMMA" type="Float" value="220.0" />
-      <property name="RS_OPTION_COLOR_HUE" type="Float" value="0.0" />
-      <property name="RS_OPTION_COLOR_SATURATION" type="Float" value="128.0" />
-      <property name="RS_OPTION_COLOR_SHARPENSS" type="Float" value="0.0" />
-      <property name="RS_OPTION_COLOR_WHITE_BALANCE" type="Float" value="6500.0" />
-      <property name="RS_OPTION_FRAMES_QUEUE_SIZE" type="Float" value="20.0" />
->>>>>>> 3774c2e3da3058bfc9426c2d9443f050f4d27d95
      </settings>
     </filter>
     <connection connection_priority="50" dest="AADC_Lane_Detection_Custom.Video_Input" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
@@ -351,9 +279,7 @@
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="AADC_Arduino_Communication.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="AADC_Arduino_Communication.WheelRightStruct" />
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="2">
-     <settings>
-      <property name="outputValue" type="Float" value="0,5.0" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="3">
@@ -368,17 +294,22 @@
     <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="4">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
-      <property name="PID::Ki_value" type="Float" value="1.0" />
-      <property name="PID::Kp_value" type="Float" value="0.0" />
-      <property name="Controller Typ" type="Int" value="3" />
-      <property name="PID::Kd_value" type="Float" value="0.0" />
-      <property name="PID::Maxiumum output" type="Float" value="10.0" />
+      <property name="PID::Ki_value" type="Float" value="0,98867.0" />
+      <property name="PID::Kp_value" type="Float" value="0,39088.0" />
+      <property name="PID::Kd_value" type="Float" value="0,01398.0" />
       <property name="PID::Minimum output" type="Float" value="-100.0" />
+      <property name="PID::Maximum output" type="Float" value="100.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
-    <connection connection_priority="50" dest="AADC_Arduino_Communication.SpeedController" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="AADC_Converter_Wheels_Custom_.car_speed" />
+    <filter alias="Felix_LinearFunction" idref="adtf.aadc.felix.LinearFunction" priority="5">
+     <settings>
+      <property name="Gain::Gain" type="Float" value="-1.0" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="AADC_Arduino_Communication.SpeedController" interface="" source="Felix_LinearFunction" />
+    <connection connection_priority="50" dest="Felix_LinearFunction.input" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
    </graph>
   </configuration>
   <configuration description="" name="Live2">
@@ -426,39 +357,6 @@
     <filter alias="AADC_Realsense_Camera_Felix" idref="adtf.aadc.felix.aadc_realsense" priority="8">
      <settings>
       <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-<<<<<<< HEAD
-=======
-      <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MAX" type="Float" value="65535.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CLAMP_MIN" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTORL_TEXTURE_DIFFERENCE_THRESHOLD" type="Float" value="24.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_ESTIMATE_MEDIAN_DECREMENT" type="Float" value="5.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_ESTIMATE_MEDIAN_INCREMENT" type="Float" value="5.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_LR_THRESHOLD" type="Float" value="24.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_MEDIAN_THRESHOLD" type="Float" value="192.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_NEIGHBOR_THRESHOLD" type="Float" value="7.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SCORE_MAXIMUM_THRESHOLD" type="Float" value="512.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SCORE_MINIMUM_THRESHOLD" type="Float" value="1.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_SECOND_PEAK_THRESHOLD" type="Float" value="27.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_CONTROL_TEXTURE_COUNT_THRESHOLD" type="Float" value="6.0" />
-      <property name="R200::RS_OPTION_R200_DEPTH_UNITS" type="Float" value="1000.0" />
-      <property name="R200::RS_OPTION_R200_EMITTER_ENABLED" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_LR_AUTO_EYPOSURE_ENABLED" type="Float" value="0.0" />
-      <property name="R200::RS_OPTION_R200_LR_EXPOSURE" type="Float" value="164.0" />
-      <property name="R200::RS_OPTION_R200_LR_GAIN" type="Float" value="400.0" />
-      <property name="RS_OPTION_COLOR_BACKLIGHT_COMPENSATION" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_BRIGHTNESS" type="Float" value="56.0" />
-      <property name="RS_OPTION_COLOR_CONTRAST" type="Float" value="32.0" />
-      <property name="RS_OPTION_COLOR_ENABLE_AUTO_EXPOSURE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_ENABLE_AUTO_WHITE_BALANCE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_EXPOSURE" type="Float" value="1.0" />
-      <property name="RS_OPTION_COLOR_GAIN" type="Float" value="32.0" />
-      <property name="RS_OPTION_COLOR_GAMMA" type="Float" value="220.0" />
-      <property name="RS_OPTION_COLOR_HUE" type="Float" value="0.0" />
-      <property name="RS_OPTION_COLOR_SATURATION" type="Float" value="128.0" />
-      <property name="RS_OPTION_COLOR_SHARPENSS" type="Float" value="0.0" />
-      <property name="RS_OPTION_COLOR_WHITE_BALANCE" type="Float" value="6500.0" />
-      <property name="RS_OPTION_FRAMES_QUEUE_SIZE" type="Float" value="20.0" />
->>>>>>> 3774c2e3da3058bfc9426c2d9443f050f4d27d95
      </settings>
     </filter>
     <connection connection_priority="50" dest="rgb" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
