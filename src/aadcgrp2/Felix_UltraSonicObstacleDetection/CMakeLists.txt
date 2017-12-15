@@ -3,8 +3,8 @@ set(FILTER_NAME UltraSonicObstacleDetection)
 # Specify the filter module target
 adtf_add_filter(${FILTER_NAME}
                 stdafx.h
-                median.h
-                median.cpp
+                ../Felix_MedianFilter/median.h
+                ../Felix_MedianFilter/median.cpp
                 UltraSonicObstacleDetection.h
                 UltraSonicObstacleDetection.cpp
 )

@@ -27,9 +27,14 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cUltraSonicObstacleDetection)
 
 cUltraSonicObstacleDetection::cUltraSonicObstacleDetection(const tChar* __info) : cFilter(__info),
-frontLeftFilter(1), frontCenterLeftFilter(1), frontCenterFilter(1),
-frontCenterRightFilter(1), frontRightFilter(1),
-rearLeftFilter(1), rearCenterFilter(1), rearRightFilter(1),
+frontRightFilter(1),
+frontCenterRightFilter(1),
+frontCenterFilter(1),
+frontCenterLeftFilter(1),
+frontLeftFilter(1),
+rearRightFilter(1),
+rearCenterFilter(1),
+rearLeftFilter(1),
 m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
