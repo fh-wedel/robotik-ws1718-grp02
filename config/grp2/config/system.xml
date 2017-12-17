@@ -199,7 +199,29 @@
     </filter>
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="Harddisk_Player.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="Harddisk_Player.WheelRightStruct" />
+    <filter alias="AADC_Lane_Detection_Custom3" idref="adtf.aadc_LaneDetection_Custom" priority="4">
+     <settings>
+      <property name="Algorithm::Angle Threshold" type="Float" value="20.0" />
+      <property name="Algorithm::Detection Lines" type="Int" value="200" />
+      <property name="Algorithm::Hough Threshold" type="Int" value="100" />
+      <property name="Algorithm::Maximum Line Width" type="Int" value="850" />
+      <property name="Algorithm::Minimum Line Contrast" type="Int" value="300" />
+      <property name="Algorithm::Minimum Line Width" type="Int" value="200" />
+      <property name="Algorithm::Saturation" type="Int" value="80" />
+      <property name="Algorithm::Value" type="Int" value="40" />
+     </settings>
+    </filter>
+    <filter alias="Hough_Display2" idref="adtf.visual.video_display" priority="8" />
+    <filter alias="Realsense_RGB_Proc_Display2" idref="adtf.visual.video_display" priority="3">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="AADC_Lane_Detection_Custom2.Video_Input" interface="" source="Harddisk_Player.Realsense_outputRGB" />
     <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="Harddisk_Player.Realsense_outputRGB" />
+    <connection connection_priority="50" dest="AADC_Lane_Detection_Custom3.Video_Input" interface="" source="Harddisk_Player.RearView_outputRGB" />
+    <connection connection_priority="50" dest="Hough_Display2.input" interface="" source="AADC_Lane_Detection_Custom3.Video_Output_Debug" />
+    <connection connection_priority="50" dest="Realsense_RGB_Proc_Display2.input" interface="" source="Harddisk_Player.RearView_outputRGB" />
    </graph>
   </configuration>
   <configuration description="" name="Recording">

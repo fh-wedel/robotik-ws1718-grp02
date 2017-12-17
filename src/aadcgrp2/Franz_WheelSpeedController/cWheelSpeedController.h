@@ -252,6 +252,9 @@ private:
     /*! indicates of bufferIDs were set */
     tBool m_bInputActuatorGetID;
 
+    // Gain to apply after the controller
+    tFloat64    m_f64Gain;
+
     // PID-Controller values
     //
     /*! proportional factor for PID Controller */
@@ -261,12 +264,12 @@ private:
     /*! differential factor for PID Controller */
     tFloat64    m_f64PIDKd;
     /*! the minimum output value for the controller */
-    tFloat64 m_f64PIDMinimumOutput;
+    tFloat64    m_f64PIDMinimumOutput;
     /*! the maximum output value for the controller */
-    tFloat64 m_f64PIDMaximumOutput;
+    tFloat64    m_f64PIDMaximumOutput;
 
     /*! holds the last speed value */
-    tFloat64 m_f64LastSpeedValue;
+    tFloat64    m_f64LastSpeedValue;
 
 
 

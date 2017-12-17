@@ -8,8 +8,10 @@
   </folder>
   <folder name="windows">
    <folder Height="366" Maximized="false" PosX="0" PosY="0" Visible="false" Width="725" name="AADC_Sensor_Visualization" />
-   <folder Height="467" Maximized="false" PosX="0" PosY="0" Visible="true" Width="599" name="Realsense_RGB_Proc_Display" />
-   <folder Height="574" Maximized="false" PosX="35" PosY="132" Visible="false" Width="587" name="Hough_Display" />
+   <folder Height="467" Maximized="false" PosX="2" PosY="3" Visible="true" Width="599" name="Realsense_RGB_Proc_Display" />
+   <folder Height="574" Maximized="false" PosX="554" PosY="127" Visible="true" Width="587" name="Hough_Display" />
+   <folder Height="428" PosX="545" PosY="3" Visible="true" Width="624" name="Realsense_RGB_Proc_Display2" />
+   <folder Height="548" PosX="25" PosY="181" Visible="true" Width="784" name="Hough_Display2" />
   </folder>
  </folder>
  <folder name="Live2">

@@ -22,6 +22,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include "stdafx.h"
 #include "cWheelSpeedController.h"
 
+#define WSC_PROP_GAIN "Gain"
 #define WSC_PROP_PID_KP "PID::Kp_value"
 #define WSC_PROP_PID_KI "PID::Ki_value"
 #define WSC_PROP_PID_KD "PID::Kd_value"
@@ -44,13 +45,14 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define WSC_PROP_PID_MINOUTPUT "PID::Minimum output"
 #define WSC_PROP_DEBUG_MODE "Debug Mode"
 
-#define max(x, y) x > y ? x : y
-#define min(x, y) x < y ? x : y
-
 
 ADTF_FILTER_PLUGIN("Franz Wheel Speed Controller", OID_ADTF_WHEELSPEEDCONTROLLER, cWheelSpeedController)
 
 cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__info) {
+
+    SetPropertyFloat(WSC_PROP_GAIN, 1);
+    SetPropertyBool(WSC_PROP_GAIN NSSUBPROP_ISCHANGEABLE, tTrue);
+    SetPropertyStr(WSC_PROP_GAIN NSSUBPROP_DESCRIPTION, "Gain to apply after the controller");
 
     SetPropertyFloat(WSC_PROP_PID_KP, 1.1);
     SetPropertyBool(WSC_PROP_PID_KP NSSUBPROP_ISCHANGEABLE, tTrue);
@@ -95,7 +97,10 @@ tResult cWheelSpeedController::PropertyChanged(const tChar* strPropertyName) {
     if (strPropertyName != NULL) {
         RETURN_IF_POINTER_NULL(strPropertyName);
 
-        if (cString::IsEqual(strPropertyName, WSC_PROP_PID_KP)) {
+        if (cString::IsEqual(strPropertyName, WSC_PROP_GAIN)) {
+            m_f64Gain = GetPropertyFloat(WSC_PROP_GAIN);
+
+        } else if (cString::IsEqual(strPropertyName, WSC_PROP_PID_KP)) {
             m_f64PIDKp = GetPropertyFloat(WSC_PROP_PID_KP);
 
         } else if (cString::IsEqual(strPropertyName, WSC_PROP_PID_KD)) {
@@ -276,7 +281,9 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
             m_pDescActuator->GetMediaSampleSerializer(&pSerializer);
             tInt nSize = pSerializer->GetDeserializedSize();
             pNewMediaSample->AllocBuffer(nSize);
-            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput);
+
+            // Apply gain and change the sign of the output to drive in the right direction
+            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput * m_f64Gain * -1);
             {
                 // focus for sample write lock
                 //read data from the media sample with the coder of the descriptor
@@ -326,8 +333,6 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
     RETURN_NOERROR;
 }
-
-
 
 tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) {
 

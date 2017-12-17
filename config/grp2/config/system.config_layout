@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="1" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="18" zoomfactor="1,000000">
+   <component height="98" name="Realsense_RGB_Proc_Display2" width="189" x="309" y="1036">
+    <input_pin name="input" />
+    <input_pin name="gcl_input" />
+    <output_pin name="video_output" />
+   </component>
+   <component height="98" name="Hough_Display2" width="172" x="594" y="849">
+    <input_pin name="input" />
+    <input_pin name="gcl_input" />
+    <output_pin name="video_output" />
+   </component>
+   <component height="122" name="AADC_Lane_Detection_Custom3" width="201" x="275" y="814">
+    <input_pin name="Video_Input" />
+    <output_pin name="Video_Output_Debug" />
+    <output_pin name="GCL" />
+    <output_pin name="steeringAngle" />
+   </component>
    <component height="266" name="Harddisk_Player" width="172" x="14" y="102">
     <output_pin name="WheelLeftStruct" />
     <output_pin name="WheelRightStruct" />
     <output_pin name="Realsense_outputRGB" />
+    <output_pin name="RearView_outputRGB" />
     <output_pin name="InerMeasUnitStruct" />
     <output_pin name="UltrasonicStruct" />
     <output_pin name="VoltageStruct" />
     <output_pin name="Realsense_DepthRaw" />
     <output_pin name="Realsense_DepthVis" />
-    <output_pin name="RearView_outputRGB" />
     <property name="alias" type="string" value="Harddisk_Player" />
     <property name="ask_for_references" type="bool" value="false" />
     <property name="cached_sectors" type="int" value="2048" />
@@ -24,7 +40,7 @@
     <property name="emulate_external_clocks" type="bool" value="true" />
     <property name="enable_loop_mode" type="bool" value="false" />
     <property name="enable_perf_log" type="bool" value="false" />
-    <property name="filename" timestamp="212379820849000000" type="file" value="../../hoe/files/Beschleunigen_split_001.dat" />
+    <property name="filename" timestamp="212379820760000000" type="file" value="../../hoe/files/Beschleunigen_split_000.dat" />
     <property name="Identifier" type="string" value="adtf.stg.harddisk_player" />
     <property name="idref" type="string" value="adtf.stg.harddisk_player" />
     <property name="ignore_unkown_classes" type="bool" value="false" />
@@ -120,7 +136,7 @@
     <output_pin name="WheelRightStruct" />
     <output_pin name="VoltageStruct" />
    </component>
-   <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="276" y="375">
+   <component height="98" name="Realsense_RGB_Proc_Display" width="182" x="277" y="373">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
     <output_pin name="video_output" />
@@ -132,7 +148,11 @@
     <input_pin name="WheelRightStruct" />
     <input_pin name="VoltageStruct" />
    </component>
-   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="Realsense_outputRGB" x_p2="222" x_p3="222" x_p4="264" x_p5="264" y_p2="0" y_p3="417" y_p4="417" y_p5="0" />
+   <connection dest="Realsense_RGB_Proc_Display2" dest_pin="input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="RearView_outputRGB" x_p2="238" x_p3="238" x_p4="297" x_p5="297" y_p2="0" y_p3="1078" y_p4="1078" y_p5="0" />
+   <connection dest="Hough_Display2" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom3" source_pin="Video_Output_Debug" x_p2="488" x_p3="488" x_p4="582" x_p5="582" y_p2="0" y_p3="891" y_p4="891" y_p5="0" />
+   <connection dest="AADC_Lane_Detection_Custom3" dest_pin="Video_Input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="RearView_outputRGB" x_p2="238" x_p3="238" x_p4="263" x_p5="263" y_p2="0" y_p3="856" y_p4="856" y_p5="0" />
+   <connection dest="Realsense_RGB_Proc_Display" dest_pin="input" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="Realsense_outputRGB" x_p2="234" x_p3="234" x_p4="264" x_p5="264" y_p2="0" y_p3="415" y_p4="415" y_p5="0" />
+   <connection dest="AADC_Lane_Detection_Custom2" dest_pin="Video_Input" reldiff="0" shape_type="4" source="Harddisk_Player" source_pin="Realsense_outputRGB" x_p2="234" x_p3="234" x_p4="238" x_p5="238" y_p2="0" y_p3="83" y_p4="83" y_p5="0" />
    <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelRight_Struct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelRightStruct" x_p2="218" x_p3="218" x_p4="385" x_p5="385" y_p2="0" y_p3="711" y_p4="711" y_p5="0" />
    <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelLeft_Struct" reldiff="0" shape_type="3" source="Harddisk_Player" source_pin="WheelLeftStruct" x_p2="214" x_p3="214" x_p4="389" x_p5="389" y_p2="0" y_p3="671" y_p4="671" y_p5="0" />
    <connection dest="Hough_Display" dest_pin="input" reldiff="0" shape_type="3" source="AADC_Lane_Detection_Custom2" source_pin="Video_Output_Debug" x_p2="467" x_p3="467" x_p4="515" x_p5="515" y_p2="0" y_p3="172" y_p4="172" y_p5="0" />
