@@ -36,17 +36,17 @@ cLinearFunction::cLinearFunction(const tChar* __info) : cFilter(__info), m_bDebu
     SetPropertyStr("Gain::Gain" NSSUBPROP_DESCRIPTION, "gain");
     SetPropertyBool("Gain::Gain" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    SetPropertyBool("Gain::OverwriteGain", false);
-    SetPropertyStr("Gain::OverwriteGain" NSSUBPROP_DESCRIPTION, "Ignore gain input pin.");
-    SetPropertyBool("Gain::OverwriteGain" NSSUBPROP_ISCHANGEABLE, tTrue);
+    SetPropertyBool("Gain::OverwritePin", false);
+    SetPropertyStr("Gain::OverwritePin" NSSUBPROP_DESCRIPTION, "Ignore gain input pin.");
+    SetPropertyBool("Gain::OverwritePin" NSSUBPROP_ISCHANGEABLE, tTrue);
 
     SetPropertyFloat("Offset::Offset", 0);
     SetPropertyStr("Offset::Offset" NSSUBPROP_DESCRIPTION, "offset");
     SetPropertyBool("Offset::Offset" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    SetPropertyBool("Offset::OverwriteOffset", false);
-    SetPropertyStr("Offset::OverwriteOffset" NSSUBPROP_DESCRIPTION, "Ignore offset input pin.");
-    SetPropertyBool("Offset::OverwriteOffset" NSSUBPROP_ISCHANGEABLE, tTrue);
+    SetPropertyBool("Offset::OverwritePin", false);
+    SetPropertyStr("Offset::OverwritePin" NSSUBPROP_DESCRIPTION, "Ignore offset input pin.");
+    SetPropertyBool("Offset::OverwritePin" NSSUBPROP_ISCHANGEABLE, tTrue);
 
     m_mostRecentValue = 0;
 }
@@ -138,14 +138,14 @@ tResult cLinearFunction::PropertyChanged(const tChar* strName) {
     if (cString::IsEqual(strName, "Gain::Gain")) {
         m_filterProperties.gain = GetPropertyFloat("Gain::Gain");
 
-    } else if (cString::IsEqual(strName, "Gain::OverwriteGain")) {
-        m_filterProperties.overwriteGain = GetPropertyBool("Gain::OverwriteGain");
+    } else if (cString::IsEqual(strName, "Gain::OverwritePin")) {
+        m_filterProperties.overwriteGain = GetPropertyBool("Gain::OverwritePin");
 
     } else if (cString::IsEqual(strName, "Offset::Offset")) {
         m_filterProperties.offset = GetPropertyFloat("Offset::Offset");
 
-    } else if (cString::IsEqual(strName, "Offset::OverwriteOffset")) {
-        m_filterProperties.overwriteOffset = GetPropertyBool("Offset::OverwriteOffset");
+    } else if (cString::IsEqual(strName, "Offset::OverwritePin")) {
+        m_filterProperties.overwriteOffset = GetPropertyBool("Offset::OverwritePin");
     }
 
 

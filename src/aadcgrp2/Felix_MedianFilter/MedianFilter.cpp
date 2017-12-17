@@ -104,7 +104,7 @@ tResult cMedianFilter::PropertyChanged(const tChar* strName) {
     RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
     //associate the properties to the member
     if (cString::IsEqual(strName, "Filter::WindowSize")) {
-        m_filterProperties.windowSize = GetPropertyFloat("Filter::WindowSize");
+        medianFilter.windowSize = GetPropertyFloat("Filter::WindowSize");
     }
 
 	RETURN_NOERROR;
@@ -125,7 +125,7 @@ tResult cMedianFilter::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, 
 
 tResult cMedianFilter::OnValueChanged(tFloat32 newValue) {
 
-    medianFilter.addValue(newValue);
+    medianFilter.pushValue(newValue);
 
     // apply median filter and transmit
     tFloat32 median = medianFilter.calculateMedian();

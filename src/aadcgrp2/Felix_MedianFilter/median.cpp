@@ -4,7 +4,7 @@ cMedian::cMedian(int windowSize) {
     this->windowSize = windowSize;
 }
 
-void cMedian::addValue(float newValue) {
+void cMedian::pushValue(float newValue) {
     // erase oldest values if window size has been reached
     int amountOfOverflownElements = storedValues.size() - windowSize;
     if (amountOfOverflownElements > 0) {

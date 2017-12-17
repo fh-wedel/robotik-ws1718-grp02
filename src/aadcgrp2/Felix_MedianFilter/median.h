@@ -17,7 +17,7 @@ public:
     /*! the most up to date values */
     std::vector<float> storedValues;
 
-    void addValue(float);
+    void pushValue(float value);
 
     float calculateMedian();
 };
