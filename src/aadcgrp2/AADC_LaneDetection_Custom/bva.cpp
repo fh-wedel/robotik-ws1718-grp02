@@ -56,7 +56,7 @@ static bool lineIsLeftLine(cv::Vec3f& line) {
 
 	//NOTE: We're dealing with the normal vector.
 
-	return (fabs(angle) < 20.0f && dist > screenSize * 2.0f/3.0f);
+	return (fabs(angle) < 20.0f && dist < screenSize / 3.0f);
 }
 
 static bool lineIsRightLine(cv::Vec3f& line) {
@@ -67,7 +67,7 @@ static bool lineIsRightLine(cv::Vec3f& line) {
 
 	//NOTE: We're dealing with the normal vector.
 
-	return (fabs(angle) < 20.0f && dist < screenSize / 3.0f);
+	return (fabs(angle) < 20.0f && dist > screenSize * 2.0f/3.0f);
 }
 
 static void classifyLines(std::vector<cv::Vec3f>& lines,
@@ -208,7 +208,7 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	// -> By remapping (91 to 180) to (-90 to 0) the distance needs to be inverted.
 	//
 	//   O----------------> x
-	//   |`-_             \
+	//   |`-_             |
 	//   |   `-_   angle  )
 	//   |      `-_      /
 	//   |		   `-_  /
@@ -238,6 +238,7 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	// Unfortunately drawing can't be done using GPU (yet), therefore we download
 	// the intermediary result and use the CPU.
 	result.download(out);
+	cv::cvtColor(out, out, CV_GRAY2RGB);
 
 	bva_angleThresh = angleThresh;
 	bva_distanceThresh = distanceThresh;
@@ -253,10 +254,10 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 
 	// Draw the lines
-	drawLines(out, rightLines, cv::Scalar(0, 0, 255));
+	drawLines(out, rightLines, cv::Scalar(255, 0, 0));
 	drawLines(out, leftLines, cv::Scalar(0, 255, 0));
-	drawLines(out, stopLines, cv::Scalar(255, 0, 0));
-	drawLines(out, unclassifiedLines, cv::Scalar(255, 255, 0));
+	drawLines(out, stopLines, cv::Scalar(0, 0, 255));
+	drawLines(out, unclassifiedLines, cv::Scalar(0, 255, 255));
 
 
 	//steeringangle

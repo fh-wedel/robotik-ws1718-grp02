@@ -22,7 +22,7 @@
   <folder name="windows">
    <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
    <folder Height="454" Visible="true" Width="632" name="Realsense_RGB_Proc_Display" />
-   <folder Height="574" PosX="27" PosY="102" Visible="true" Width="792" name="Hough_Display" />
+   <folder Height="574" PosX="3" PosY="57" Visible="true" Width="792" name="Hough_Display" />
   </folder>
  </folder>
  <folder name="Live2">

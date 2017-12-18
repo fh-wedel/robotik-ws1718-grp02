@@ -341,7 +341,6 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			);
 			imageWarped.download(outputImage);*/
 
-
 			// Binarization of specified range
 			bva::lineBinarization(m_inputImage, outputImage,
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
