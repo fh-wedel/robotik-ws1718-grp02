@@ -567,5 +567,10 @@ tResult cConverterWheels::PropertyChanged(const tChar* strName)
         m_f32LastCalculatedSpeedLeft = 0;
         m_bEnableFiltering = static_cast<tBool>(GetPropertyBool("filtering enabled"));
     }
+
+    if (cString::IsEqual(WSC_PROP_DEBUG_MODE, strName))
+    {
+      m_bShowDebug = static_cast<tBool>(GetPropertyBool(WSC_PROP_DEBUG_MODE));
+    }
     RETURN_NOERROR;
 }
