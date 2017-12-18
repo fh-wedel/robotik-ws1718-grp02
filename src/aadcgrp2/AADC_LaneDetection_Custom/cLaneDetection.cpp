@@ -341,39 +341,19 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 			);
 			imageWarped.download(outputImage);*/
 
+
 			// Binarization of specified range
 			bva::lineBinarization(m_inputImage, outputImage,
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
 				m_filterProperties.saturation, m_filterProperties.value);
 
-			//calculate the detectionlines in image
-    	/*getDetectionLines(detectionLines);
-			linePoints = cv::Mat::zeros(outputImage.size(), CV_8U);
-			rightPoints.clear();
-			leftPoints.clear();*/
-
-      //findLinePoints(detectionLines, outputImage, detectedLinePoints);
-
-			/*cv::Vec4f leftLine;
-			cv::Vec4f rightLine;
-			if(leftPoints.size() > 0){
-				cv::fitLine(leftPoints, leftLine, CV_DIST_L2, 0, 0.01, 0.01);
-				printf("leftLine:  x0: %.2f y0: %.2f x1: %.2f y1: %.2f\n", leftLine[0], leftLine[1], leftLine[2], leftLine[3]);
-			}
-			if(rightPoints.size() > 0){
-				cv::fitLine(rightPoints, rightLine, CV_DIST_L2, 0, 0.01, 0.01);
-				printf("rightLine: x0: %.2f y0: %.2f x1: %.2f y1: %.2f\n", rightLine[0], rightLine[1], rightLine[2], rightLine[3]);
-			}*/
 
 
-			//linePoints.copyTo(outputImage);
+			//find the lines in image and calculate the desired steering angle
 			tFloat32 angle = -1;
 			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
 								m_filterProperties.angleThresh, m_filterProperties.distanceThresh);
 
-			//find the lines in image and calculate the desired steering angle
-			//tFloat32 angle = -1;
-			//angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh);
 			printf("Winkel %f\n", angle);
 			transmitValue(angle);
 		}

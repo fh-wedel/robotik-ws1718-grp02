@@ -38,14 +38,89 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 	return sum / clusteredLines.size();
 };
 
+
+static bool lineIsStopLine(cv::Vec3f& line) {
+	float angle = rad2deg(line[1]);
+	float dist = line[0];
+
+	//NOTE: We're dealing with the normal vector.
+
+	return (fabs(angle) > 80.0f);
+}
+
+static bool lineIsLeftLine(cv::Vec3f& line) {
+	int screenSize = 1920;
+
+	float angle = rad2deg(line[1]);
+	float dist = line[0];
+
+	//NOTE: We're dealing with the normal vector.
+
+	return (fabs(angle) < 20.0f && dist > screenSize * 2.0f/3.0f);
+}
+
+static bool lineIsRightLine(cv::Vec3f& line) {
+	int screenSize = 1920;
+
+	float angle = rad2deg(line[1]);
+	float dist = line[0];
+
+	//NOTE: We're dealing with the normal vector.
+
+	return (fabs(angle) < 20.0f && dist < screenSize / 3.0f);
+}
+
+static void classifyLines(std::vector<cv::Vec3f>& lines,
+	std::vector<cv::Vec3f>& rightLines,
+	std::vector<cv::Vec3f>& leftLines,
+	std::vector<cv::Vec3f>& stopLines,
+	std::vector<cv::Vec3f>& unclassifiedLines) {
+
+	for (cv::Vec3f& line : lines) {
+		if (lineIsStopLine(line)) {
+			stopLines.push_back(line);
+		} else if (lineIsLeftLine(line)) {
+			leftLines.push_back(line);
+		} else if (lineIsRightLine(line)) {
+			rightLines.push_back(line);
+		} else {
+			unclassifiedLines.push_back(line);
+		}
+	}
+}
+
+
+static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar color) {
+
+	std::vector<cv::Vec3f>::const_iterator it = lines.begin();
+	while (it != lines.end()) {
+
+		float rho = (*it)[0];    // first element is distance rho
+		float theta = (*it)[1];  // second element is angle theta
+		float weight = (*it)[2]; // third element is the weight of the line
+
+
+    	// point of intersection of the line with first row
+		cv::Point pt1(rho / cos(theta), 0);
+		// point of intersection of the line with last row
+		cv::Point pt2((rho - out.rows*sin(theta)) / cos(theta), out.rows);
+		// draw a line: Color = Scalar(R, G, B), thickness
+		cv::line(out, pt1, pt2, color, weight / 2.0f);
+
+		++it;
+	}
+}
+
+
+
 //weight saved in clusteredLines[2]
-/*static*/ void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
+static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
 	std::vector<int> labels;
 	int amountOfClasses = cv::partition(lines, labels, isEqual);
 
-//	for (int i = 0; i < lines.size(); i++) {
-//		printf("dist: %.3f angle: %.3f Klasse: %d\n", lines.at(i)[0], rad2deg(lines.at(i)[1]), labels.at(i));
-//	}
+	//	for (int i = 0; i < lines.size(); i++) {
+	//		printf("dist: %.3f angle: %.3f Klasse: %d\n", lines.at(i)[0], rad2deg(lines.at(i)[1]), labels.at(i));
+	//	}
 
 	for (int i = 0; i < amountOfClasses; i++) {
 		float sumAngle = 0;
@@ -70,26 +145,11 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 	//printf("Klassen: %d\n", amountOfClasses);
 }
 
-//static void createMask(cv::Mat& mask, std::vector<std::vector<cv::Point> >& contours,
-//	cv::Point refPoint) {
-//	std::vector<cv::Point> contour;
-//	contour.push_back(refPoint);
-//	contour.push_back(cv::Point(0, mask.rows - 1));
-//	contour.push_back(cv::Point(mask.cols - 1, mask.rows - 1));
-//	contour.push_back(cv::Point(mask.cols - 1 - refPoint.x, refPoint.y));
-//	contours.push_back(contour);
-//}
 
 //own implementation of line detection
 tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
-													float angleThresh, float distanceThresh)
+						float angleThresh, float distanceThresh)
 {
-	//----------------------ROI------------------------------
-	//cv::Mat mask = cv::Mat::zeros(src.size(), CV_8U);
-	//std::vector<std::vector<cv::Point> > maskContour;
-	//createMask(mask, maskContour, cv::Point(500, 600));
-	//cv::fillPoly(mask, maskContour, 255);
-	//src = src & mask;
 
 	//--------------------canny-------------------------
 	cv::cuda::GpuMat image(src);
@@ -121,10 +181,10 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	source_points[2] = cv::Point(contours.cols - 1, contours.rows - 1); // bottom right corner
 	source_points[3] = cv::Point(contours.cols - 1 - refPoint.x, refPoint.y);
 
-	dest_points[0] = cv::Point2f(0, 0);
-	dest_points[1] = cv::Point2f(bottomCornerInset, contours.rows - 1);
-	dest_points[2] = cv::Point2f(contours.cols - bottomCornerInset, contours.rows - 1);
-	dest_points[3] = cv::Point2f(contours.cols - 1, 0);
+	dest_points[0] = cv::Point(0, 0);
+	dest_points[1] = cv::Point(bottomCornerInset, contours.rows - 1);
+	dest_points[2] = cv::Point(contours.cols - bottomCornerInset, contours.rows - 1);
+	dest_points[3] = cv::Point(contours.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
 	cv::cuda::GpuMat contoursWarped;
@@ -144,12 +204,24 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	hough->detect(contoursWarped, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);
 
-	// Apply Normalization
+	// Apply Normalization for better recognition of vertical lines (angle doesn't jump from 0 to 180)
+	// -> By remapping (91 to 180) to (-90 to 0) the distance needs to be inverted.
+	//
+	//   O----------------> x
+	//   |`-_             \
+	//   |   `-_   angle  )
+	//   |      `-_      /
+	//   |		   `-_  /
+	//   |			  `-_
+	// y V
+	//
+	//NOTE: We're dealing with the normal vector.
+
 	for (cv::Vec2f& line : lines) {
 		float angle = rad2deg(line[1]);
 		float dist = line[0];
 
-		if (angle > 90) {
+		if (angle > 90 && angle < 270) {
 			line[0] = -dist;
 			line[1] = deg2rad(angle - 180.0f);
 		} else if (angle < 0 || angle > 270) {
@@ -169,38 +241,34 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 	bva_angleThresh = angleThresh;
 	bva_distanceThresh = distanceThresh;
+
 	std::vector<cv::Vec3f> clusteredLines;
 	clusterLines(lines, clusteredLines);
 
+	std::vector<cv::Vec3f> rightLines;
+	std::vector<cv::Vec3f> leftLines;
+	std::vector<cv::Vec3f> stopLines;
+	std::vector<cv::Vec3f> unclassifiedLines;
+	classifyLines(clusteredLines, rightLines, leftLines, stopLines, unclassifiedLines);
+
+
 	// Draw the lines
-	std::vector<cv::Vec3f>::const_iterator it = clusteredLines.begin();
-	while (it != clusteredLines.end()) {
+	drawLines(out, rightLines, cv::Scalar(0, 0, 255));
+	drawLines(out, leftLines, cv::Scalar(0, 255, 0));
+	drawLines(out, stopLines, cv::Scalar(255, 0, 0));
+	drawLines(out, unclassifiedLines, cv::Scalar(255, 255, 0));
 
-		float rho = (*it)[0];    // first element is distance rho
-		float theta = (*it)[1];  // second element is angle theta
-		float weight = (*it)[2]; // third element is the weight of the line
-
-
-    // point of intersection of the line with first row
-		cv::Point pt1(rho / cos(theta), 0);
-		// point of intersection of the line with last row
-		cv::Point pt2((rho - result.rows*sin(theta)) / cos(theta), result.rows);
-		// draw a line: Color = Scalar(R, G, B), thickness
-		cv::line(out, pt1, pt2, cv::Scalar(255, 255, 255), weight / 2.0f);
-
-		++it;
-	}
 
 	//steeringangle
 	tFloat32 angle = getAngle(clusteredLines);
 
 	// Write current angle to screen for visualization
 	string text = std::to_string(angle);
-  int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
-  double fontScale = 2;
-  int thickness = 3;
-  cv::Point textOrg(10, 130);
-  cv::putText(out, text, textOrg, fontFace, fontScale, cv::Scalar::all(255), thickness,8);
+	int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
+	double fontScale = 2;
+	int thickness = 3;
+	cv::Point textOrg(10, 130);
+	cv::putText(out, text, textOrg, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
 
 	return angle;
 }
@@ -213,10 +281,11 @@ void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
 	cv::cvtColor(input_img, hsv, CV_BGR2HSV);
 
 	//Filter blue color (range: ~90-120 saturation: ~120-255)
-	cv::inRange(hsv, cv::Scalar(hueLow,
-		saturation,
-		value)
-		, cv::Scalar(hueHigh, 255, 255), out);
+	cv::inRange(hsv,
+				cv::Scalar(hueLow, saturation, value),
+				cv::Scalar(hueHigh, 255, 255),
+				out
+	);
 
 	//closing
 	int kernelSize = 6;
