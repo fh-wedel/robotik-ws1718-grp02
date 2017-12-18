@@ -25,4 +25,14 @@
    <folder Height="574" PosX="27" PosY="102" Visible="true" Width="792" name="Hough_Display" />
   </folder>
  </folder>
+ <folder name="Live2">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
+   <folder Height="1054" Visible="true" Width="1912" name="RGB_Display" />
+   <folder Height="574" PosX="60" PosY="126" Visible="true" Width="792" name="Video_Display" />
+  </folder>
+ </folder>
 </adtf:export>

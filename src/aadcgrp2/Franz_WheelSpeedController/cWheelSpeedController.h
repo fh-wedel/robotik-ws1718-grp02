@@ -208,6 +208,11 @@ private:
      */
     tTimeStamp GetTime();
 
+    // Filter startup Time
+    tTimeStamp m_startupTime;
+    // Time before first output in sec
+    tFloat32 m_waitTime;
+
     /*! holds the last measuredValue */
     tFloat64 m_f64MeasuredVariable;
     /*! holds the last measured error */

@@ -301,7 +301,9 @@
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="AADC_Arduino_Communication.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="AADC_Arduino_Communication.WheelRightStruct" />
     <filter alias="Float_Value_Generator" idref="adtf.aadc.FloatValueGenerator" priority="2">
-     <settings />
+     <settings>
+      <property name="outputValue" type="Float" value="0,5.0" />
+     </settings>
     </filter>
     <connection connection_priority="50" dest="Float_Value_Generator.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
     <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="3">
@@ -319,19 +321,14 @@
       <property name="PID::Ki_value" type="Float" value="0,98867.0" />
       <property name="PID::Kp_value" type="Float" value="0,39088.0" />
       <property name="PID::Kd_value" type="Float" value="0,01398.0" />
-      <property name="PID::Minimum output" type="Float" value="-100.0" />
-      <property name="PID::Maximum output" type="Float" value="100.0" />
+      <property name="PID::Minimum output" type="Float" value="-50.0" />
+      <property name="PID::Maximum output" type="Float" value="50.0" />
+      <property name="Gain" type="Float" value="10.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="AADC_Converter_Wheels_Custom_.car_speed" />
-    <filter alias="Felix_LinearFunction" idref="adtf.aadc.felix.LinearFunction" priority="5">
-     <settings>
-      <property name="Gain::Gain" type="Float" value="-1.0" />
-     </settings>
-    </filter>
-    <connection connection_priority="50" dest="AADC_Arduino_Communication.SpeedController" interface="" source="Felix_LinearFunction" />
-    <connection connection_priority="50" dest="Felix_LinearFunction.input" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
+    <connection connection_priority="50" dest="AADC_Arduino_Communication.SpeedController" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
    </graph>
   </configuration>
   <configuration description="" name="Live2">

@@ -44,6 +44,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define WSC_PROP_PID_MAXOUTPUT "PID::Maximum output"
 #define WSC_PROP_PID_MINOUTPUT "PID::Minimum output"
 #define WSC_PROP_DEBUG_MODE "Debug Mode"
+#define WSC_PROP_WAIT_TIME "Wait Time"
 
 
 ADTF_FILTER_PLUGIN("Franz Wheel Speed Controller", OID_ADTF_WHEELSPEEDCONTROLLER, cWheelSpeedController)
@@ -77,6 +78,9 @@ cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__in
     SetPropertyBool(WSC_PROP_DEBUG_MODE, tFalse);
     SetPropertyBool(WSC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are written to output");
+
+    SetPropertyFloat(WSC_PROP_WAIT_TIME, 5);
+    SetPropertyStr(WSC_PROP_WAIT_TIME NSSUBPROP_DESCRIPTION, "Time to send 0s to the arduino before starting the controller");
 
     //m_pISignalRegistry = NULL;
 
@@ -117,6 +121,11 @@ tResult cWheelSpeedController::PropertyChanged(const tChar* strPropertyName) {
 
         } else if (cString::IsEqual(strPropertyName, WSC_PROP_PID_MAXOUTPUT)) {
             m_f64PIDMaximumOutput = GetPropertyFloat(WSC_PROP_PID_MAXOUTPUT);
+
+        } else if (cString::IsEqual(strPropertyName, WSC_PROP_WAIT_TIME)) {
+            m_waitTime = GetPropertyFloat(WSC_PROP_WAIT_TIME);
+
+
         }
 
     }
@@ -183,7 +192,7 @@ tResult cWheelSpeedController::Init(tInitStage eStage, __exception) {
 
     case StageNormal:
         if (m_bShowDebug) {
-            printf("Speed Controller started\n");
+            printf("Speed Controller Stage Normal\n");
         }
 
         break;
@@ -195,6 +204,10 @@ tResult cWheelSpeedController::Init(tInitStage eStage, __exception) {
         m_bInputActuatorGetID = tFalse;
 
         m_f64LastOutput = 0.0f;
+
+        if (m_bShowDebug) {
+            printf("Speed Controller StageGraphReady\n");
+        }
         break;
     }
 
@@ -208,6 +221,12 @@ tResult cWheelSpeedController::Start(__exception) {
     m_lastSampleTime = GetTime();
     m_f64LastSpeedValue = 0;
     m_f64accumulatedVariable = 0;
+
+    m_startupTime = GetTime() + (tTimeStamp)(1000000 * m_waitTime);
+
+    if (m_bShowDebug) {
+        printf("Speed Controller Start\n");
+    }
 
     return cFilter::Start(__exception_ptr);
 }
@@ -259,7 +278,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
             //calculation
             // if the desired output speed is 0, immediately stop the motors
-            if (m_f64SetPoint == 0) {
+            if (m_f64SetPoint == 0 || m_startupTime > GetTime()) {
 
                 m_f64LastOutput = 0;
                 m_f64accumulatedVariable = 0;
@@ -341,8 +360,8 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
     m_lastSampleTime = GetTime();
 
     if (m_bShowDebug) {
-      std::cout << "deltaT -> " <<  deltaT << '\n';
-      std::cout << "current Speed -> " << i_f64MeasuredValue << '\n';
+      std::cout << "deltaT: " <<  deltaT << '\n';
+      std::cout << "current Speed: " << i_f64MeasuredValue << '\n';
       std::cout << "Set Value: " << m_f64SetPoint << " Measured Value: " << i_f64MeasuredValue << '\n';
     }
 
