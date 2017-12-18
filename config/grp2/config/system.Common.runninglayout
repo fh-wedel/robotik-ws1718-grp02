@@ -20,9 +20,8 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
    <folder Height="454" Visible="true" Width="632" name="Realsense_RGB_Proc_Display" />
-   <folder Height="574" PosX="3" PosY="57" Visible="true" Width="792" name="Hough_Display" />
+   <folder Height="574" PosX="27" PosY="100" Visible="true" Width="792" name="Hough_Display" />
   </folder>
  </folder>
  <folder name="Live2">
@@ -30,9 +29,9 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
-   <folder Height="1054" Visible="true" Width="1912" name="RGB_Display" />
-   <folder Height="574" PosX="60" PosY="126" Visible="true" Width="792" name="Video_Display" />
+   <folder Height="340" PosY="0" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
+   <folder Height="1054" PosY="0" Visible="true" Width="1912" name="RGB_Display" />
+   <folder Height="574" PosX="60" PosY="0" Visible="true" Width="792" name="Video_Display" />
   </folder>
  </folder>
 </adtf:export>

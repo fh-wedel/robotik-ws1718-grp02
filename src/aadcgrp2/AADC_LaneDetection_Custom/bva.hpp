@@ -8,8 +8,9 @@ namespace bva {
 
 	tFloat32 leftLineAngle;*/
 
-	tFloat32 findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
-								float angleThresh, float distanceThresh);
+	void findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
+								float angleThresh, float distanceThresh, float stopThresh,
+								tFloat32& angle, tFloat32& speed);
 
 	void lineBinarization(cv::Mat& input_img, cv::Mat& out,
                 int hueLow,	int hueHigh, int saturation, int value);

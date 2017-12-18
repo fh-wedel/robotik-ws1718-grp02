@@ -5,8 +5,12 @@
 #define deg2rad(x) (x) / 180.0f * CV_PI
 
 static float bva_angleThresh;
-
 static float bva_distanceThresh;
+
+static struct {
+	int x = 1920;
+	int y = 1080;
+} screenSize;
 
 //returns true if two vectors are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
@@ -22,21 +26,24 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 	if (clusteredLines.size() == 0) return 0; //no lane was detected
 	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
 	// Car: "Just go straight and full speed :]"
-	int lines = 0;
-
-	for (cv::Vec3f v : clusteredLines) {
-			lines += v[2];
-	}
 	for (cv::Vec3f v : clusteredLines) {
 		float angle = rad2deg(v[1]);
 		printf("CalculatedAngle; %.2f\n", angle);
 		if (angle > 90) angle -= 180;
-		sum += angle * (v[2] / lines);
+		sum += angle * v[2];
 
 	}
 
-	return sum / clusteredLines.size();
-};
+	tFloat32 angle = sum / clusteredLines.size();
+
+	if (fabs(angle) < 5.0f && clusteredLines.size() == 1) {
+		if (clusteredLines.at(0)[0] > screenSize.x / 2) {
+			angle = 20.0f;
+		}
+	}
+
+	return angle;
+}
 
 
 static bool lineIsStopLine(cv::Vec3f& line) {
@@ -49,25 +56,21 @@ static bool lineIsStopLine(cv::Vec3f& line) {
 }
 
 static bool lineIsLeftLine(cv::Vec3f& line) {
-	int screenSize = 1920;
-
 	float angle = rad2deg(line[1]);
 	float dist = line[0];
 
 	//NOTE: We're dealing with the normal vector.
 
-	return (fabs(angle) < 20.0f && dist < screenSize / 3.0f);
+	return (fabs(angle) < 20.0f && dist < screenSize.x / 3.0f);
 }
 
 static bool lineIsRightLine(cv::Vec3f& line) {
-	int screenSize = 1920;
-
 	float angle = rad2deg(line[1]);
 	float dist = line[0];
 
 	//NOTE: We're dealing with the normal vector.
 
-	return (fabs(angle) < 20.0f && dist > screenSize * 2.0f/3.0f);
+	return (fabs(angle) < 20.0f && dist > screenSize.x * 2.0f/3.0f);
 }
 
 static void classifyLines(std::vector<cv::Vec3f>& lines,
@@ -103,13 +106,17 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
     	// point of intersection of the line with first row
 		cv::Point pt1(rho / cos(theta), 0);
 		// point of intersection of the line with last row
-		cv::Point pt2((rho - out.rows*sin(theta)) / cos(theta), out.rows);
+		cv::Point pt2((rho - screenSize.x*sin(theta)) / cos(theta), screenSize.y);
 		// draw a line: Color = Scalar(R, G, B), thickness
-		cv::line(out, pt1, pt2, color, weight / 2.0f);
+		cv::line(out, pt1, pt2, color, weight * 50);
 
 		++it;
 	}
 }
+
+/*static void distanceFromStopLine(cv::Vec3f line) {
+	(rho - screenSize.x/2*sin(theta)) / cos(theta)
+}*/
 
 
 
@@ -134,12 +141,12 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 			}
 		}
 		//printf("sumDist: %.1f sumAngle: %.1f\n", sumDist, sumAngle);
-		clusteredLines.push_back(cv::Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize));
+		clusteredLines.push_back(cv::Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize / lines.size()));
 	}
 
 	printf("Clustered:\n");
 	for (cv::Vec3f v : clusteredLines) {
-		printf("dist: %.3f angle: %.3f weight: %.1f\n", v[0], rad2deg(v[1]), v[2]);
+		printf("dist: %.3f angle: %.3f weight: %.3f\n", v[0], rad2deg(v[1]), v[2]);
 	}
 
 	//printf("Klassen: %d\n", amountOfClasses);
@@ -147,8 +154,9 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 
 
 //own implementation of line detection
-tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
-						float angleThresh, float distanceThresh)
+void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
+						float angleThresh, float distanceThresh, float stopThresh,
+						tFloat32& angle, tFloat32& speed)
 {
 
 	//--------------------canny-------------------------
@@ -261,17 +269,31 @@ tFloat32 bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 
 	//steeringangle
-	tFloat32 angle = getAngle(clusteredLines);
+	angle = getAngle(clusteredLines);
+
+	//speed
+	speed = 0.25f;
+
+	if (stopLines.size() > 0) {
+		float sum = 0.0f;
+		for (cv::Vec3f line : stopLines) {
+			sum += line[2];
+		}
+
+		printf("stopThresh: %.3f\n", stopThresh);
+		if (sum > stopThresh) {
+			speed = 0.0f;
+			angle = 0.0f;
+		}
+	}
 
 	// Write current angle to screen for visualization
-	string text = std::to_string(angle);
+	string text = std::to_string(angle) + "\n" + std::to_string(speed);
 	int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
 	double fontScale = 2;
 	int thickness = 3;
 	cv::Point textOrg(10, 130);
 	cv::putText(out, text, textOrg, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
-
-	return angle;
 }
 
 void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,

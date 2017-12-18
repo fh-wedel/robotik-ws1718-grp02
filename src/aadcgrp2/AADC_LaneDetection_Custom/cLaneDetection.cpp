@@ -110,6 +110,10 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 	SetPropertyStr("Algorithm::Distance Threshold" NSSUBPROP_DESCRIPTION, "Threshold for distance in line clustering");
 	SetPropertyBool("Algorithm::Distance Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
 
+	SetPropertyFloat("Algorithm::Stop Threshold", 0.4f);
+	SetPropertyStr("Algorithm::Stop Threshold" NSSUBPROP_DESCRIPTION, "Threshold for stop weight");
+	SetPropertyBool("Algorithm::Stop Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
+
 }
 
 cLaneDetection::~cLaneDetection() {}
@@ -164,6 +168,10 @@ tResult cLaneDetection::CreateOutputPins(__exception) {
     // create pin
     RETURN_IF_FAILED(m_SteeringPin.Create("steeringAngle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(&m_SteeringPin));
+
+		// create pin
+    RETURN_IF_FAILED(m_SpeedPin.Create("speed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
+    RETURN_IF_FAILED(RegisterPin(&m_SpeedPin));
 
     RETURN_NOERROR;
 }
@@ -277,6 +285,8 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
 		m_filterProperties.angleThresh = GetPropertyInt("Algorithm::Angle Threshold");
 	else if (cString::IsEqual(strName, "Algorithm::Distance Threshold"))
 		m_filterProperties.distanceThresh = GetPropertyInt("Algorithm::Distance Threshold");
+	else if (cString::IsEqual(strName, "Algorithm::Stop Threshold"))
+		m_filterProperties.stopThresh = GetPropertyFloat("Algorithm::Stop Threshold");
 	RETURN_NOERROR;
 }
 
@@ -304,6 +314,9 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 	vector<cPoint> detectedLinePoints;
 
 	const tVoid* l_pSrcBuffer;
+
+	tFloat32 angle = -1;
+	tFloat32 speed = 0;
 
 	//receiving data from input sample, and saving to TheInputImage
 	if (IS_OK(pSample->Lock(&l_pSrcBuffer)))
@@ -347,14 +360,13 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				m_filterProperties.saturation, m_filterProperties.value);
 
 
-
+				printf("stopThresh im Filter: %.3f\n", m_filterProperties.stopThresh);
 			//find the lines in image and calculate the desired steering angle
-			tFloat32 angle = -1;
-			angle = bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
-								m_filterProperties.angleThresh, m_filterProperties.distanceThresh);
+			bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
+								m_filterProperties.angleThresh, m_filterProperties.distanceThresh,
+								m_filterProperties.stopThresh, angle, speed);
 
-			printf("Winkel %f\n", angle);
-			transmitValue(angle);
+
 		}
 		pSample->Unlock(l_pSrcBuffer);
 	}
@@ -389,7 +401,13 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 	}
 
 	if (m_SteeringPin.IsConnected()) {
-		// TODO hier transmitValue(angle) ?
+		printf("Winkel %f\n", angle);
+		transmitValue(angle, m_SteeringPin);
+	}
+
+	if (m_SpeedPin.IsConnected()) {
+		printf("Speed %f\n", speed);
+		transmitValue(speed, m_SpeedPin);
 	}
 
 	RETURN_NOERROR;
@@ -544,7 +562,7 @@ tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage)
 	RETURN_NOERROR;
 }
 
-tResult cLaneDetection::transmitValue(tFloat32 value) {
+tResult cLaneDetection::transmitValue(tFloat32 value, cOutputPin& outputPin) {
 
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_SteeringOutputDescription);
     {
@@ -555,23 +573,23 @@ tResult cLaneDetection::transmitValue(tFloat32 value) {
         /*! indicates of bufferIDs were set */
         static tBool m_SteeringOutputDescriptionIsInitialized = false;
         /*! the id for the f32value of the media description for input pin for the set speed */
-        static tBufferID m_SteeringOutputDescriptionID;
+        static tBufferID m_FloatOutputDescriptionID;
         /*! the id for the arduino time stamp of the media description for input pin for the set speed */
         static tBufferID m_OutputValueTimestampID;
 
         if(!m_SteeringOutputDescriptionIsInitialized) {
-            pCoder->GetID("f32Value", m_SteeringOutputDescriptionID);
+            pCoder->GetID("f32Value", m_FloatOutputDescriptionID);
             pCoder->GetID("ui32ArduinoTimestamp", m_OutputValueTimestampID);
             m_SteeringOutputDescriptionIsInitialized = tTrue;
         }
 
         //write values to media sample
-        pCoder->Set(m_SteeringOutputDescriptionID, (tVoid*)&value);
+        pCoder->Set(m_FloatOutputDescriptionID, (tVoid*)&value);
     }
 
     //transmit media sample over output pin
     RETURN_IF_FAILED(pMediaSample->SetTime(_clock->GetStreamTime()));
-    RETURN_IF_FAILED(m_SteeringPin.Transmit(pMediaSample));
+    RETURN_IF_FAILED(outputPin.Transmit(pMediaSample));
 
     RETURN_NOERROR;
 }

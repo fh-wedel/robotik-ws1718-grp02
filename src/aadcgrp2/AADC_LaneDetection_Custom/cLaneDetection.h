@@ -118,6 +118,9 @@ protected:
     /*! define outputPin */
     cOutputPin           m_SteeringPin;
 
+    /*! define outputPin */
+    cOutputPin           m_SpeedPin;
+
 public:
     /*! default constructor for template class
         \param __info   [in] This is the name of the filter instance.
@@ -285,6 +288,7 @@ private: // private methods
         int houghThresh;
         float angleThresh;
         float distanceThresh;
+        float stopThresh;
 
     }
     /*! the filter properties of this class */
@@ -305,7 +309,7 @@ private: // private methods
     /*! media description for encoding steering output */
     cObjectPtr<IMediaTypeDescription> m_SteeringOutputDescription;
 
-    tResult transmitValue(tFloat32 value);
+    tResult transmitValue(tFloat32 value, cOutputPin& outputPin);
 
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
