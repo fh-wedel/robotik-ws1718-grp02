@@ -46,6 +46,9 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
 }
 
 
+
+//MARK: - Line Classification
+
 static bool lineIsStopLine(cv::Vec3f& line) {
 	float angle = rad2deg(line[1]);
 	float dist = line[0];
@@ -92,7 +95,6 @@ static void classifyLines(std::vector<cv::Vec3f>& lines,
 	}
 }
 
-
 static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar color) {
 
 	std::vector<cv::Vec3f>::const_iterator it = lines.begin();
@@ -114,11 +116,83 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 	}
 }
 
-/*static void distanceFromStopLine(cv::Vec3f line) {
-	(rho - screenSize.x/2*sin(theta)) / cos(theta)
-}*/
+//MARK: - Helper Functions
+
+static float xValueOfLineAt(cv::Vec2f& line, float yValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return xValueOfLineAt(distance, angle, yValue);
+}
+static float xValueOfLineAt(cv::Vec3f& line, float yValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return xValueOfLineAt(distance, angle, yValue);
+}
+static float xValueOfLineAt(float distance, float angle, float yValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return distance / cos(angle) + tan(angle) * yValue;
+}
+
+static float yValueOfLineAt(cv::Vec2f& line, float xValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return yValueOfLineAt(distance, angle, yValue);
+}
+static float yValueOfLineAt(cv::Vec3f& line, float xValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return yValueOfLineAt(distance, angle, yValue);
+}
+static float yValueOfLineAt(float distance, float angle, float xValue) {
+
+	return (distance / sin(angle)) - xValue * cos(angle);
+}
+
+static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
+	return centerOfLines(first, second, screenSize.y);
+}
+static float centerOfLinesAt(cv::Vec3f& first, cv::Vec3f& second, float yValue) {
+	return (xValueOfLineAt(first, yValue) + xValueOfLineAt(second, yValue)) / 2;
+}
+
+//MARK: - Distance Approximation
+
+static float distanceFromStopLine(cv::Vec3f line) {
+	float angle = line[1];
+	float dist = line[0];
+
+	/** The following formula calculates the y value of the
+	 *  line
+	 *
+	 *				   /		   screenSize.x   \
+	 * screenSize.y - ( dist  +  ---------------- )
+	 *  			  \ 		  2 * tan(angle) /
+	 */
 
 
+	//TODO: Why does this differ from the yValueOfLineAt() function formula?
+	return convertPixelToMM(
+		screenSize.y - (dist + screenSize.x / (2 * tan(angle)))
+	);
+}
+
+static float convertPixelToMM(float pixel) {
+	//TODO: Constant based on perspective transform.
+	//TODO: Should be the same for vertical and horizontal (-> keep aspect ratio).
+	float ratio = 0.5f; //dummy value -> 1080 pixel equal approx. 55cm
+
+	return ratio * pixel;
+}
+
+
+
+//MARK: - Clustering and Detection
 
 //weight saved in clusteredLines[2]
 static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
