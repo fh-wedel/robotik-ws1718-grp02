@@ -258,6 +258,8 @@ private:
     tBufferID m_buIDEmergStopArduinoTimestamp;
     /*! indicates of bufferIDs were set */
     tBool m_bInputEmergStopGetID;
+    /*! emergency stop flag */
+    tBool m_bEmergencyStop;
 
     /*! the critical section for the on pin events */
     cCriticalSection m_critSecOnPinEvent;

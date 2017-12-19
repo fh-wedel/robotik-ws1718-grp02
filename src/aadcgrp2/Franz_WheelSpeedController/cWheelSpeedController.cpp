@@ -145,7 +145,7 @@ tResult cWheelSpeedController::CreateInputPins(__exception) {
     // set member media description
     RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescMeasSpeed));
     RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescSetSpeed));
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescEmergStop));
+    RETURN_IF_FAILED(pTypeBoolSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescEmergStop));
 
     // create pins
     RETURN_IF_FAILED(m_oInputSetWheelSpeed.Create("set_WheelSpeed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
@@ -287,7 +287,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
             //calculation
             // if the desired output speed is 0 and we have stoped, immediately stop the motor
             // if the system just started, wait for the controller to start up
-            if ((m_f64SetPoint == 0 && m_f64MeasuredVariable == 0) || m_startupTime > GetTime()) {
+            if ((m_f64SetPoint == 0 && m_f64MeasuredVariable == 0) || m_startupTime > GetTime() || m_bEmergencyStop) {
 
                 resetController();
 
@@ -371,6 +371,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
             }
 
             pCoder->Get(m_buIDEmergStopBValue, (tVoid*)&bValue);
+            m_bEmergencyStop = bValue;
         }
     }
 
