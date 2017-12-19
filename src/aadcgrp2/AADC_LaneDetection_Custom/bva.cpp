@@ -7,10 +7,7 @@
 static float bva_angleThresh;
 static float bva_distanceThresh;
 
-static struct {
-	int x = 1920;
-	int y = 1080;
-} screenSize;
+static cv::Size screenSize (1920,1486);
 
 //returns true if two vectors are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
@@ -20,32 +17,35 @@ static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	return (angle < bva_angleThresh) && (dist < bva_distanceThresh);
 }
 
+static float getAngleSum(std::vector<cv::Vec3f> lines) {
+	float sum = 0.0f;
+	for (cv::Vec3f v : lines) {
+		float angle = rad2deg(v[1]);
+		sum += angle * v[2];
+	}
+
+	return sum;
+}
+
 //calculate steering angle
-static tFloat32 getAngle(std::vector<cv::Vec3f> clusteredLines) {
-	tFloat32 sum = 0;
-	if (clusteredLines.size() == 0) return 0; //no lane was detected
+static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
+												 std::vector<cv::Vec3f> leftLines,
+											 	 std::vector<cv::Vec3f> unclassifiedLines) {
+
+  int linesSize = rightLines.size() + leftLines.size() + unclassifiedLines.size();
+	if (linesSize == 0) return 0; //no lane was detected
 	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
 	// Car: "Just go straight and full speed :]"
-	for (cv::Vec3f v : clusteredLines) {
-		float angle = rad2deg(v[1]);
-		printf("CalculatedAngle; %.2f\n", angle);
-		if (angle > 90) angle -= 180;
-		sum += angle * v[2];
 
-	}
+	tFloat32 sum = getAngleSum(rightLines);
+	sum += getAngleSum(leftLines);
+	sum += getAngleSum(unclassifiedLines);
+	tFloat32 angle = sum / (linesSize);
 
-	tFloat32 angle = sum / clusteredLines.size();
-
-	if (fabs(angle) < 5.0f && clusteredLines.size() == 1) {
-		if (clusteredLines.at(0)[0] > screenSize.x / 2) {
-			angle = 20.0f;
-		}
-	}
+	// TODO: hier Spurkontrolle (abdriften)
 
 	return angle;
 }
-
-
 
 //MARK: - Line Classification
 
@@ -55,7 +55,7 @@ static bool lineIsStopLine(cv::Vec3f& line) {
 
 	//NOTE: We're dealing with the normal vector.
 
-	return (fabs(angle) > 80.0f);
+	return (fabs(angle) > 75.0f);
 }
 
 static bool lineIsLeftLine(cv::Vec3f& line) {
@@ -64,7 +64,7 @@ static bool lineIsLeftLine(cv::Vec3f& line) {
 
 	//NOTE: We're dealing with the normal vector.
 
-	return (fabs(angle) < 20.0f && dist < screenSize.x / 3.0f);
+	return (fabs(angle) < 20.0f && dist < screenSize.width / 3.0f);
 }
 
 static bool lineIsRightLine(cv::Vec3f& line) {
@@ -73,7 +73,7 @@ static bool lineIsRightLine(cv::Vec3f& line) {
 
 	//NOTE: We're dealing with the normal vector.
 
-	return (fabs(angle) < 20.0f && dist > screenSize.x * 2.0f/3.0f);
+	return (fabs(angle) < 20.0f && dist > screenSize.width * 2.0f/3.0f);
 }
 
 static void classifyLines(std::vector<cv::Vec3f>& lines,
@@ -105,10 +105,10 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 		float weight = (*it)[2]; // third element is the weight of the line
 
 
-    	// point of intersection of the line with first row
+    // point of intersection of the line with first row
 		cv::Point pt1(rho / cos(theta), 0);
 		// point of intersection of the line with last row
-		cv::Point pt2((rho - screenSize.x*sin(theta)) / cos(theta), screenSize.y);
+		cv::Point pt2((rho - screenSize.height*sin(theta)) / cos(theta), screenSize.height);
 		// draw a line: Color = Scalar(R, G, B), thickness
 		cv::line(out, pt1, pt2, color, weight * 50);
 
@@ -157,7 +157,7 @@ static float centerOfLinesAt(cv::Vec3f& first, cv::Vec3f& second, float yValue) 
 	return (xValueOfLineAt(first, yValue) + xValueOfLineAt(second, yValue)) / 2;
 }
 static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
-	return centerOfLinesAt(first, second, screenSize.y);
+	return centerOfLinesAt(first, second, screenSize.height);
 }
 
 //MARK: - Distance Approximation
@@ -179,8 +179,8 @@ static float distanceFromStopLine(cv::Vec3f& line) {
 	/** The following formula calculates the y value of the
 	 *  line
 	 *
-	 *				   /		   screenSize.x   \
-	 * screenSize.y - ( dist  +  ---------------- )
+	 *				   /		   screenSize.width   \
+	 * screenSize.height - ( dist  +  ---------------- )
 	 *  			  \ 		  2 * tan(angle) /
 	 */
 
@@ -188,15 +188,38 @@ static float distanceFromStopLine(cv::Vec3f& line) {
 	//TODO: Why does this differ from the yValueOfLineAt() function formula?
 
 	/*return convertPixelToMM(
-		yValueOfLineAt(line, screenSize.x / 2)
+		yValueOfLineAt(line, screenSize.width / 2)
 	);*/
 
 
 	return convertPixelToMM(
-		screenSize.y - (dist + screenSize.x / (2 * tan(angle)))
+		screenSize.height - (dist + screenSize.width / (2 * tan(angle)))
 	);
 }
 
+
+static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines){
+
+	if(stopLines.size() > 0){
+		cv::Vec3f thickestLine = stopLines.at(0);
+
+		for(cv::Vec3f& line : stopLines){
+			if (line[2] > thickestLine[2]) {
+		 		thickestLine = line;
+			}
+		}
+	 float dist = yValueOfLineAt(thickestLine, screenSize.width / 2);
+
+	 printf("dist: %.2f\n", dist);
+	 #define BREAK_DISTANCE 0.1f
+	 float lowerPart = screenSize.height * BREAK_DISTANCE;
+	 float upperPart = screenSize.height - lowerPart;
+
+	 return 1 / (upperPart) * (screenSize.height-dist);
+	}
+
+	return 1;
+}
 
 
 //MARK: - Clustering and Detection
@@ -205,10 +228,6 @@ static float distanceFromStopLine(cv::Vec3f& line) {
 static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
 	std::vector<int> labels;
 	int amountOfClasses = cv::partition(lines, labels, isEqual);
-
-	//	for (int i = 0; i < lines.size(); i++) {
-	//		printf("dist: %.3f angle: %.3f Klasse: %d\n", lines.at(i)[0], rad2deg(lines.at(i)[1]), labels.at(i));
-	//	}
 
 	for (int i = 0; i < amountOfClasses; i++) {
 		float sumAngle = 0;
@@ -229,8 +248,6 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 	for (cv::Vec3f v : clusteredLines) {
 		printf("dist: %.3f angle: %.3f weight: %.3f\n", v[0], rad2deg(v[1]), v[2]);
 	}
-
-	//printf("Klassen: %d\n", amountOfClasses);
 }
 
 
@@ -271,8 +288,8 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	source_points[3] = cv::Point(contours.cols - 1 - refPoint.x, refPoint.y);
 
 	dest_points[0] = cv::Point(0, 0);
-	dest_points[1] = cv::Point(bottomCornerInset, contours.rows - 1);
-	dest_points[2] = cv::Point(contours.cols - bottomCornerInset, contours.rows - 1);
+	dest_points[1] = cv::Point(bottomCornerInset, 1486 - 1);
+	dest_points[2] = cv::Point(contours.cols - bottomCornerInset, 1486 - 1);
 	dest_points[3] = cv::Point(contours.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
@@ -281,7 +298,7 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 		contours,
 		contoursWarped,
 		transform_matrix,
-		contours.size()
+		cv::Size(1920,1486)
 	);
 
 	//---------------hough transformation---------------------------
@@ -350,23 +367,12 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 
 	//steeringangle
-	angle = getAngle(clusteredLines);
+	angle = getAngle(rightLines, leftLines, unclassifiedLines);
 
 	//speed
-	speed = 0.25f;
+	float tempSpeed = 0.25f * getSpeedPercentage(stopLines);
 
-	if (stopLines.size() > 0) {
-		float sum = 0.0f;
-		for (cv::Vec3f line : stopLines) {
-			sum += line[2];
-		}
-
-		printf("stopThresh: %.3f\n", stopThresh);
-		if (sum > stopThresh) {
-			speed = 0.0f;
-			angle = 0.0f;
-		}
-	}
+	speed = tempSpeed > 0.1f ? tempSpeed : 0;
 
 	// Write current angle to screen for visualization
 	string text = std::to_string(angle) + "\n" + std::to_string(speed);

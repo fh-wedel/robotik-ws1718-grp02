@@ -326,7 +326,7 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
 
-			/*cv::Mat transform_matrix;
+		/*	cv::Mat transform_matrix;
 			cv::Point2f source_points[4];
 			cv::Point2f dest_points[4];
 			int bottomCornerInset = m_filterProperties.minLineContrast; //300
