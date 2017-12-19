@@ -163,7 +163,7 @@ static float centerOfLinesAt(cv::Vec3f& first, cv::Vec3f& second, float yValue) 
 
 //MARK: - Distance Approximation
 
-static float distanceFromStopLine(cv::Vec3f line) {
+static float distanceFromStopLine(cv::Vec3f& line) {
 	float angle = line[1];
 	float dist = line[0];
 
@@ -177,6 +177,12 @@ static float distanceFromStopLine(cv::Vec3f line) {
 
 
 	//TODO: Why does this differ from the yValueOfLineAt() function formula?
+
+	/*return convertPixelToMM(
+		yValueOfLineAt(line, screenSize.x / 2)
+	);*/
+
+
 	return convertPixelToMM(
 		screenSize.y - (dist + screenSize.x / (2 * tan(angle)))
 	);

@@ -168,6 +168,23 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
 
     bool obstacleInFront = true;
 
+
+    if (m_bDebugModeEnabled) {
+        printf("\n\t\t<%4.2f | %4.2f | %4.2f | %4.2f | %4.2f>\n",
+            pSampleData->tFrontLeft.f32Value,
+            pSampleData->tFrontCenterLeft.f32Value,
+            pSampleData->tFrontCenter.f32Value,
+            pSampleData->tFrontCenterRight.f32Value,
+            pSampleData->tFrontRight.f32Value
+        );
+        printf("\t\t<%4.2f | %4.2f | %4.2f>\n\n",
+            pSampleData->tRearLeft.f32Value,
+            pSampleData->tRearCenter.f32Value,
+            pSampleData->tRearRight.f32Value
+        );
+    }
+
+
     frontLeftFilter.pushValue(pSampleData->tFrontLeft.f32Value);
     frontCenterLeftFilter.pushValue(pSampleData->tFrontCenterLeft.f32Value);
     frontCenterFilter.pushValue(pSampleData->tFrontCenter.f32Value);
@@ -192,8 +209,10 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
                     &&  rearRightFilter.calculateMedian()   < m_filterProperties.rearDetectionThreshhold;
 
 
-    printf("OBSTACLES: %d %d\n", obstacleInFront, obstacleBehind);
-
+    if (m_bDebugModeEnabled) {
+        printf("OBSTACLES: %d %d\n", obstacleInFront, obstacleBehind);
+    }
+    
     transmitValue(obstacleInFront, &m_OutputObstacleInFront);
     transmitValue(obstacleBehind, &m_OutputObstacleBehind);
 
