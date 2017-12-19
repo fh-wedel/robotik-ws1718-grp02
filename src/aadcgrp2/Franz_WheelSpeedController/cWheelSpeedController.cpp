@@ -80,16 +80,11 @@ cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__in
     SetPropertyStr(WSC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are written to output");
 
     SetPropertyFloat(WSC_PROP_WAIT_TIME, 5);
-    SetPropertyStr(WSC_PROP_WAIT_TIME NSSUBPROP_DESCRIPTION, "Time to send 0s to the arduino before starting the controller");
+    SetPropertyStr(WSC_PROP_WAIT_TIME NSSUBPROP_DESCRIPTION, "Time in seconds to send 0's to the arduino before starting the controller");
 
     //m_pISignalRegistry = NULL;
 
-    m_f64LastOutput = 0;
-    m_f64LastMeasuredError = 0;
-    m_f64SetPoint = 0;
-    m_lastSampleTime = GetTime();
-    m_f64LastSpeedValue = 0;
-    m_f64accumulatedVariable = 0;
+    resetController();
 }
 
 cWheelSpeedController::~cWheelSpeedController() {}
@@ -143,16 +138,22 @@ tResult cWheelSpeedController::CreateInputPins(__exception) {
     tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
     RETURN_IF_POINTER_NULL(strDescSignalValue);
     cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue,IMediaDescription::MDF_DDL_DEFAULT_VERSION);
+    tChar const * strDescBoolSignalValue = pDescManager->GetMediaDescription("tBoolSignalValue");
+  	cObjectPtr<IMediaType> pTypeBoolSignalValue = new cMediaType(0, 0, 0, "tBoolSignalValue", strDescBoolSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION);
+
 
     // set member media description
     RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescMeasSpeed));
     RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescSetSpeed));
+    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescEmergStop));
 
     // create pins
     RETURN_IF_FAILED(m_oInputSetWheelSpeed.Create("set_WheelSpeed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(&m_oInputSetWheelSpeed));
     RETURN_IF_FAILED(m_oInputMeasWheelSpeed.Create("measured_wheelSpeed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(&m_oInputMeasWheelSpeed));
+    RETURN_IF_FAILED(m_oInputEmergencyStop.Create("emergencystop", pTypeBoolSignalValue, static_cast<IPinEventSink*> (this)));
+    RETURN_IF_FAILED(RegisterPin(&m_oInputEmergencyStop));
 
     RETURN_NOERROR;
 }
@@ -201,6 +202,7 @@ tResult cWheelSpeedController::Init(tInitStage eStage, __exception) {
         // set the flags which indicate if the media descriptions strings were set
         m_bInputMeasWheelSpeedGetID = tFalse;
         m_bInputSetWheelSpeedGetID = tFalse;
+        m_bInputEmergStopGetID = tFalse;
         m_bInputActuatorGetID = tFalse;
 
         m_f64LastOutput = 0.0f;
@@ -215,13 +217,10 @@ tResult cWheelSpeedController::Init(tInitStage eStage, __exception) {
 }
 
 tResult cWheelSpeedController::Start(__exception) {
-    m_f64LastOutput = 0;
-    m_f64LastMeasuredError = 0;
-    m_f64SetPoint = 0;
-    m_lastSampleTime = GetTime();
-    m_f64LastSpeedValue = 0;
-    m_f64accumulatedVariable = 0;
 
+    resetController();
+
+    // Timestamps are in us
     m_startupTime = GetTime() + (tTimeStamp)(1000000 * m_waitTime);
 
     if (m_bShowDebug) {
@@ -241,6 +240,15 @@ tResult cWheelSpeedController::Shutdown(tInitStage eStage, __exception) {
         m_oLock.Release();
     }
     return cFilter::Shutdown(eStage,__exception_ptr);
+}
+
+void cWheelSpeedController::resetController() {
+    m_f64LastOutput = 0;
+    m_f64LastMeasuredError = 0;
+    m_f64SetPoint = 0;
+    m_lastSampleTime = GetTime();
+    m_f64LastSpeedValue = 0;
+    m_f64accumulatedVariable = 0;
 }
 
 tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample) {
@@ -277,16 +285,14 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
             m_f64MeasuredVariable = f32Value;
 
             //calculation
-            // if the desired output speed is 0, immediately stop the motors
-            if (m_f64SetPoint == 0 || m_startupTime > GetTime()) {
+            // if the desired output speed is 0 and we have stoped, immediately stop the motor
+            // if the system just started, wait for the controller to start up
+            if ((m_f64SetPoint == 0 && m_f64MeasuredVariable == 0) || m_startupTime > GetTime()) {
 
-                m_f64LastOutput = 0;
-                m_f64accumulatedVariable = 0;
-                m_f64LastMeasuredError = 0;
-                m_lastSampleTime = GetTime();
+                resetController();
 
             } else {
-                m_f64LastOutput = getControllerValue(f32Value);
+                m_f64LastOutput = getControllerValue(m_f64MeasuredVariable);
             }
 
             // Send signal to controller
@@ -347,6 +353,24 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
             // write to member variable
             m_f64SetPoint = static_cast<tFloat64>(f32Value);
+        } else if (pSource == &m_oInputEmergencyStop) {
+
+            // Receive emergency stop
+
+            //write values with zero
+            tBool bValue = false;
+
+            // focus for sample write lock
+            __adtf_sample_read_lock_mediadescription(m_pDescEmergStop, pMediaSample, pCoder);
+
+            if (!m_bInputEmergStopGetID)
+            {
+                pCoder->GetID("bValue", m_buIDEmergStopBValue);
+                pCoder->GetID("ui32ArduinoTimestamp", m_buIDEmergStopArduinoTimestamp);
+                m_bInputEmergStopGetID = tTrue;
+            }
+
+            pCoder->Get(m_buIDEmergStopBValue, (tVoid*)&bValue);
         }
     }
 

@@ -91,6 +91,9 @@ class cWheelSpeedController : public adtf::cFilter
     /*! the input pin for the set point value */
     cInputPin m_oInputSetWheelSpeed;
 
+    /*! the input pin for emergency stop */
+    cInputPin m_oInputEmergencyStop;
+
     /*! the output pin for the manipulated value */
     cOutputPin m_oOutputActuator;
 
@@ -208,6 +211,8 @@ private:
      */
     tTimeStamp GetTime();
 
+    void resetController();
+
     // Filter startup Time
     tTimeStamp m_startupTime;
     // Time before first output in sec
@@ -244,6 +249,15 @@ private:
     tBufferID m_buIDMeasSpeedArduinoTimestamp;
     /*! indicates of bufferIDs were set */
     tBool m_bInputMeasWheelSpeedGetID;
+
+    /*! media description for the input pin emergency stop */
+    cObjectPtr<IMediaTypeDescription> m_pDescEmergStop;
+    /*! the id for the f32value of the media description for input pin for the emergency stop */
+    tBufferID m_buIDEmergStopBValue;
+    /*! the id for the arduino time stamp of the media description for input pin for the emergency stop */
+    tBufferID m_buIDEmergStopArduinoTimestamp;
+    /*! indicates of bufferIDs were set */
+    tBool m_bInputEmergStopGetID;
 
     /*! the critical section for the on pin events */
     cCriticalSection m_critSecOnPinEvent;
