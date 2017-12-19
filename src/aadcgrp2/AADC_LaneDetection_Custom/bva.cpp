@@ -118,6 +118,10 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 
 //MARK: - Helper Functions
 
+
+static float xValueOfLineAt(float distance, float angle, float yValue) {
+	return distance / cos(angle) + tan(angle) * yValue;
+}
 static float xValueOfLineAt(cv::Vec2f& line, float yValue) {
 	float distance = line[0];
 	float angle = line[1];
@@ -130,38 +134,43 @@ static float xValueOfLineAt(cv::Vec3f& line, float yValue) {
 
 	return xValueOfLineAt(distance, angle, yValue);
 }
-static float xValueOfLineAt(float distance, float angle, float yValue) {
-	float distance = line[0];
-	float angle = line[1];
 
-	return distance / cos(angle) + tan(angle) * yValue;
+
+static float yValueOfLineAt(float distance, float angle, float xValue) {
+	return (distance / sin(angle)) - xValue / tan(angle);
 }
-
 static float yValueOfLineAt(cv::Vec2f& line, float xValue) {
 	float distance = line[0];
 	float angle = line[1];
 
-	return yValueOfLineAt(distance, angle, yValue);
+	return yValueOfLineAt(distance, angle, xValue);
 }
 static float yValueOfLineAt(cv::Vec3f& line, float xValue) {
 	float distance = line[0];
 	float angle = line[1];
 
-	return yValueOfLineAt(distance, angle, yValue);
-}
-static float yValueOfLineAt(float distance, float angle, float xValue) {
-
-	return (distance / sin(angle)) - xValue / tan(angle);
+	return yValueOfLineAt(distance, angle, xValue);
 }
 
-static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
-	return centerOfLines(first, second, screenSize.y);
-}
+
 static float centerOfLinesAt(cv::Vec3f& first, cv::Vec3f& second, float yValue) {
 	return (xValueOfLineAt(first, yValue) + xValueOfLineAt(second, yValue)) / 2;
 }
+static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
+	return centerOfLinesAt(first, second, screenSize.y);
+}
 
 //MARK: - Distance Approximation
+
+
+static float convertPixelToMM(float pixel) {
+	//TODO: Constant based on perspective transform.
+	//TODO: Should be the same for vertical and horizontal (-> keep aspect ratio).
+	float ratio = 0.5f; //dummy value -> 1080 pixel equal approx. 55cm
+
+	return ratio * pixel;
+}
+
 
 static float distanceFromStopLine(cv::Vec3f& line) {
 	float angle = line[1];
@@ -186,14 +195,6 @@ static float distanceFromStopLine(cv::Vec3f& line) {
 	return convertPixelToMM(
 		screenSize.y - (dist + screenSize.x / (2 * tan(angle)))
 	);
-}
-
-static float convertPixelToMM(float pixel) {
-	//TODO: Constant based on perspective transform.
-	//TODO: Should be the same for vertical and horizontal (-> keep aspect ratio).
-	float ratio = 0.5f; //dummy value -> 1080 pixel equal approx. 55cm
-
-	return ratio * pixel;
 }
 
 
