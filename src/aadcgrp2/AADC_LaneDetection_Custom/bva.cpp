@@ -9,7 +9,7 @@ static float bva_distanceThresh;
 
 static cv::Size screenSize (1920,1486);
 
-//returns true if two vectors are similar
+// returns true if two vectors are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
 	float dist = fabs(a[0] - b[0]);
@@ -17,6 +17,7 @@ static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	return (angle < bva_angleThresh) && (dist < bva_distanceThresh);
 }
 
+// gets the weighted angle sum for all the lines in a vector.
 static float getAngleSum(std::vector<cv::Vec3f> lines) {
 	float sum = 0.0f;
 	for (cv::Vec3f v : lines) {
@@ -27,7 +28,13 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 	return sum;
 }
 
-//calculate steering angle
+// return if a value lies in a range with specified tolerance
+static bool isInRange(float value, float rangeMiddle, float tolerance) {
+	return value > rangeMiddle - tolerance &&
+				 value < rangeMiddle + tolerance;
+}
+
+// calculate steering angle
 static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 												 std::vector<cv::Vec3f> leftLines,
 											 	 std::vector<cv::Vec3f> unclassifiedLines) {
@@ -40,15 +47,32 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	tFloat32 sum = getAngleSum(rightLines);
 	sum += getAngleSum(leftLines);
 	sum += getAngleSum(unclassifiedLines);
-	tFloat32 angle = sum / (linesSize);
+	tFloat32 steeringAngle = sum / (linesSize);
 
-	// TODO: hier Spurkontrolle (abdriften)
+	if (unclassifiedLines.size() == linesSize == 1) {
+		cv::Vec3f line = unclassifiedLines.at(0);
+		float dist  = line[0];
+		float angle = rad2deg(line[1]);
 
-	return angle;
+		if (fabs(angle) < 20.0f &&
+				isInRange(xValueOfLineAt(line, screenSize.height/2),
+									screenSize.width/2,
+									screenSize.width*0.3)) {
+			// we found a single, vertical line in the middle of the frame (+/- 1/3)
+
+			steeringAngle = 20.0f; // dummy value more or less
+			// TODO: now we always steer to the right -- is this the way to go?
+			// But in most situations, steering to the right will be appropriate ...
+		}
+
+	}
+
+	return steeringAngle;
 }
 
 //MARK: - Line Classification
 
+// returns if a line is a stop line
 static bool lineIsStopLine(cv::Vec3f& line) {
 	float angle = rad2deg(line[1]);
 	float dist = line[0];
@@ -58,6 +82,7 @@ static bool lineIsStopLine(cv::Vec3f& line) {
 	return (fabs(angle) > 75.0f);
 }
 
+// returns if a line is a left line
 static bool lineIsLeftLine(cv::Vec3f& line) {
 	float angle = rad2deg(line[1]);
 	float dist = line[0];
@@ -67,6 +92,7 @@ static bool lineIsLeftLine(cv::Vec3f& line) {
 	return (fabs(angle) < 20.0f && dist < screenSize.width / 3.0f);
 }
 
+// returns if a line is a right line
 static bool lineIsRightLine(cv::Vec3f& line) {
 	float angle = rad2deg(line[1]);
 	float dist = line[0];
@@ -76,6 +102,13 @@ static bool lineIsRightLine(cv::Vec3f& line) {
 	return (fabs(angle) < 20.0f && dist > screenSize.width * 2.0f/3.0f);
 }
 
+// classifies a line into one of these categories:
+// - right line
+// - left line
+// - stop line
+//
+// based off its angle and distance.
+// If no category matches, the line is unclassified.
 static void classifyLines(std::vector<cv::Vec3f>& lines,
 	std::vector<cv::Vec3f>& rightLines,
 	std::vector<cv::Vec3f>& leftLines,
@@ -95,6 +128,7 @@ static void classifyLines(std::vector<cv::Vec3f>& lines,
 	}
 }
 
+// draws the detected and clustered lines in the specified color
 static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar color) {
 
 	std::vector<cv::Vec3f>::const_iterator it = lines.begin();
@@ -179,13 +213,15 @@ static float distanceFromStopLine(cv::Vec3f& line) {
 	/** The following formula calculates the y value of the
 	 *  line
 	 *
-	 *				   /		   screenSize.width   \
+	 *				              /		      screenSize.width \
 	 * screenSize.height - ( dist  +  ---------------- )
-	 *  			  \ 		  2 * tan(angle) /
+	 *  			             \  		     2 * tan(angle) /
 	 */
 
 
 	//TODO: Why does this differ from the yValueOfLineAt() function formula?
+
+	// TODO: Which version do we prefer?
 
 	/*return convertPixelToMM(
 		yValueOfLineAt(line, screenSize.width / 2)
@@ -203,6 +239,7 @@ static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines){
 	if(stopLines.size() > 0){
 		cv::Vec3f thickestLine = stopLines.at(0);
 
+		// We look for the thickest (most sure) stop line
 		for(cv::Vec3f& line : stopLines){
 			if (line[2] > thickestLine[2]) {
 		 		thickestLine = line;
@@ -210,12 +247,14 @@ static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines){
 		}
 	 float dist = yValueOfLineAt(thickestLine, screenSize.width / 2);
 
-	 printf("dist: %.2f\n", dist);
 	 #define BREAK_DISTANCE 0.1f
 	 float lowerPart = screenSize.height * BREAK_DISTANCE;
 	 float upperPart = screenSize.height - lowerPart;
 
 	 return 1 / (upperPart) * (screenSize.height-dist);
+
+	 // TODO: Calculation is based off percentage of stop line in frame.
+	 // Maybe use a different function?
 	}
 
 	return 1;
@@ -224,7 +263,8 @@ static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines){
 
 //MARK: - Clustering and Detection
 
-//weight saved in clusteredLines[2]
+// Clusters lines according to a similarity measure (isEqual())
+// weight saved in clusteredLines[2]
 static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
 	std::vector<int> labels;
 	int amountOfClasses = cv::partition(lines, labels, isEqual);
@@ -240,8 +280,10 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 				sumAngle += lines.at(label)[1];
 			}
 		}
-		//printf("sumDist: %.1f sumAngle: %.1f\n", sumDist, sumAngle);
-		clusteredLines.push_back(cv::Vec3f(sumDist / classSize, sumAngle / classSize, (float) classSize / lines.size()));
+
+		clusteredLines.push_back(cv::Vec3f(sumDist / classSize,
+																			 sumAngle / classSize,
+																			 (float) classSize / lines.size()));
 	}
 
 	printf("Clustered:\n");
@@ -264,7 +306,6 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 	cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(0, 10, 3, false);
 	canny->detect(image, contours);
-	//image.copyTo(contours);
 
 	//--------------perspective warp------------------
 	cv::Mat transform_matrix;
@@ -314,11 +355,11 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	// -> By remapping (91 to 180) to (-90 to 0) the distance needs to be inverted.
 	//
 	//   O----------------> x
-	//   |`-_             |
-	//   |   `-_   angle  )
-	//   |      `-_      /
-	//   |		   `-_  /
-	//   |			  `-_
+	//   |`-_              |
+	//   |   `-_   angle   )
+	//   |      `-_       /
+	//   |		     `-_   /
+	//   |			      `-_
 	// y V
 	//
 	//NOTE: We're dealing with the normal vector.
@@ -327,9 +368,13 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 		float angle = rad2deg(line[1]);
 		float dist = line[0];
 
+		// Normalizing angle and distance so that they are in the following range:
+		// angle:    -90 .. 90
+		// distance:   0 .. inf (always positive)
 		if (angle > 90 && angle < 270) {
 			line[0] = -dist;
 			line[1] = deg2rad(angle - 180.0f);
+
 		} else if (angle < 0 || angle > 270) {
 			printf("ALARM! %.2f\n", angle);
 		}
@@ -358,29 +403,31 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	std::vector<cv::Vec3f> unclassifiedLines;
 	classifyLines(clusteredLines, rightLines, leftLines, stopLines, unclassifiedLines);
 
-
 	// Draw the lines
-	drawLines(out, rightLines, cv::Scalar(255, 0, 0));
-	drawLines(out, leftLines, cv::Scalar(0, 255, 0));
-	drawLines(out, stopLines, cv::Scalar(0, 0, 255));
-	drawLines(out, unclassifiedLines, cv::Scalar(0, 255, 255));
+	drawLines(out, rightLines, cv::Scalar(255, 0, 0)); // blue right lines
+	drawLines(out, leftLines, cv::Scalar(0, 255, 0));  // green left lines
+	drawLines(out, stopLines, cv::Scalar(0, 0, 255));  // red stop lines
+	drawLines(out, unclassifiedLines, cv::Scalar(0, 255, 255)); // yellow unclassified
 
-
-	//steeringangle
+	// steering angle
 	angle = getAngle(rightLines, leftLines, unclassifiedLines);
 
-	//speed
+	// speed
 	float tempSpeed = 0.25f * getSpeedPercentage(stopLines);
 
+	// using an epsilon to make the car halt at very low speeds.
 	speed = tempSpeed > 0.1f ? tempSpeed : 0;
 
 	// Write current angle to screen for visualization
-	string text = std::to_string(angle) + "\n" + std::to_string(speed);
+	std::string textAngle = std::to_string(angle);
+	std::string textSpeed = std::to_string(speed);
 	int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
 	double fontScale = 2;
 	int thickness = 3;
-	cv::Point textOrg(10, 130);
-	cv::putText(out, text, textOrg, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
+	cv::Point textOrgAngle(10, 130);
+	cv::Point textOrgSpeed(10, 160);
+	cv::putText(out, text, textOrgAngle, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
+	cv::putText(out, text, textOrgSpeed, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
 }
 
 void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
