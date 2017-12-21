@@ -498,7 +498,7 @@ Wir beheben den SegFault in Franz' Nothalt-Pin und kümmern uns um weitere Anpas
 Wir bereiten Alles darauf vor, dass das Auto sich selbst **auf der Spur zentrieren** kann.
 Darüberhinaus sind wir nun soweit, dass das Auto eigenständig anhält, wenn es sich sicher ist, eine Haltelinie erkannt zu haben.
 
-**15:20 - 17:00 Uhr ?? - Frauke, Jan**  
+**15:20 - 17:30 Uhr - Frauke, Jan**  
 Da das Anhalten recht früh und abrupt erfolgt, sind nun Vorkehrungen getroffen worden, die die gewünschte Geschwindigkeit mithilfe der aktuellen Position der Haltelinie im Kamerabild modulieren.
 So ist ein **sanftes Abbremsen** gewährleistet.
 
