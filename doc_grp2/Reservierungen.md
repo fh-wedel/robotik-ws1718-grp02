@@ -8,7 +8,6 @@
 ----
 #### Gruppe 2 - Gelb
 
-- Montag ab 14 Uhr
 - Dienstags 9:30 bis 10:45 Uhr
 - Mittwochs ab 14:15 Uhr
 - Donnerstags 17:00 bis 18:15 Uhr
