@@ -502,4 +502,7 @@ Darüberhinaus sind wir nun soweit, dass das Auto eigenständig anhält, wenn es
 Da das Anhalten recht früh und abrupt erfolgt, sind nun Vorkehrungen getroffen worden, die die gewünschte Geschwindigkeit mithilfe der aktuellen Position der Haltelinie im Kamerabild modulieren.
 So ist ein **sanftes Abbremsen** gewährleistet.
 
+**15:30 - 17:00 Uhr - Franz, Frauke**
+Wir haben das Zentrieren auf der Fahrspur getestet und eine neue Vorangehensweise überlegt. Dann haben ein paar Videos aufgenommen und die VNC Verbindung auf Franz Surface ausprobiert, was sehr gut funktionierte.
+
 Anmerkung (Felix): Zur Zeit wird dies durch eine Lineare Funktion bewerkstelligt. In Zukunft könnte hier die **Sigmoid-Funktion** (S-förmig) angewendet werden. Dadurch erlangen wir einen sanften Start gefolgt von einer *"Beschleunigung"* durch die Mitte, hin zu einem sanften Ausklingen.
