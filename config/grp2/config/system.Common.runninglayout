@@ -25,4 +25,14 @@
    <folder Height="574" PosX="27" PosY="102" Visible="true" Width="792" name="Hough_Display" />
   </folder>
  </folder>
+ <folder name="Live2">
+  <folder name="components">
+   <folder filter_tree_expanded_list="//AADC_Lane_Detection_Custom2" name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
+   <folder Height="1028" Visible="true" Width="1904" name="RGB_Display" />
+   <folder Height="548" Visible="true" Width="784" name="Video_Display" />
+  </folder>
+ </folder>
 </adtf:export>

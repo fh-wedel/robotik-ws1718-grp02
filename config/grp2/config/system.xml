@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:project xmlns:adtf="adtf">
  <general_settings>
-  <property name="active_configuration" type="String" value="Wheel_Converter" />
+  <property name="active_configuration" type="String" value="Live2" />
   <property name="enable_messagebus" type="Bool" value="true" />
   <property name="synchronizing_type" type="Int" value="1" />
   <property name="global_log_level" type="Int" value="3" />
@@ -398,6 +398,26 @@
     <connection connection_priority="50" dest="Video_Display.input" interface="" source="AADC_Lane_Detection_Custom2.Video_Output_Debug" />
     <connection connection_priority="50" dest="Felix_MedianFilter.input" interface="" source="AADC_Lane_Detection_Custom2.steeringAngle" />
     <connection connection_priority="50" dest="AADC_Lane_Detection_Custom2.Video_Input" interface="" source="AADC_Realsense_Camera_Felix.outputRGB" />
+    <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="4">
+     <settings>
+      <property name="PID::Kd_value" type="Float" value="0,01398.0" />
+      <property name="PID::Ki_value" type="Float" value="0,98867.0" />
+      <property name="PID::Kp_value" type="Float" value="0,39088.0" />
+      <property name="PID::Maximum output" type="Float" value="100.0" />
+      <property name="PID::Minimum output" type="Float" value="-100.0" />
+      <property name="Gain" type="Float" value="10.0" />
+     </settings>
+    </filter>
+    <filter alias="AADC_Converter_Wheels_Custom_" idref="adtf.aadc.converterWheels_Custom" priority="2">
+     <settings>
+      <property name="Use Speed Controller Input Direction - Deadband" type="Float" value="0,1.0" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="Base_Config.SpeedController" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
+    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="AADC_Lane_Detection_Custom2.speed" />
+    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="AADC_Converter_Wheels_Custom_.car_speed" />
+    <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="Base_Config.WheelLeftStruct" />
+    <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="Base_Config.WheelRightStruct" />
    </graph>
   </configuration>
  </configurations>

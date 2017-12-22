@@ -205,6 +205,7 @@ tResult cWheelSpeedController::Init(tInitStage eStage, __exception) {
         m_bInputEmergStopGetID = tFalse;
         m_bInputActuatorGetID = tFalse;
 
+        m_bEmergencyStop = tFalse;
         m_f64LastOutput = 0.0f;
 
         if (m_bShowDebug) {
