@@ -9,6 +9,52 @@ static float bva_distanceThresh;
 
 static cv::Size screenSize (1920,1486);
 
+
+//MARK: - Helper Functions
+
+
+static float xValueOfLineAt(float distance, float angle, float yValue) {
+	return distance / cos(angle) + tan(angle) * yValue;
+}
+static float xValueOfLineAt(cv::Vec2f& line, float yValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return xValueOfLineAt(distance, angle, yValue);
+}
+static float xValueOfLineAt(cv::Vec3f& line, float yValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return xValueOfLineAt(distance, angle, yValue);
+}
+
+
+static float yValueOfLineAt(float distance, float angle, float xValue) {
+	return (distance / sin(angle)) - xValue / tan(angle);
+}
+static float yValueOfLineAt(cv::Vec2f& line, float xValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return yValueOfLineAt(distance, angle, xValue);
+}
+static float yValueOfLineAt(cv::Vec3f& line, float xValue) {
+	float distance = line[0];
+	float angle = line[1];
+
+	return yValueOfLineAt(distance, angle, xValue);
+}
+
+
+static float centerOfLinesAt(cv::Vec3f& first, cv::Vec3f& second, float yValue) {
+	return (xValueOfLineAt(first, yValue) + xValueOfLineAt(second, yValue)) / 2;
+}
+static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
+	return centerOfLinesAt(first, second, screenSize.height);
+}
+
+
 // returns true if two vectors are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
@@ -49,20 +95,21 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	sum += getAngleSum(unclassifiedLines);
 	tFloat32 steeringAngle = sum / (linesSize);
 
-	if (unclassifiedLines.size() == linesSize == 1) {
+	if (unclassifiedLines.size() > 0 && linesSize == 1) {
 		cv::Vec3f line = unclassifiedLines.at(0);
-		float dist  = line[0];
 		float angle = rad2deg(line[1]);
 
 		if (fabs(angle) < 20.0f &&
 				isInRange(xValueOfLineAt(line, screenSize.height/2),
 									screenSize.width/2,
-									screenSize.width*0.3)) {
+									screenSize.width*0.4)) {
 			// we found a single, vertical line in the middle of the frame (+/- 1/3)
 
 			steeringAngle = 20.0f; // dummy value more or less
 			// TODO: now we always steer to the right -- is this the way to go?
 			// But in most situations, steering to the right will be appropriate ...
+			
+			// TODO: Abstand der rechten und linken linie zum Rand messen und aus dem Verhältnis einen Lenkwinkel berechnen
 		}
 
 	}
@@ -75,7 +122,6 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 // returns if a line is a stop line
 static bool lineIsStopLine(cv::Vec3f& line) {
 	float angle = rad2deg(line[1]);
-	float dist = line[0];
 
 	//NOTE: We're dealing with the normal vector.
 
@@ -148,50 +194,6 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 
 		++it;
 	}
-}
-
-//MARK: - Helper Functions
-
-
-static float xValueOfLineAt(float distance, float angle, float yValue) {
-	return distance / cos(angle) + tan(angle) * yValue;
-}
-static float xValueOfLineAt(cv::Vec2f& line, float yValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return xValueOfLineAt(distance, angle, yValue);
-}
-static float xValueOfLineAt(cv::Vec3f& line, float yValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return xValueOfLineAt(distance, angle, yValue);
-}
-
-
-static float yValueOfLineAt(float distance, float angle, float xValue) {
-	return (distance / sin(angle)) - xValue / tan(angle);
-}
-static float yValueOfLineAt(cv::Vec2f& line, float xValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return yValueOfLineAt(distance, angle, xValue);
-}
-static float yValueOfLineAt(cv::Vec3f& line, float xValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return yValueOfLineAt(distance, angle, xValue);
-}
-
-
-static float centerOfLinesAt(cv::Vec3f& first, cv::Vec3f& second, float yValue) {
-	return (xValueOfLineAt(first, yValue) + xValueOfLineAt(second, yValue)) / 2;
-}
-static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
-	return centerOfLinesAt(first, second, screenSize.height);
 }
 
 //MARK: - Distance Approximation
@@ -425,9 +427,9 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	double fontScale = 2;
 	int thickness = 3;
 	cv::Point textOrgAngle(10, 130);
-	cv::Point textOrgSpeed(10, 160);
-	cv::putText(out, text, textOrgAngle, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
-	cv::putText(out, text, textOrgSpeed, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
+	cv::Point textOrgSpeed(10, 200);
+	cv::putText(out, textAngle, textOrgAngle, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
+	cv::putText(out, textSpeed, textOrgSpeed, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
 }
 
 void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
