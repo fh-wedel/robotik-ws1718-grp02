@@ -446,13 +446,60 @@ Wir haben uns von Hermann zu unseren Problemen in der BVA beraten lassen. Er sag
 
 Danach hat sich Felix mit der **genaueren perspektivischen Transformation** beschäftigt, indem er die **Kalibrierung mit einem Schachbrettmuster** vornimmt. Dazu haben wir auch das RGB-Bild der Kamera perspektivisch transformiert. Wir sind allerdings nicht fertig gewordern; Felix wollte sich das am Abend noch einmal anschauen.
 
-Weil die Ausgabe von debug-Videostreams momentan ziemlich mühselig ist, hatte Frauke folgende Idee: Man könnte auf verschiedenen Stufen die entsprechenden Bilder als `outputStream` ausgeben, sodass man sie sich im ADTF anzeigen kann. Alternativ könnte man einzelne **OpenCV-Funktionen auch als eigenen ADTF-Filter** implementieren (z.B. `cv::warpPerspective()`, `cv::threshold` oder `cv::houghLines()` usw.), sodass wir eine Modularität schaffen. Da können natürlich viele Filter entstehen. Vielleicht kann man auch mehrere Operationen in einem Filter zusammenfassen.
+Weil die Ausgabe von debug-Videostreams momentan ziemlich mühselig ist, hatte Frauke folgende Idee: Man könnte auf verschiedenen Stufen die entsprechenden Bilder als `outputStream` ausgeben, sodass man sie sich im ADTF anzeigen kann. Alternativ könnte man einzelne **OpenCV-Funktionen auch als eigenen ADTF-Filter** implementieren (z.B. `cv::warpPerspective()`, `cv::threshhold` oder `cv::houghLines()` usw.), sodass wir eine Modularität schaffen. Da können natürlich viele Filter entstehen. Vielleicht kann man auch mehrere Operationen in einem Filter zusammenfassen.
 
 ----
 
 ### Mittwoch, 13.12.
-**14:00 - 15:50 Uhr - Jan**
+**14:00 - 15:50 Uhr - Jan**  
 Jan hat den Winkel der selbstgebauten RealSense Kamerahalterung erhöht, sodass diese nun besser auf die Straße ausgerichtet ist. 
-Dies hat zu Folge, dass das transformierte Bild nichtmehr so anfällig bei der Beschleunigung ist. 
+Dies hat zu Folge, dass das transformierte Bild nicht mehr so anfällig bei der Beschleunigung ist. 
 Ebenfalls hat Jan danach die perspektivische Transformation angepasst. Hierfür wurden zur Zeit ungenutzte Parameter im ADTF benutzt, um nicht ständig neu compilieren zu müssen. 
 Nachdem die neuen Werte gefunden wurden, wurden sie in `findLines()` übertragen. Die Sichtweite nach vorne wurde deutlich verringert, da wir nicht vorrausschauend fahren müssen, sondern uns nur für den **aktuellen** Lenkwinkel interessieren
+
+
+----
+
+
+### Freitag, 15.12.
+**07:50 bis 09:30 - Felix**  
+Felix begann Hilfsfunktionen zur Klassifizierung der erkannten Linien zu schreiben. In Zukunft soll es möglich sein, zwischen rechten, linken und Haltelinien zu unterscheiden.
+
+
+----
+
+
+### Montag, 18.12.
+**14:00 - 18:30 Uhr - Franz, Felix, Frauke, Jan**  
+Wir haben uns um die Klassifizierung von Linien gekümmert und diese nun in unterschiedlichen Farben auf dem `Canny-Bild` ausgegeben.
+
+Die Klassifizierung wird auf die bereits geclusterten Linien angewendet.
+Es wird zwischen linken, rechten und Haltelinien unterschieden.
+
+Zusätzlich hat die BVA jetzt einen Geschwindigkeitsausgang erhalten, womit es uns nun möglich ist, an Haltelinien anzuhalten (**Notiz: 40% der Linien müssen Haltelinien sein**).
+
+**20:50 bis 23:00 Uhr - Felix (, Frauke)**  
+Felix hat sich der Spurhaltung zugewandt. Es entstanden mehrere Hilfsfunktionen, die auf den erkannten Linien arbeiten.
+Es sollte möglich sein, den x-Wert einer Linie auf Basis eines zugehörigen y-Wert (und umgekehrt) zu erlangen.
+
+Die hierzu benötigten *Winkelberechnungen* wurden mit Frauke diskutiert und verifiziert.
+
+----
+
+
+### Dienstag, 19.12.
+**09:00 - 10:45 Uhr - Franz, Felix, Frauke**  
+Frauke und Felix haben sich zuerst mit der Einrichtung von **Teletype™️** auseinandergesetzt. Die Verbindung über das FH-Robotik-Netzwerk zwischen Felix' und Fraukes Laptop funktioniert gut -- man kann also gleichzeitig an einer File schreiben --, allerdings schafft es Teletype™️ nicht, auf dem Auto eine Verbindung aufzubauen. Es könnte daran liegen, dass Teletype™️ versucht einen Port zu öffnen, der nicht freigeschaltet ist ...
+
+Danach haben sie sich weiter mit der BVA und der Berechnung von Schnittpunkten von Linien mit x- und y-Werten auseinandergesetzt. Man kann also für eine Linie einen bestimmten x- oder y-Wert angeben, und bekommt den jeweils anderen Wert für die Linie zurück.
+
+**14:00 - 15:20 Uhr - Alle**  
+Wir beheben den SegFault in Franz' Nothalt-Pin und kümmern uns um weitere Anpassungen des Spurhalte*assistenten*.  
+Wir bereiten Alles darauf vor, dass das Auto sich selbst **auf der Spur zentrieren** kann.
+Darüberhinaus sind wir nun soweit, dass das Auto eigenständig anhält, wenn es sich sicher ist, eine Haltelinie erkannt zu haben.
+
+**15:20 - 17:30 Uhr - Frauke, Jan**  
+Da das Anhalten recht früh und abrupt erfolgt, sind nun Vorkehrungen getroffen worden, die die gewünschte Geschwindigkeit mithilfe der aktuellen Position der Haltelinie im Kamerabild modulieren.
+So ist ein **sanftes Abbremsen** gewährleistet.
+
+Anmerkung (Felix): Zur Zeit wird dies durch eine Lineare Funktion bewerkstelligt. In Zukunft könnte hier die **Sigmoid-Funktion** (S-förmig) angewendet werden. Dadurch erlangen wir einen sanften Start gefolgt von einer *"Beschleunigung"* durch die Mitte, hin zu einem sanften Ausklingen.

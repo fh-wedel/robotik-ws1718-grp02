@@ -1,0 +1,81 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[utf8]{inputenc} % damit auch äöüß gehen
+\usepackage[T1]{fontenc}	% so kann man bessere wörtliche rede machen
+\usepackage[ngerman]{babel} % deutsche Silbentrennung
+\usepackage{gensymb} % für besondere Symbole wie zB Grad -> \degree
+
+\usepackage{csvsimple} % for tables
+
+\usepackage{graphicx}
+
+\usepackage{enumitem} % um aufzählungen zu machen
+\usepackage[
+	colorlinks,
+	pdfpagelabels,
+	bookmarksopen = true,
+	bookmarksnumbered = true,
+	linkcolor = black,
+	plainpages = false,
+	hypertexnames = false,
+	citecolor = black
+]{hyperref} % verlinkt referenzen für die digitale verwendung
+
+
+
+%TODO: Einführung, Gruppenfoto (mit Auto), Passiver Schreibstil, Bilder, Allgemeine Beschreibungen der Kapitel, Autor der jeweiligen Funktion, Fazit, Zwischenfazit für jedes Kaptiel?, Sinnabschnitte,  Literatur/Quellverzeichnis
+
+
+
+\begin{document}
+	\title{Robotik Praktikum -- Gruppe 2}
+	\author{Frauke Jörgens (minf101207) \and Franz Wernicke (ite101729) \and Thorger Dittmann (ite101646) \and Jan Ottmüller (tinf101737) \and Felix Maaß (ite101754)}
+	\date{\today}
+	\maketitle
+	
+	\tableofcontents
+	
+	
+	
+	
+	\chapter{Allgemeine Filter}
+	\section{Medianfilter}
+	
+		Zur Stabilisierung von Messwerten haben wir uns dafür entschieden den Medien Filter zu benutzen weil dieser ausreißersicher ist und damit falsche Werte wie zum Beispiel die -1, die die Ultraschallsensoren zeitweise ausgeben, nicht mit in kommende Berechnung einbezogen werden.
+		
+		So einen Filter habe ich nun sowohl als Klasse als auch als ADTF Filter erstellt und damit ist uns eine flexible Filterung möglich.
+	
+	
+	\section{Lineare Funktion}
+	
+		Zur besseren Visualisierung habe ich einen ADTF Filter erstellt, der float Werte mit einem Gain und einem Offset versehen kann. 
+		Gain und Offset können sowohl als Parameter im Filter selbst gesetzt als auch über Inputs Pins bestimmt werden.
+	
+	\chapter{Hinderniserkennung}
+	
+		Mithilfe der Ultraschall Sensoren werden vorne und hinten Hindernisse er kann ich die eventuell dem Auto im Weg stehen könnten.
+		Dadurch ist es möglich, rechtzeitig zu reagieren bevor eine Kollision stattfindet.
+	
+	\chapter{Kollisionserkennung}
+	
+		Mithilfe der Daten des Accelerometers können wir Kollisionen erkennen und einen sofortigen Nothalt auslösen.
+		Dabei wird darauf geachtet, dass die Ausschläge der Werte entsprechend hoch und kurzweilig sind, da auch bei starkem Abbremsen bereits starke aber anhaltende Beschleunigungen entstehen.
+	
+	\chapter{Fahrbahnerkennung}
+	
+	\section{Linienerkennung (Binarisierung)}
+	Threshold, HSV-Modell, Closing, ...
+	
+	\section{Canny Edge Detection} %TODO vorher/nachher Bilder
+	
+	\section{Hough Line Transformation}
+	
+	\section{Line-Clustering}
+	
+	\section{Klassifizierung}
+	
+	\subsection{Haltelinien}
+	
+\end{document}
+
+
