@@ -28,6 +28,9 @@
 
 
 \begin{document}
+	
+%%%%%%%%%%%%%%%%%%%%% HEADER %%%%%%%%%%%%%%%%%%%%%
+
 	\title{Robotik Praktikum -- Gruppe 2}
 	\author{Frauke Jörgens (minf101207) \and Franz Wernicke (ite101729) \and Thorger Dittmann (ite101646) \and Jan Ottmüller (tinf101737) \and Felix Maaß (ite101754)}
 	\date{\today}
@@ -35,46 +38,99 @@
 	
 	\tableofcontents
 	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+\chapter{Allgemeine Themen}
+\section{Lineare Funktion}
+
+	Für manche Werte war es nötig eine Modulation hinzufügen zu können.
 	
+	Es wurde sich aus Gründen der besseren Visualisierung für einen eigenen ADTF Filter entschieden.
+	Dieser nimmt ein Eingangssignal entgegen, welches daraufhin mit einem Gain und Offset versehen wird und anschließend den modulierten Wert zurückliefert.
 	
+	Diese Funktionalität entspricht einer "Linearen Funktion":
 	
-	\chapter{Allgemeine Filter}
-	\section{Medianfilter}
+	\[y = g * x + o\]
 	
-		Zur Stabilisierung von Messwerten haben wir uns dafür entschieden den Medien Filter zu benutzen weil dieser ausreißersicher ist und damit falsche Werte wie zum Beispiel die -1, die die Ultraschallsensoren zeitweise ausgeben, nicht mit in kommende Berechnung einbezogen werden.
-		
-		So einen Filter habe ich nun sowohl als Klasse als auch als ADTF Filter erstellt und damit ist uns eine flexible Filterung möglich.
+	wobei $x$ der Eingang, $g$ der Gain, $o$ der Offset und $y$ der Ausgang ist.
+	\\
+	Gain und Offset können hierbei sowohl über eigene Eingangspins als auch über variable Filterparameter gesetzt werden.
+
+\subsection{In Entwicklung}
+
+	Es ist geplant, dass die Geschwindigkeit des Autos mithilfe des aktuellen Lenkwinkels in Kurven angepasst werden kann.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Lenkung}
+
+%TODO: Hier ein bisschen was über die beiden Filter schreiben + Ackermann Steering Approximation + Theoretische Überlegungen auf zettel und papier
+%https://en.wikipedia.org/wiki/Steering
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Motorregelung}	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Kollisionsvermeidung}
+
+	Mithilfe der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
+	Dadurch soll es möglich sein, zu reagieren bevor eine Kollision stattfindet.
+
+\section{Genauigkeit der Ultraschallsensoren}
+
+	\paragraph{Situation.}
+	Die Ultraschallsensoren liefern einzeln betrachtet recht akkurate Werte.
+	Die Genauigkeit wurde zu $\pm1cm$ bestimmt.
 	
+	\paragraph{Problem.}
+	Leider ist es jedoch der Fall, dass die Messungen Ausreißer aufweisen.
+	Teils wurden leicht erkennbare Fehler zurückgegeben ($-1$). Teils wichen die Werte aber auch um erhebliche Beträge ab.
 	
-	\section{Lineare Funktion}
+	Den Grund für Letzteres diagnostizierten wir in der gleichzeitigen Ansteuerung der Sensoren.
+	Da jedoch der Code der Arduinos (welche sich um die Erfassung der Werte kümmern) nicht offen liegt und für uns somit anpassbar wäre, können wir vorerst keine Änderungen daran vornehmen.
 	
-		Zur besseren Visualisierung habe ich einen ADTF Filter erstellt, der float Werte mit einem Gain und einem Offset versehen kann. 
-		Gain und Offset können sowohl als Parameter im Filter selbst gesetzt als auch über Inputs Pins bestimmt werden.
+	Damit diese falschen Werte dennoch nicht mit in kommende Berechnungen einbezogen werden, musste eine entsprechende Lösung gefunden werden.
+
+	\paragraph{Resultat.}
+	Zur Stabilisierung der Messwerte entschieden wir uns für eine Filterung.
+	Es wurde nach einem Filter gesucht, der robust gegenüber Ausreißern ist.
+	Hier kam uns als Erstes der Median in den Sinn.
 	
-	\chapter{Hinderniserkennung}
+	Ein entsprechender Filter wurde nun sowohl als C++ Klasse als auch als ADTF Filter erstellt.
+
+	Der ADTF Filter besitzt einen Parameter, der die Fenstergröße einstellt (i.e. die Anzahl an Werten über die der Median gebildet werden soll) und ermöglicht damit eine flexible Filterung der Messwerte.
+
+\section{Hinderniserkennung}
 	
-		Mithilfe der Ultraschall Sensoren werden vorne und hinten Hindernisse er kann ich die eventuell dem Auto im Weg stehen könnten.
-		Dadurch ist es möglich, rechtzeitig zu reagieren bevor eine Kollision stattfindet.
+	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
+	\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 	
-	\chapter{Kollisionserkennung}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Kollisionserkennung}
+
+	Mithilfe der Daten des Accelerometers werden Kollisionen erkannt und ein sofortiger Nothalt ausgelöst.
+	\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 	
-		Mithilfe der Daten des Accelerometers können wir Kollisionen erkennen und einen sofortigen Nothalt auslösen.
-		Dabei wird darauf geachtet, dass die Ausschläge der Werte entsprechend hoch und kurzweilig sind, da auch bei starkem Abbremsen bereits starke aber anhaltende Beschleunigungen entstehen.
+	Dabei wird darauf geachtet, dass die Ausschläge der Werte entsprechend hoch und kurzweilig sind, da auch bei starkem Abbremsen bereits starke aber anhaltende Beschleunigungen entstehen.
 	
-	\chapter{Fahrbahnerkennung}
-	
-	\section{Linienerkennung (Binarisierung)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+\chapter{Fahrbahnerkennung}
+
+\section{Linienerkennung (Binarisierung)}
 	Threshold, HSV-Modell, Closing, ...
-	
-	\section{Canny Edge Detection} %TODO vorher/nachher Bilder
-	
-	\section{Hough Line Transformation}
-	
-	\section{Line-Clustering}
-	
-	\section{Klassifizierung}
-	
-	\subsection{Haltelinien}
+
+\section{Canny Edge Detection} %TODO vorher/nachher Bilder
+
+\section{Hough Line Transformation}
+
+\section{Line-Clustering}
+
+\section{Klassifizierung}
+
+\subsection{Haltelinien}
+
+
 	
 \end{document}
 
