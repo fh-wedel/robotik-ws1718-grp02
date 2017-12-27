@@ -50,7 +50,7 @@
 	
 	Diese Funktionalität entspricht einer "Linearen Funktion":
 	
-	\[y = g * x + o\]
+	\[y = g \cdot x + o\]
 	
 	wobei $x$ der Eingang, $g$ der Gain, $o$ der Offset und $y$ der Ausgang ist.
 	\\
@@ -104,6 +104,33 @@
 	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
 	\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 	
+\subsection{Theoretische Überlegungen}
+	
+	Um sich ein geeignetes Bild der Umgebung zu machen, ist es sinnvoll, jeden  Messwert der fünf Frontsensoren einzeln zu bewerten, da sonst unnötige Manöver eingeführt werden, um Objekten auszuweichen, die nicht auf unserer Trajektorie liegen.
+	Uns erschien es sinnig, dies anhand des aktuellen Lenkwinkels zu tun.
+	
+	Es wurde eine Funktion synthetisiert, die die Relevanz der einzelnen Messwerte zu dem Lenkwinkel in Relation setzt:
+	
+		\[y=2-e^{-3 \cdot \left( x-a \right)^2}\]
+	
+	Sie bietet eine Gewichtung für Messwerte der jeweiligen Sensoren.
+	Hierbei steht $x$ für den Montagewinkel des zu gewichtenden Sensors, $a$ für den aktuellen Lenkwinkel und $y$ für die Gewichtung (den Skalierungsfaktor).
+	
+	Dies bewirkt, dass Messwerte von Sensoren, die nicht in Fahrtrichtung zeigen, weniger stark in die Hinderniserkennung mit eingehen, ohne diese gänzlich ausschließen zu müssen.
+	
+	\paragraph{Veranschaulichung.} \autoref{img_uss_function} zeigt die Funktion bei $a = 0\degree$ Auslenkung.
+	Das Minimum der Kurve befindet sich stets bei dem aktuellen Lenkwinkel, da hier gilt: $x = a$.
+	
+	Die blauen Vertikalen zeigen Hilfslinien bei $45\degree$ Montagewinkel.
+	
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/uss-function}
+		\caption{Gewichtungsfunktion für einen Lenkwinkel von $a = 0\degree$}
+		\label{img_uss_function}
+	\end{figure}
+	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionserkennung}
@@ -130,7 +157,44 @@
 
 \subsection{Haltelinien}
 
+\section{Zentrierung in der Fahrspur}
+	
+	Bisher ist das Auto in der Lage der Fahrspur zu folgen.
+	Allerdings besteht das Problem, dass es sich nicht in der Mitte der Spur zentriert.
+	Dies führt dazu, dass es oft bereits auf den Linien fährt und teilweise sogar die andere Fahrspur mitbenutzt.
+	Da dies sicher kein erwünschtes Verhalten ist behandelt dieser Abschnitt unsere Herangehensweise.
 
+\subsection{Theoretische Überlegungen}
+
+	Angenommen es werden zwei Linien (linke und rechte Leitlinie) erkannt.
+	Es wird nun jeweils der Abstand zur Seite ermittelt und dann gemittelt (Arithmetisches Mittel).
+	Das Ergebnis ist ein Wert, der entweder links, rechts oder genau auf der Ideallinie des Fahrspur liegt.
+	
+	Es wird nun eine Funktion gesucht, die die Abweichung in eine Lenkanweisung umsetzt.
+	Da dies schnell zu instabilen Verhalten führen kann, fällt eine lineare Funktion raus.
+	Hier würde zu oft nachkorrigiert werden müssen.
+	
+	Unsere Wahl fiel dabei auf eine modifizierte Sigmoid-Funktion:
+	\footnote{Die Funktion wird symmetrisch auch für Abweichungen nach links eingesetzt. Hierbei muss lediglich das Vorzeichen beachtet werden.}
+	
+		\[y=\frac{a_{max}}{1 + e^{-14\left( \frac{x}{x_{max}}-\frac{1}{2} \right)}}\]
+	
+	Hierbei steht $x$ für die aktuelle und $x_{max}$ für die maximale Abweichung von der Ideallinie.
+	Der maximal anzusteuernde Lenkwinkel wird durch den Parameter $a_{max}$ angegeben.
+	
+	\paragraph{Veranschaulichung.} \autoref{img_spurzentrierung_function} zeigt die Funktion beispielhaft für $a_{max} = x_{max} = 1$, also in ihrer normierten Darstellung.
+	
+	Je weiter das Auto sich also von der Ideallinie entfernt, desto stärker wird der Lenkeinschlag und somit der Drang sich wieder zu zentrieren.
+	
+	Durch das exponentielle Verhalten ist sichergestellt, dass ein Aufschwingen nicht möglich ist. Es existiert eine Art Totzone.
+	
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=200pt,keepaspectratio]{assets/spurzentrierung}
+		\caption{Normierte Spurzentrierung}
+		\label{img_spurzentrierung_function}
+	\end{figure}
+	
 	
 \end{document}
 
