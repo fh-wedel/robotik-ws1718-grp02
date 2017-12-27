@@ -86,7 +86,7 @@
 	Teils wurden leicht erkennbare Fehler zurückgegeben ($-1$). Teils wichen die Werte aber auch um erhebliche Beträge ab.
 	
 	Den Grund für Letzteres diagnostizierten wir in der gleichzeitigen Ansteuerung der Sensoren.
-	Da jedoch der Code der Arduinos (welche sich um die Erfassung der Werte kümmern) nicht offen liegt und für uns somit anpassbar wäre, können wir vorerst keine Änderungen daran vornehmen.
+	Da jedoch der Code der Arduinos (welche sich um die Erfassung der Werte kümmern) nicht offen liegt, können wir vorerst keine Änderungen daran vornehmen.
 	
 	Damit diese falschen Werte dennoch nicht mit in kommende Berechnungen einbezogen werden, musste eine entsprechende Lösung gefunden werden.
 
@@ -135,7 +135,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionserkennung}
 
-	Mithilfe der Daten des Accelerometers werden Kollisionen erkannt und ein sofortiger Nothalt ausgelöst.
+	Mithilfe der Daten des Beschleunigungssensors werden Kollisionen erkannt und ein sofortiger Nothalt ausgelöst.
 	\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 	
 	Dabei wird darauf geachtet, dass die Ausschläge der Werte entsprechend hoch und kurzweilig sind, da auch bei starkem Abbremsen bereits starke aber anhaltende Beschleunigungen entstehen.
@@ -162,7 +162,7 @@
 	Bisher ist das Auto in der Lage der Fahrspur zu folgen.
 	Allerdings besteht das Problem, dass es sich nicht in der Mitte der Spur zentriert.
 	Dies führt dazu, dass es oft bereits auf den Linien fährt und teilweise sogar die andere Fahrspur mitbenutzt.
-	Da dies sicher kein erwünschtes Verhalten ist behandelt dieser Abschnitt unsere Herangehensweise.
+	Da es sich hierbei um unerwünschtes Verhalten handelt, thematisiert dieser Abschnitt unsere Herangehensweise.
 
 \subsection{Theoretische Überlegungen}
 
@@ -171,20 +171,20 @@
 	Das Ergebnis ist ein Wert, der entweder links, rechts oder genau auf der Ideallinie des Fahrspur liegt.
 	
 	Es wird nun eine Funktion gesucht, die die Abweichung in eine Lenkanweisung umsetzt.
-	Da dies schnell zu instabilen Verhalten führen kann, fällt eine lineare Funktion raus.
+	Da dies schnell zu instabilem Verhalten führen kann, fällt eine lineare Funktion raus.
 	Hier würde zu oft nachkorrigiert werden müssen.
 	
-	Unsere Wahl fiel dabei auf eine modifizierte Sigmoid-Funktion:
+	Unsere Wahl fiel daher auf eine modifizierte Sigmoid-Funktion:
 	\footnote{Die Funktion wird symmetrisch auch für Abweichungen nach links eingesetzt. Hierbei muss lediglich das Vorzeichen beachtet werden.}
 	
-		\[y=\frac{a_{max}}{1 + e^{-14\left( \frac{x}{x_{max}}-\frac{1}{2} \right)}}\]
+		\[y=\frac{a_{max}}{1 + e^{-14\left( \frac{x}{x_{max}} - \frac{1}{2} \right)}}\]
 	
 	Hierbei steht $x$ für die aktuelle und $x_{max}$ für die maximale Abweichung von der Ideallinie.
 	Der maximal anzusteuernde Lenkwinkel wird durch den Parameter $a_{max}$ angegeben.
 	
 	\paragraph{Veranschaulichung.} \autoref{img_spurzentrierung_function} zeigt die Funktion beispielhaft für $a_{max} = x_{max} = 1$, also in ihrer normierten Darstellung.
 	
-	Je weiter das Auto sich also von der Ideallinie entfernt, desto stärker wird der Lenkeinschlag und somit der Drang sich wieder zu zentrieren.
+	Je weiter das Auto sich von der Ideallinie entfernt, desto stärker wird der Lenkeinschlag und somit der Drang sich wieder zu zentrieren.
 	
 	Durch das exponentielle Verhalten ist sichergestellt, dass ein Aufschwingen nicht möglich ist. Es existiert eine Art Totzone.
 	
