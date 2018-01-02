@@ -142,6 +142,7 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	if (rightLines.size() == 1 && leftLines.size() == 1) {
 		// TODO/REMARK: If we expect the vectors to be of size 1 each, we might as well
 		// give the lines as a direct parameter. (As in: cv::Vec3f rightLine). ?
+		// -> either cluster again or chose one line each
 
 		// TODO: Abstand der rechten und linken linie zum Rand messen und aus dem Verhältnis einen Lenkwinkel berechnen
 		// -> Wie verwursteln wir steeringAngle damit? -> Mittelwert/Gewichtung?
@@ -159,6 +160,7 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 			// we found a single, vertical line in the middle of the frame (+/- 2/5)
 
 			steeringAngle = 20.0f; // dummy value -- use more sophisticated function like sigmoid
+			// Parameter: Deviation of middle?
 		}
 
 	}
