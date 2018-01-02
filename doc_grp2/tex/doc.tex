@@ -76,8 +76,7 @@
 \label{Steering_Angle_To_Servo}
 
 	Die erste Abstraktionsebene stellt das Mapping von Lenkwinkel zu Servostellung dar.
-	
-	Hierfür ist es nötig zu wissen, wie der physikalisch bedingte maximale Lenkwinkel ist.
+	Hierfür ist es nötig zu wissen, welchen Wert der physikalisch bedingte maximale Lenkwinkel hat.
 	
 	Wir stellten fest, dass die Auslenkung der Vorderräder unterschiedlich stark erfolgt.
 	Dies liegt daran, dass die Räder unterschiedlichen Radien folgen müssen, um einen gemeinsamen Kurvenmittelpunkt zu besitzen.
@@ -96,17 +95,20 @@
 		\label{img_steering_angles_sketch}
 	\end{figure}
 	\pagebreak
-
+	
 	Basierend auf den in \autoref{img_steering_angles_sketch} skizzierten trigonometrischen Überlegungen wurde folgende Gleichung entwickelt:
 	
 	\begin{align*}
 		&&\theta_{max} &= \arctan\left( \frac{l}{r} \right)\\
 		&&&= \arctan\left( \frac{l}{x_{min} + \frac{d}{2}} \right) &&\|\quad d = 260mm, l = 360mm
 	\end{align*}
-
-	Aufgrund des Schlupfes erwiesen sich theoretische Werte für den minimalen Innenradius nicht als akkurat, weshalb dieser sodann durch  Praxistests empirisch ermittelt wurde:
-		\[x_{min} = 400mm.\] 
 	\\
+	Hierbei stellt $d$ die Spurweite und $l$ den Radstand dar.
+	
+	Aufgrund des Schlupfes erwiesen sich theoretische Werte für den minimalen Innenradius $x_{min}$ nicht als akkurat, weshalb dieser sodann durch  Praxistests empirisch ermittelt wurde:
+		\[x_{min} = 400mm.\] 
+	
+	\paragraph{Resultat.}
 	Dieses Vorgehen generierte eine zufriedenstellende Lösung.
 	Der maximale Lenkwinkel wurde zu $\theta_{max} \simeq 34,19\degree$ bestimmt.
 	
@@ -115,17 +117,18 @@
 \section{Mittels Radius}
 
 	Die zweite Abstraktionsebene stellt den Übergang von von Kurvenradius zu Lenkwinkel dar.
-	Einige notwendigen Vorkenntnisse sind bereits in \autoref{Steering_Angle_To_Servo} erläutert worden.
-	
+	Einige notwendige Vorkenntnisse sind bereits in \autoref{Steering_Angle_To_Servo} erläutert worden.
 	Darauf setzt dieser Filter nun wie folgt auf:
 	
 		\begin{align*}
 		&&\theta\left(r\right) &= \arctan\left( \frac{l}{r} \right)\\
 		&&&= \arctan\left( \frac{l}{r - \frac{d}{2}} \right) &&\|\quad d = 260mm, l = 360mm
 		\end{align*}
+	
+	Analog zu \autoref{Steering_Angle_To_Servo} stellt $d$ die Spurweite und $l$ den Radstand dar.
 
-
-	Soll ein bestimmter Kurvenradius eingestellt werden, wird der dazugehörige Winkel berechnet und daraufhin zum Servowert umgerechnet.
+	\paragraph{Resultat.}
+	Soll nun ein bestimmter Kurvenradius eingestellt werden, wird der dazugehörige Winkel berechnet und daraufhin zum Servowert umgerechnet.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
