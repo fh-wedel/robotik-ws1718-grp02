@@ -155,7 +155,12 @@
 \section{Canny Edge Detection} %TODO vorher/nachher Bilder
 
 \section{Hough Line Transformation}
-
+	Nachdem die Kanten der Fahrbahnen nun gefiltert sind, können aus den Bilddaten die Fahrstreifen abstrahiert werden. Für die Positionsberechnung ist es notwendig, die Fahrbahnen nun in dem gefilterten Bild zu erkennen, und in geeigneter Weise zu mathematisch zu repräsentieren. \\
+	OpenCV bringt die hierfür geeignete Hough Line Transformation mit. Diese transformiert das Bild in den Hough Raum. Über einen Threshhold Parameter kann hierbei die Empfindlichkeit des Filters eingestellt werden. Je niedriger, desto mehr Linien werden im Bild erkannt. Diesen Parameter kann im ADTF zur Laufzeit angepasst werden.\\
+	Ebenfalls probierten wir zu Anfang noch die probabilistic Hough Transformation aus. Diese, ebenfalls von OpenCV mitgebrachte Funktion, hat die zusätzliche Eigenschaft, dass beispielsweise die gestrichelten Mittellinien nicht als eine einzelne Gerade erkannt werden, sondern jeder Strich der Mittellinie als einzelne Gerade. Da uns jedoch nur die Mittlline an sich interessiert, haben wir uns dazu entschieden, diese Transformation nicht zu verwenden. Dies reduziuert zudem die Menge der zu verarbeitenden Geraden.\\
+	Die mit Hilfe der Hough Line Transformation erkannten Geraden werden in Polarkoordinaten dargestellt. Hierbei befindet sich der Ursprung oben links im Bild. Von diesem Punkt aus wird die Gerade mit einem Stützvektor mit dem Winkel $\theta$ und der Länge $r$ beschrieben.\\
+	Aufgrund der Tatsache, dass das Bild so verzerrt wurde, dass wir die Straße aus einer senkrechten Obersicht betrachten, Entsprechen die Winkel der gefunden Geraden nun dem relativen Winkel der Fahrbahn zu unserem Model.
+	
 \section{Line-Clustering}
 
 \section{Klassifizierung}
