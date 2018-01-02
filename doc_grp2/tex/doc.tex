@@ -9,6 +9,8 @@
 
 \usepackage{graphicx}
 
+\usepackage{amsmath}
+
 \usepackage{enumitem} % um aufzählungen zu machen
 \usepackage[
 	colorlinks,
@@ -65,6 +67,66 @@
 
 %TODO: Hier ein bisschen was über die beiden Filter schreiben + Ackermann Steering Approximation + Theoretische Überlegungen auf zettel und papier
 %https://en.wikipedia.org/wiki/Steering
+
+	Standardmäßig erwartet der vorgefertigte Arduino-Controller-Filter in ADTF einen Wert zwischen $-100$ und $+100$, um den Servomotor für die Lenkung richtig zu instruieren.
+	
+	Es wurde eine Modularisierung eingeführt, die das Vorhaben der Ansteuerung in die im folgenden beschriebenen Bereiche aufteilt.
+	
+\section{Mittels Winkel}
+\label{Steering_Angle_To_Servo}
+
+	Die erste Abstraktionsebene stellt das Mapping von Lenkwinkel zu Servostellung dar.
+	
+	Hierfür ist es nötig zu wissen, wie der physikalisch bedingte maximale Lenkwinkel ist.
+	
+	Wir stellten fest, dass die Auslenkung der Vorderräder unterschiedlich stark erfolgt.
+	Dies liegt daran, dass die Räder unterschiedlichen Radien folgen müssen, um einen gemeinsamen Kurvenmittelpunkt zu besitzen.
+	Gibt es keinen Gemeinsamen, so entsteht mehr Abrieb bzw. Schlupf, was wiederum zu ungenauen Lenk- und Wegverhalten führt.
+	
+	Oft verwendet wird die sogenannte Ackermann-Lenkung, die genau diesem Prozess entgegenwirken soll, indem die Räder unterschiedlich stark einlenken.
+	
+	\paragraph{Theorie.}
+	Es wurde sich für eine Annäherung der Winkel entschieden, da wir die Räder nicht getrennt anstellen können.
+	Wir denken uns idealisiert ein Rad in der Mitte der Vorderachse und führen unsere Berechnungen anhand dessen durch.
+	
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/Lenkwinkel_Skizze}
+		\caption{Skizze des idealisierten Lenkwinkels}
+		\label{img_steering_angles_sketch}
+	\end{figure}
+	\pagebreak
+
+	Basierend auf den in \autoref{img_steering_angles_sketch} skizzierten trigonometrischen Überlegungen wurde folgende Gleichung entwickelt:
+	
+	\begin{align*}
+		&&\theta_{max} &= \arctan\left( \frac{l}{r} \right)\\
+		&&&= \arctan\left( \frac{l}{x_{min} + \frac{d}{2}} \right) &&\|\quad d = 260mm, l = 360mm
+	\end{align*}
+
+	Aufgrund des Schlupfes erwiesen sich theoretische Werte für den minimalen Innenradius nicht als akkurat, weshalb dieser sodann durch  Praxistests empirisch ermittelt wurde:
+		\[x_{min} = 400mm.\] 
+	\\
+	Dieses Vorgehen generierte eine zufriedenstellende Lösung.
+	Der maximale Lenkwinkel wurde zu $\theta_{max} \simeq 34,19\degree$ bestimmt.
+	
+	Es erfolgt eine Übersetzung des gewünschten Lenkwinkels von $-\theta_{max}$ bis $+\theta_{max}$ auf die nötigen Servoansteuerungswerte zwischen $-100$ und $100$.
+
+\section{Mittels Radius}
+
+	Die zweite Abstraktionsebene stellt den Übergang von von Kurvenradius zu Lenkwinkel dar.
+	Einige notwendigen Vorkenntnisse sind bereits in \autoref{Steering_Angle_To_Servo} erläutert worden.
+	
+	Darauf setzt dieser Filter nun wie folgt auf:
+	
+		\begin{align*}
+		&&\theta\left(r\right) &= \arctan\left( \frac{l}{r} \right)\\
+		&&&= \arctan\left( \frac{l}{r - \frac{d}{2}} \right) &&\|\quad d = 260mm, l = 360mm
+		\end{align*}
+
+
+	Soll ein bestimmter Kurvenradius eingestellt werden, wird der dazugehörige Winkel berechnet und daraufhin zum Servowert umgerechnet.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Motorregelung}	
