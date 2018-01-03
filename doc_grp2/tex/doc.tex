@@ -209,9 +209,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 \chapter{Fahrbahnerkennung}
 
-% TODO: vielleicht Überblick über BVA als Pipeline (Grafik)?
-
 % TODO: Genereller Talk über die Nutzung von GPU/CUDA -> Erfahrungen?
+
+\pagebreak
+
+\section{Übersicht}
+
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=250pt,keepaspectratio]{assets/bvaFlowchart}
+		\caption{Übersicht der Bildverarbeitung}
+		\label{img_bvaFlowchart}
+	\end{figure}
+
+\pagebreak
 
 \section{Linienerkennung (Binarisierung)}	
 	Die von einer Kamera (Realsense oder Basler) aufgenommene RGB-Bilder werden zunächst in das HSV-Farbmodell übertragen, um eine genauere Segmentierung anhand von Farben im Bild zu ermöglichen.
