@@ -4,13 +4,9 @@
 \usepackage[T1]{fontenc}	% so kann man bessere wörtliche rede machen
 \usepackage[ngerman]{babel} % deutsche Silbentrennung
 \usepackage{gensymb} % für besondere Symbole wie zB Grad -> \degree
-
 \usepackage{csvsimple} % for tables
-
 \usepackage{graphicx}
-
 \usepackage{amsmath}
-
 \usepackage{enumitem} % um aufzählungen zu machen
 \usepackage[
 	colorlinks,
@@ -22,12 +18,9 @@
 	hypertexnames = false,
 	citecolor = black
 ]{hyperref} % verlinkt referenzen für die digitale verwendung
-
-
+%\renewcommand{\familydefault}{\sfdefault} % NOTE: Hermann liest am Bildschirm lieber serifenlos --hoe
 
 %TODO: Einführung, Gruppenfoto (mit Auto), Passiver Schreibstil, Bilder, Allgemeine Beschreibungen der Kapitel, Autor der jeweiligen Funktion, Fazit, Zwischenfazit für jedes Kaptiel?, Sinnabschnitte,  Literatur/Quellverzeichnis
-
-
 
 \begin{document}
 	
@@ -44,6 +37,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 \chapter{Allgemeine Themen}
 \section{Lineare Funktion}
+
+% TODO: Diese Sektion muss irgendwo einsortiert werden oder braucht eine eigene Einleitung "es gibt im system viele messwerte, die als einfache Fließkommazahlen…" --hoe
 
 	Für manche Werte war es nötig eine Modulation hinzufügen zu können.
 	
@@ -73,7 +68,7 @@
 	Es wurde eine Modularisierung eingeführt, die das Vorhaben der Ansteuerung in die im folgenden beschriebenen Bereiche aufteilt.
 	
 \section{Mittels Winkel}
-\label{Steering_Angle_To_Servo}
+\label{Steering-Angle-To-Servo}
 
 	Die erste Abstraktionsebene stellt das Mapping von Lenkwinkel zu Servostellung dar.
 	Hierfür ist es nötig zu wissen, welchen Wert der physikalisch bedingte maximale Lenkwinkel hat.
@@ -90,13 +85,14 @@
 	
 	\begin{figure}[ht]
 		\centering
-		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/Lenkwinkel_Skizze}
+		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/Lenkwinkel-Skizze.png}
+		% NOTE: Skizze ist gut. --hoe
 		\caption{Skizze des idealisierten Lenkwinkels}
-		\label{img_steering_angles_sketch}
+		\label{img-steering-angles-sketch}
 	\end{figure}
 	\pagebreak
 	
-	Basierend auf den in \autoref{img_steering_angles_sketch} skizzierten trigonometrischen Überlegungen wurde folgende Gleichung entwickelt:
+	Basierend auf den in \autoref{img-steering-angles-sketch} skizzierten trigonometrischen Überlegungen wurde folgende Gleichung entwickelt:
 	
 	\begin{align*}
 		&&\theta_{max} &= \arctan\left( \frac{l}{r} \right)\\
@@ -105,7 +101,8 @@
 	\\
 	Hierbei stellt $d$ die Spurweite und $l$ den Radstand dar.
 	
-	Aufgrund des Schlupfes erwiesen sich theoretische Werte für den minimalen Innenradius $x_{min}$ nicht als akkurat, weshalb dieser sodann durch  Praxistests empirisch ermittelt wurde:
+	Aufgrund des Schlupfes erwiesen sich theoretische Werte für den minimalen Innenradius $x_{min}$ nicht als akkurat, weshalb dieser sodann durch  Praxistests % NOTE: Falls noch vorhanden, Rohdaten gerne als Anhang beilegen (eingescannter Zettel reicht mir schon) --hoe
+	empirisch ermittelt wurde:
 		\[x_{min} = 400mm.\] 
 	
 	\paragraph{Resultat.}
@@ -117,7 +114,7 @@
 \section{Mittels Radius}
 
 	Die zweite Abstraktionsebene stellt den Übergang von von Kurvenradius zu Lenkwinkel dar.
-	Einige notwendige Vorkenntnisse sind bereits in \autoref{Steering_Angle_To_Servo} erläutert worden.
+	Einige notwendige Vorkenntnisse sind bereits in \autoref{Steering-Angle-To-Servo} erläutert worden.
 	Darauf setzt dieser Filter nun wie folgt auf:
 	
 		\begin{align*}
@@ -125,11 +122,12 @@
 		&&&= \arctan\left( \frac{l}{r - \frac{d}{2}} \right) &&\|\quad d = 260mm, l = 360mm
 		\end{align*}
 	
-	Analog zu \autoref{Steering_Angle_To_Servo} stellt $d$ die Spurweite und $l$ den Radstand dar.
+	Analog zu \autoref{Steering-Angle-To-Servo} stellt $d$ die Spurweite und $l$ den Radstand dar.
 
 	\paragraph{Resultat.}
 	Soll nun ein bestimmter Kurvenradius eingestellt werden, wird der dazugehörige Winkel berechnet und daraufhin zum Servowert umgerechnet.
 
+% TODO: Bemerken, dass sowas in ADTF schon drin ist und begründen, warum deren Filter nicht verwendet wurde. --hoe
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Motorregelung}	
@@ -137,7 +135,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionsvermeidung}
 
-	Mithilfe der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
+	Mithilfe % TODO: Ändern in "Mit Hilfe". "Mithilfe" bedeutet "Unterstützung". --hoe
+	der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
 	Dadurch soll es möglich sein, zu reagieren bevor eine Kollision stattfindet.
 
 \section{Genauigkeit der Ultraschallsensoren}
@@ -155,7 +154,7 @@
 	
 	Damit diese falschen Werte dennoch nicht mit in kommende Berechnungen einbezogen werden, musste eine entsprechende Lösung gefunden werden.
 
-	\paragraph{Resultat.}
+	\paragraph{Resultat.} % TODO: Das ist nicht das Resultat, sondern die Maßnahme. In Resultat wird die Effektivität der Maßnahme (die Verbesserung durch den Filter) dargestellt. --hoe
 	Zur Stabilisierung der Messwerte entschieden wir uns für eine Filterung.
 	Es wurde nach einem Filter gesucht, der robust gegenüber Ausreißern ist.
 	Hier kam uns als Erstes der Median in den Sinn.
@@ -166,24 +165,26 @@
 
 \section{Hinderniserkennung}
 	
-	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
-	\footnote{Dieses Feature befindet sich noch in Entwicklung.}
+	Mit Hilfe % TODO: siehe oben --hoe
+	der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
+	\footnote{Dieses Feature befindet sich noch in Entwicklung.} % TODO: Whitespace vor Fußnoten entfernen. --hoe
 	
 \subsection{Theoretische Überlegungen}
 	
-	Um sich ein geeignetes Bild der Umgebung zu machen, ist es sinnvoll, jeden  Messwert der fünf Frontsensoren einzeln zu bewerten, da sonst unnötige Manöver eingeführt werden, um Objekten auszuweichen, die nicht auf unserer Trajektorie liegen.
+	Um sich ein geeignetes Bild der Umgebung zu machen, ist es sinnvoll, jeden  Messwert der fünf Frontsensoren einzeln zu bewerten, da sonst unnötige Manöver eingeführt % TODO: "ausgeführt" wäre besser --hoe
+	werden, um Objekten auszuweichen, die nicht auf unserer Trajektorie liegen.
 	Uns erschien es sinnig, dies anhand des aktuellen Lenkwinkels zu tun.
 	
 	Es wurde eine Funktion synthetisiert, die die Relevanz der einzelnen Messwerte zu dem Lenkwinkel in Relation setzt:
 	
-		\[y=2-e^{-3 \cdot \left( x-a \right)^2}\]
+		\[y=2-e^{-3 \cdot \left( x-a \right)^2}\] % TODO: Nach Möglichkeit genauer beschreiben, wie diese Funktion zu Stande gekommen ist. Falls das Verfahren "irgendwas ausprobieren, bis es passte" war, verschweigen. --hoe
 	
 	Sie bietet eine Gewichtung für Messwerte der jeweiligen Sensoren.
 	Hierbei steht $x$ für den Montagewinkel des zu gewichtenden Sensors, $a$ für den aktuellen Lenkwinkel und $y$ für die Gewichtung (den Skalierungsfaktor).
 	
 	Dies bewirkt, dass Messwerte von Sensoren, die nicht in Fahrtrichtung zeigen, weniger stark in die Hinderniserkennung mit eingehen, ohne diese gänzlich ausschließen zu müssen.
 	
-	\paragraph{Veranschaulichung.} \autoref{img_uss_function} zeigt die Funktion bei $a = 0\degree$ Auslenkung.
+	\paragraph{Veranschaulichung.} \autoref{img-uss-function} zeigt die Funktion bei $a = 0\degree$ Auslenkung.
 	Das Minimum der Kurve befindet sich stets bei dem aktuellen Lenkwinkel, da hier gilt: $x = a$.
 	
 	Die blauen Vertikalen zeigen Hilfslinien bei $45\degree$ Montagewinkel.
@@ -191,9 +192,14 @@
 	
 	\begin{figure}
 		\centering
-		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/uss-function}
+		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/uss-function.jpg}
+		% NOTE: Für diese Doku ist das vollkommen ausreichend. :)
+		% Für ernsthafte Dokumente, die schön sein müssen und ggf. gedruckt werden wollen, bitte keine Rastergraphiken wählen, sondern PDF, EPS oder SVG. SVG kann auch für HTML (in online-Dokumenten) verwendet werden, muss für pdflatex aber manuell konvertiert werden.
+		% Für Dokumente mit pdflatex kann gnuplot verwendet werden (graphik einbinden mit \resizebox{}{}{\input{uss-function.tex}})
+		% gnuplot -e 'set terminal epslatex; set output "uss-function.tex"; f(x)=2-exp(-3*(x-a)**2); a=0; set xrange [-1:1]; plot f(x) with lines'
+		% --hoe
 		\caption{Gewichtungsfunktion für einen Lenkwinkel von $a = 0\degree$}
-		\label{img_uss_function}
+		\label{img-uss-function}
 	\end{figure}
 	
 
@@ -217,9 +223,10 @@
 
 	\begin{figure}[ht]
 		\centering
-		\includegraphics[width=250pt,keepaspectratio]{assets/bvaFlowchart}
+		\includegraphics[width=250pt,keepaspectratio]{assets/bvaFlowchart.jpg}
+		% NOTE: Tippfehler in "Binarisierung" entfernen. --hoe
 		\caption{Übersicht der Bildverarbeitung}
-		\label{img_bvaFlowchart}
+		\label{img-bvaFlowchart}
 	\end{figure}
 
 \pagebreak
@@ -231,7 +238,8 @@
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
 
 \section{Canny Edge Detection} %TODO vorher/nachher Bilder
-	Um in dem Binärbild die Fahrbahnen als Linien erkennen zu können, wird ein Kantendetektionsverfahren -- der Canny Edge Detector, der bereits in OpenCV implementiert wurde -- verwendet (siehe auch \footnote{\url{https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/canny_detector/canny_detector.html}}). Dieser erkennt in einem Grauwertbild mithilfe des Sobel-Operators Kanten, deren Stärke und Gewichtung pro Pixel aufgenommen wird. Um sicherzustellen, dass die Kanten nur einen Pixel breit sind, werden alle zu Kanten zugehörigen Pixel, die keine lokalen Maxima sind, aussortiert. Schließlich werden über zwei Schwellenwerte die Kantenkandidaten weiter gefiltert, sodass ein Binärbild entsteht. Ist die Kantenstärke eines Pixels größer als der obere Schwellenwert, wird der Pixel als Kante akzeptiert. Ist die Kantenstärke eines Pixels niedriger als der untere Schwellenwert, wird dieser Pixel als Kandidat verworfen. Über eine Hysterese werden die Pixel gefiltert, die zwischen beiden Schwellenwerten liegen, sodass "`Ausreißer"' vermieden werden. Dementsprechend nimmt die Funktion \texttt{cv::Canny}, bzw. das GPU-Pendant \texttt{cv::cuda::createCannyEdgeDetector} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators. Für das Verhältnis der Schwellenwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
+	Um in dem Binärbild die Fahrbahnen als Linien erkennen zu können, wird ein Kantendetektionsverfahren -- der Canny Edge Detector, der bereits in OpenCV implementiert wurde -- verwendet (siehe auch \footnote{\url{https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/canny\_detector/canny\_detector.html}}). Dieser erkennt in einem Grauwertbild mithilfe des Sobel-Operators Kanten, deren Stärke und Gewichtung pro Pixel aufgenommen wird. Um sicherzustellen, dass die Kanten nur einen Pixel breit sind, werden alle zu Kanten zugehörigen Pixel, die keine lokalen Maxima sind, aussortiert. Schließlich werden über zwei Schwellenwerte die Kantenkandidaten weiter gefiltert, sodass ein Binärbild entsteht. Ist die Kantenstärke eines Pixels größer als der obere Schwellenwert, wird der Pixel als Kante akzeptiert. Ist die Kantenstärke eines Pixels niedriger als der untere Schwellenwert, wird dieser Pixel als Kandidat verworfen. Über eine Hysterese werden die Pixel gefiltert, die zwischen beiden Schwellenwerten liegen, sodass "`Ausreißer"' vermieden werden. Dementsprechend nimmt die Funktion \texttt{cv::Canny}, bzw. das GPU-Pendant \texttt{cv::cuda::createCannyEdgeDetector} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators. Für das Verhältnis der Schwellenwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
+	% NOTE: Das ist okay, aber ihr dürft davon ausgehen, dass der Leser weiß, wie der Canny Filter arbeitet. Ihr müsst die Parameter nicht erklären, es sei denn das war euch bei der Parameterwertsuche besonders wichtig. Konzentriert euch lieber auf die Beschreibung von dem, was ihr gemacht habt. :) --hoe
 	
 	Angewandt auf das binarisierte Bild der Straße hat der Canny-Algorithmus folgenden Effekt:
 	
@@ -277,17 +285,18 @@
 	Hierbei steht $x$ für die aktuelle und $x_{max}$ für die maximale Abweichung von der Ideallinie.
 	Der maximal anzusteuernde Lenkwinkel wird durch den Parameter $a_{max}$ angegeben.
 	
-	\paragraph{Veranschaulichung.} \autoref{img_spurzentrierung_function} zeigt die Funktion beispielhaft für $a_{max} = x_{max} = 1$, also in ihrer normierten Darstellung.
+	\paragraph{Veranschaulichung.} \autoref{img-spurzentrierung-function} zeigt die Funktion beispielhaft für $a_{max} = x_{max} = 1$, also in ihrer normierten Darstellung.
 	
 	Je weiter das Auto sich von der Ideallinie entfernt, desto stärker wird der Lenkeinschlag und somit der Drang sich wieder zu zentrieren.
 	
 	Durch das exponentielle Verhalten ist sichergestellt, dass ein Aufschwingen nicht möglich ist. Es existiert eine Art Totzone.
+	% NOTE: Vorsicht mit absoluten Aussagen. Ich kann nicht erkennen, dass ein Aufschwingen unmöglich ist. Das müsstet ihr mir zeigen. Eine Totzone existiert auch nicht. "Die Verstärkung um den Nullpunkt ist so gering, dass sie im praktischen Betrieb wie eine Totzone wirkt." ist eine Aussage, die mir besser gefiele. --hoe
 	
 	\begin{figure}[ht]
 		\centering
-		\includegraphics[width=200pt,keepaspectratio]{assets/spurzentrierung}
+		\includegraphics[width=200pt,keepaspectratio]{assets/spurzentrierung.jpg}
 		\caption{Normierte Spurzentrierung}
-		\label{img_spurzentrierung_function}
+		\label{img-spurzentrierung-function}
 	\end{figure}
 	
 	
