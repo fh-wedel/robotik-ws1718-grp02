@@ -238,7 +238,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 \chapter{Fahrbahnerkennung}
 
-% TODO: Genereller Talk über die Nutzung von GPU/CUDA -> Erfahrungen?
+% TODO: Perspektivische Verzerrung erwähnen
+
+\section{CPU vs. GPU}
+Im Zusammenhang mit der Nutzung der OpenCV-Bibliothek sahen wir uns mit dem Problem, ob wir für die Bildverarbeitung die CPU oder die GPU verwenden konfrontiert, da beides in OpenCV angeboten wird.
+
+Standardmäßig wird der Code von OpenCV auf der CPU -- im Gegensatz zur GPU -- augeführt. Während die OpenCV-CPU-Schnittstelle generell einfacher zu nutzen ist, bietet die GPU-Implementierung einen Performance-Vorteil, da GPUs für Matrixoperationen und die Arbeit auf 2D- und 3D-Bildern optimiert sind. Diese Optimierung war trotz der echtzeitnahen Bildverarbeitung nicht zwingend notwendig. Da das Modellauto allerdings mit einer aktuellen Grafikkarte -- der nVidia GeForce GTX 1050Ti -- ausgestattet ist, sahen wir in der GPU-Nutzung eine Möglichkeit, uns mit der Programmierung auf der GPU auseinanderzusetzen und Erfahrungen damit zu sammeln, weshalb wir uns für Programmcode entschieden haben, der weitestgehend auf der GPU ausgeführt wird.
+
+Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs ohne nVidia-Grafikkarte ausführen lassen konnte, da die OpenCV-GPU-Implementierung auf der CUDA-Bibliothek basiert, die nur für nVidia-Grafikkarten nutzbar ist. Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar ist.
+
+% NOTE: Erfahrungen a la "Blöd, zwischen GPU/CPU zu switchen?" -- "Doch ziemlich leichte Handhabung" -- "Wenig Codebeispiele" ?
+
 
 \pagebreak
 
