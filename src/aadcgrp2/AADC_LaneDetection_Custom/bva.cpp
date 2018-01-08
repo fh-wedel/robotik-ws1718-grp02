@@ -316,11 +316,12 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 																			 sumAngle / classSize,
 																			 (float) classSize / lines.size()));
 	}
-
+	/*
 	printf("Clustered:\n");
 	for (cv::Vec3f v : clusteredLines) {
 		printf("dist: %.3f angle: %.3f weight: %.3f\n", v[0], rad2deg(v[1]), v[2]);
 	}
+	*/
 }
 
 

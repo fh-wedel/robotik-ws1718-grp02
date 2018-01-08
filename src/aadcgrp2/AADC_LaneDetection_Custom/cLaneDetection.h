@@ -258,6 +258,9 @@ private: // private methods
     /*! tha last received input image*/
     cv::Mat m_inputImage;
 
+    /*! Flag, indicating whether debug mode is enabled. */
+    tBool m_bDebugModeEnabled;
+
     /*! the struct with all the properties*/
     struct filterProperties
     {

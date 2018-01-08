@@ -21,6 +21,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include <iostream>
 
+#define SC_PROP_DEBUG_MODE "Debug Mode"
 
 // define the ADTF property names to avoid errors
 ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
@@ -34,6 +35,10 @@ std::vector<cv::Point> leftPoints;
 
 cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 {
+
+	SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
+  SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
+	SetPropertyBool(SC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
 
 	SetPropertyInt("ROI::XOffset", 0);
 	SetPropertyStr("ROI::XOffset" NSSUBPROP_DESCRIPTION, "X Offset for Region of Interest Rectangular");
@@ -251,7 +256,9 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
 {
 	RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
 	//associate the properties to the member
-	if (cString::IsEqual(strName, "ROI::Width"))
+	if (cString::IsEqual(strName, SC_PROP_DEBUG_MODE))
+		m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
+	else if (cString::IsEqual(strName, "ROI::Width"))
 		m_filterProperties.ROIWidth = GetPropertyInt("ROI::Width");
 	else if (cString::IsEqual(strName, "ROI::Height"))
 		m_filterProperties.ROIHeight = GetPropertyInt("ROI::Height");
@@ -269,6 +276,7 @@ tResult cLaneDetection::PropertyChanged(const tChar* strName)
 		m_filterProperties.minLineContrast = GetPropertyInt("Algorithm::Minimum Line Contrast");
 	else if (cString::IsEqual(strName, "Algorithm::Image Binarization Threshold"))
 		m_filterProperties.thresholdImageBinarization = GetPropertyInt("Algorithm::Image Binarization Threshold");
+
 
 	//eigene properties
 	else if (cString::IsEqual(strName, "Algorithm::Hue Low"))
@@ -360,7 +368,8 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 				m_filterProperties.saturation, m_filterProperties.value);
 
 
-				printf("stopThresh im Filter: %.3f\n", m_filterProperties.stopThresh);
+			if (m_bDebugModeEnabled) printf("stopThresh im Filter: %.3f\n", m_filterProperties.stopThresh);
+
 			//find the lines in image and calculate the desired steering angle
 			bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
 								m_filterProperties.angleThresh, m_filterProperties.distanceThresh,
@@ -401,12 +410,12 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 	}
 
 	if (m_SteeringPin.IsConnected()) {
-		printf("Winkel %f\n", angle);
+		if (m_bDebugModeEnabled) printf("Winkel %f\n", angle);
 		transmitValue(angle, m_SteeringPin);
 	}
 
 	if (m_SpeedPin.IsConnected()) {
-		printf("Speed %f\n", speed);
+		if (m_bDebugModeEnabled) printf("Speed %f\n", speed);
 		transmitValue(speed, m_SpeedPin);
 	}
 
@@ -419,7 +428,7 @@ tResult cLaneDetection::UpdateInputImageFormat(const tBitmapFormat* pFormat)
 	{
 		//update member variable
 		m_sInputFormat = (*pFormat);
-		LOG_INFO(adtf_util::cString::Format("Input: Size %d x %d ; BPL %d ; Size %d , PixelFormat; %d", m_sInputFormat.nWidth, m_sInputFormat.nHeight, m_sInputFormat.nBytesPerLine, m_sInputFormat.nSize, m_sInputFormat.nPixelFormat));
+		if (m_bDebugModeEnabled) {LOG_INFO(adtf_util::cString::Format("Input: Size %d x %d ; BPL %d ; Size %d , PixelFormat; %d", m_sInputFormat.nWidth, m_sInputFormat.nHeight, m_sInputFormat.nBytesPerLine, m_sInputFormat.nSize, m_sInputFormat.nPixelFormat));}
 		//create the input matrix
 		RETURN_IF_FAILED(BmpFormat2Mat(m_sInputFormat, m_inputImage));
 	}
@@ -460,7 +469,7 @@ tResult cLaneDetection::findLinePoints(const vector<tInt>& detectionLines, const
 			int x = tInt(currentIndex - abs(columnStartCornerLine - currentIndex) / 2 +
 				m_filterProperties.ROIOffsetX);
 
-			printf("x: %d, y: %d\n", x, y);
+			if (m_bDebugModeEnabled) printf("x: %d, y: %d\n", x, y);
 			//linePoints.at<uchar>(y, x) = 255;
 			cv::circle(linePoints, cv::Point(x,y),20, cv::Scalar(255, 255, 255), -1);
 
@@ -555,7 +564,7 @@ tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage)
 	{
 		Mat2BmpFormat(outputImage, m_sOutputFormat);
 
-		LOG_INFO(adtf_util::cString::Format("Output: Size %d x %d ; BPL %d ; Size %d , PixelFormat; %d", m_sOutputFormat.nWidth, m_sOutputFormat.nHeight, m_sOutputFormat.nBytesPerLine, m_sOutputFormat.nSize, m_sOutputFormat.nPixelFormat));
+		if (m_bDebugModeEnabled) { LOG_INFO(adtf_util::cString::Format("Output: Size %d x %d ; BPL %d ; Size %d , PixelFormat; %d", m_sOutputFormat.nWidth, m_sOutputFormat.nHeight, m_sOutputFormat.nBytesPerLine, m_sOutputFormat.nSize, m_sOutputFormat.nPixelFormat)); }
 		//set output format for output pin
 		m_oVideoOutputPin.SetFormat(&m_sOutputFormat, NULL);
 	}
