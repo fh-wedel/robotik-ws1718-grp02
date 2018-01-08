@@ -14,6 +14,12 @@ public:
     /*! the number of values to consider */
     int windowSize;
 
+    /*! Flag indicating whether the median has been calculated for the current input set. */
+    bool medianIsUpToDate;
+
+    /*! The most recent median value. */
+    float calculatedMedian;
+
     /*! the most up to date values */
     std::vector<float> storedValues;
 
