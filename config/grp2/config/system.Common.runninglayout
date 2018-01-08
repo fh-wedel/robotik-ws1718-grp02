@@ -27,7 +27,7 @@
  </folder>
  <folder name="Live2">
   <folder name="components">
-   <folder filter_tree_expanded_list="//AADC_Lane_Detection_Custom2" name="FilterTraceView" />
+   <folder filter_tree_expanded_list="" name="FilterTraceView" />
   </folder>
   <folder name="windows">
    <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />

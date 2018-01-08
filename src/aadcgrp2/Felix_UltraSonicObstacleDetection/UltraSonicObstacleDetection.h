@@ -32,12 +32,18 @@ class cUltraSonicObstacleDetection : public adtf::cFilter {
     */
     ADTF_DECLARE_FILTER_VERSION(UNIQUE_FILTER_ID, FILTER_NAME, OBJCAT_DataFilter, FILTER_NAME, 1, 0, 0, "");
 
-    /* the input value which is fed into the linear function. */
+    /*! the pin for ultrasonic struct which is being analyzed. */
     cInputPin m_oInputUssStruct;
 
-    /* the value */
+    /*! the pin for the current steering angle. */
+    cInputPin m_InputSteeringAngle;
+
+    /*! the value */
     cOutputPin m_OutputObstacleInFront;
     cOutputPin m_OutputObstacleBehind;
+
+    /*! Obstacle in driving direction */
+    cOutputPin m_OutputObstacleDrivingDirection;
 
 public:
 
@@ -109,6 +115,9 @@ private:
     */
     tResult CreateUSSInputPin(ucom::IException** __exception_ptr = NULL);
 
+
+    tResult CreateAngleInputPin(__exception);
+
     /*! creates all the output Pins
     * \param __exception_ptr the exception pointer
     * \return standard adtf error code
@@ -120,6 +129,10 @@ private:
     /*! mediadescription for ultrasonic data struct */
     cObjectPtr<IMediaTypeDescription> m_pDescriptionUsData;
 
+
+    /*! mediadescription for ultrasonic data struct */
+    cObjectPtr<IMediaTypeDescription> m_pDescriptionSteeringAngle;
+
 // For encoding output
 
     /*! media description for the output pin  */
@@ -130,9 +143,17 @@ private:
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
 
+// Storing values
+
+    tFloat32 m_currentSteeringAngle;
+
 // Own Helper Functions
 
+    tFloat32 getAmplificationForMountingAngle(tFloat32 mountingAngle);
+
     tResult OnValueChanged(tUltrasonicStruct* pSampleData);
+
+    tFloat32 readInputValue(IMediaSample* pMediaSample);
 
     tResult transmitValue(tBool value, cOutputPin* outputPin);
 
