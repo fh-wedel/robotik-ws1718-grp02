@@ -241,11 +241,15 @@
 % TODO: Perspektivische Verzerrung erwähnen
 
 \section{CPU vs. GPU}
-Im Zusammenhang mit der Nutzung der OpenCV-Bibliothek sahen wir uns mit dem Problem, ob wir für die Bildverarbeitung die CPU oder die GPU verwenden konfrontiert, da beides in OpenCV angeboten wird.
+Im Zusammenhang mit der Nutzung der OpenCV-Bibliothek sahen wir uns mit dem Problem, ob wir für die Bildverarbeitung die CPU oder die GPU verwenden, konfrontiert, da beides in OpenCV angeboten wird.
 
-Standardmäßig wird der Code von OpenCV auf der CPU -- im Gegensatz zur GPU -- augeführt. Während die OpenCV-CPU-Schnittstelle generell einfacher zu nutzen ist, bietet die GPU-Implementierung einen Performance-Vorteil, da GPUs für Matrixoperationen und die Arbeit auf 2D- und 3D-Bildern optimiert sind. Diese Optimierung war trotz der echtzeitnahen Bildverarbeitung nicht zwingend notwendig. Da das Modellauto allerdings mit einer aktuellen Grafikkarte -- der nVidia GeForce GTX 1050Ti -- ausgestattet ist, sahen wir in der GPU-Nutzung eine Möglichkeit, uns mit der Programmierung auf der GPU auseinanderzusetzen und Erfahrungen damit zu sammeln, weshalb wir uns für Programmcode entschieden haben, der weitestgehend auf der GPU ausgeführt wird.
+Standardmäßig wird der Code von OpenCV auf der CPU -- im Gegensatz zur GPU -- augeführt.
+Während die OpenCV-CPU-Schnittstelle generell einfacher zu nutzen ist, bietet die GPU-Implementierung einen Performance-Vorteil, da GPUs für Matrixoperationen und die Arbeit auf 2D- und 3D-Bildern optimiert sind.
+Diese Optimierung war trotz der echtzeitnahen Bildverarbeitung nicht zwingend notwendig.
+Da das Modellauto allerdings mit einer aktuellen Grafikkarte -- der nVidia GeForce GTX 1050Ti -- ausgestattet ist, sahen wir in der GPU-Nutzung eine Möglichkeit, uns mit der Programmierung auf der GPU auseinanderzusetzen und Erfahrungen damit zu sammeln, weshalb wir uns für Programmcode entschieden haben, der weitestgehend auf der GPU ausgeführt wird.
 
-Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs ohne nVidia-Grafikkarte ausführen lassen konnte, da die OpenCV-GPU-Implementierung auf der CUDA-Bibliothek basiert, die nur für nVidia-Grafikkarten nutzbar ist. Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar ist.
+Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs ohne nVidia-Grafikkarte ausführen lassen konnte, da die OpenCV-GPU-Implementierung auf der CUDA-Bibliothek basiert, die nur für nVidia-Grafikkarten nutzbar ist.
+Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
 
 % NOTE: Erfahrungen a la "Blöd, zwischen GPU/CPU zu switchen?" -- "Doch ziemlich leichte Handhabung" -- "Wenig Codebeispiele" ?
 
@@ -311,25 +315,44 @@ Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs o
 	Hier würde zu oft nachkorrigiert werden müssen.
 	
 	Unsere Wahl fiel daher auf eine modifizierte Sigmoid-Funktion:
-	\footnote{Die Funktion wird symmetrisch auch für Abweichungen nach links eingesetzt. Hierbei muss lediglich das Vorzeichen beachtet werden.}
 	
-		\[y=\frac{a_{max}}{1 + e^{-14\left( \frac{x}{x_{max}} - \frac{1}{2} \right)}}\]
+		\[y=\frac{a_{max}}{1 + e^{-14\left( \frac{\left\|x\right\|}{x_{max}} - \frac{1}{2} \right)}} \cdot -\frac{x}{\left\|x\right\|}\]
 	
 	Hierbei steht $x$ für die aktuelle und $x_{max}$ für die maximale Abweichung von der Ideallinie.
 	Der maximal anzusteuernde Lenkwinkel wird durch den Parameter $a_{max}$ angegeben.
 	
-	\paragraph{Veranschaulichung.} \autoref{img-spurzentrierung-function} zeigt die Funktion beispielhaft für $a_{max} = x_{max} = 1$, also in ihrer normierten Darstellung.
+	\paragraph{Veranschaulichung.} \autoref{img-spurzentrierung-function} zeigt die Funktion beispielhaft für eine maximale Abweichung von $x_{max} = 100mm$ und die damit einhergehende maximale Lenkwinkelreaktion von $a_{max} = 20\degree$.
 	
-	Je weiter das Auto sich von der Ideallinie entfernt, desto stärker wird der Lenkeinschlag und somit der Drang sich wieder zu zentrieren.
+	Je weiter sich das Auto von der Ideallinie entfernt, desto stärker wird der Lenkeinschlag und somit der Drang sich wieder zu zentrieren.
 	
 	Durch das exponentielle Verhalten ist sichergestellt, dass ein Aufschwingen unwahrscheinlich ist. Dies begründen wir dadurch, dass die Amplifikation um den Nullpunkt so gering ist, dass sie in der Praxis wie eine Totzone wirkt.
 	
 	\begin{figure}[ht]
 		\centering
-		\includegraphics[width=200pt,keepaspectratio]{assets/spurzentrierung.jpg}
-		\caption{Normierte Spurzentrierung}
+		
+		\begin{tikzpicture}
+		\datavisualization [
+		scientific axes=clean,
+		style sheet=strong colors,
+		style sheet=vary dashing,
+		all axes={grid}, scale=2,
+		y axis={label=Lenkwinkel, ticks={few, tick unit=\degree}},
+		x axis={label=Abweichung, ticks={step=50, tick unit=mm}},
+		visualize as smooth line,
+		data/format=function
+		]
+		
+		data {
+			var x : interval [-100:100] samples 20;
+			func y = 20 / (1 + e^(-14 * (abs(\value x)/100 - 1/2))) * -\value x / abs(\value x);
+		};
+		\end{tikzpicture}
+		
+		\caption{Spurzentrierung mit $a_{max} = 20\degree$ und $x_{max} = 100mm$}
 		\label{img-spurzentrierung-function}
 	\end{figure}
+	
+	
 	
 	
 \end{document}
