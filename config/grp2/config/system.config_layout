@@ -397,6 +397,7 @@
    <component height="74" name="AADC_Watchdog_Trigger" width="172" x="748" y="138">
     <output_pin name="WatchdogAliveSignal" />
    </component>
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="emergencystop" reldiff="0" shape_type="2" source="Felix_Ultrasonic_Obstacle_Detection" source_pin="obstacleInDrivingDirection" x_p2="1740" x_p3="1740" x_p4="1001" x_p5="1001" y_p2="1193" y_p3="950" y_p4="950" y_p5="708" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="720" x_p3="720" x_p4="1361" x_p5="1361" y_p2="0" y_p3="1181" y_p4="1181" y_p5="0" />
    <connection dest="" dest_pin="rgb" reldiff="0" shape_type="4" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="240" x_p3="240" x_p4="286" x_p5="286" y_p2="0" y_p3="45" y_p4="45" y_p5="0" />
    <connection dest="AADC_Lane_Detection_Custom2" dest_pin="Video_Input" reldiff="0" shape_type="3" source="AADC_Realsense_Camera" source_pin="outputRGB" x_p2="240" x_p3="240" x_p4="271" x_p5="271" y_p2="0" y_p3="286" y_p4="286" y_p5="0" />
