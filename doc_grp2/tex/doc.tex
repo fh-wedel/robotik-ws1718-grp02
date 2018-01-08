@@ -57,6 +57,14 @@
 	wobei $x$ der Eingang, $g$ der Gain, $o$ der Offset und $y$ der Ausgang ist.
 	\\
 	Gain und Offset können hierbei sowohl über eigene Eingangspins als auch über variable Filterparameter gesetzt werden.
+	
+
+\section{Float Wert Generator}
+
+	Um verschiedene Filter zu testen, die einen Wert als Eingang benötigen, wurde dieser Block erstellt.
+
+	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst werden, wurde ein \texttt{WatchDog} als Input definiert. So wird mit jedem Auslösen des WatchDog der Wert gesendet. Der Wert kann in den Einstellungen des Filters während der Laufzeit gesetzt werden.
+
 
 \subsection{In Entwicklung}
 
