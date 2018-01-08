@@ -192,10 +192,10 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
     frontRightFilter.pushValue(pSampleData->tFrontRight.f32Value);
 
     obstacleInFront =   frontLeftFilter.calculateMedian()           < m_filterProperties.frontDetectionThreshhold
-                    &&  frontCenterLeftFilter.calculateMedian()     < m_filterProperties.frontDetectionThreshhold
-                    &&  frontCenterFilter.calculateMedian()         < m_filterProperties.frontDetectionThreshhold
-                    &&  frontCenterRightFilter.calculateMedian()    < m_filterProperties.frontDetectionThreshhold
-                    &&  frontRightFilter.calculateMedian()          < m_filterProperties.frontDetectionThreshhold;
+                    ||  frontCenterLeftFilter.calculateMedian()     < m_filterProperties.frontDetectionThreshhold
+                    ||  frontCenterFilter.calculateMedian()         < m_filterProperties.frontDetectionThreshhold
+                    ||  frontCenterRightFilter.calculateMedian()    < m_filterProperties.frontDetectionThreshhold
+                    ||  frontRightFilter.calculateMedian()          < m_filterProperties.frontDetectionThreshhold;
 
 
     bool obstacleBehind = true;
@@ -205,14 +205,32 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
     rearRightFilter.pushValue(pSampleData->tRearRight.f32Value);
 
     obstacleBehind  =   rearLeftFilter.calculateMedian()    < m_filterProperties.rearDetectionThreshhold
-                    &&  rearCenterFilter.calculateMedian()  < m_filterProperties.rearDetectionThreshhold
-                    &&  rearRightFilter.calculateMedian()   < m_filterProperties.rearDetectionThreshhold;
+                    ||  rearCenterFilter.calculateMedian()  < m_filterProperties.rearDetectionThreshhold
+                    ||  rearRightFilter.calculateMedian()   < m_filterProperties.rearDetectionThreshhold;
+
+    if (m_bDebugModeEnabled) {
+        printf("\n\t\t<%4.2f | %4.2f | %4.2f | %4.2f | %4.2f>\n",
+            frontLeftFilter.calculateMedian(),
+            frontCenterLeftFilter.calculateMedian(),
+            frontCenterFilter.calculateMedian(),
+            frontCenterRightFilter.calculateMedian(),
+            frontRightFilter.calculateMedian()
+        );
+        printf("\t\t<%4.2f | %4.2f | %4.2f>\n\n",
+            rearLeftFilter.calculateMedian(),
+            rearCenterFilter.calculateMedian(),
+            rearRightFilter.calculateMedian()
+        );
+
+        printf("\nfrontDetectionThreshhold: %4.2f\n", m_filterProperties.frontDetectionThreshhold);
+        printf("\nrearDetectionThreshhold: %4.2f\n", m_filterProperties.rearDetectionThreshhold);
+    }
 
 
     if (m_bDebugModeEnabled) {
         printf("OBSTACLES: %d %d\n", obstacleInFront, obstacleBehind);
     }
-    
+
     transmitValue(obstacleInFront, &m_OutputObstacleInFront);
     transmitValue(obstacleBehind, &m_OutputObstacleBehind);
 
