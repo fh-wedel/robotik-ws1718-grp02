@@ -123,6 +123,24 @@ static bool lineIsRightLine(cv::Vec3f& line) {
 }
 
 
+static void poolLines(std::vector<cv::Vec3f>& lines, cv::Vec3f& output) {
+	int amountOfLines = (int)lines.size();
+
+	float totalWeight = 0;
+	float sumAngle = 0;
+	float sumDist = 0;
+
+	for (int i = 0; i < amountOfLines; i++) {
+		sumDist += lines.at(i)[0];
+		sumAngle += lines.at(i)[1];
+		totalWeight += lines.at(i)[2];
+	}
+
+	output[0] = sumDist / amountOfLines;
+	output[1] = sumAngle / amountOfLines;
+	output[2] = totalWeight;
+}
+
 // calculates steering angle
 static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 												 std::vector<cv::Vec3f> leftLines,
@@ -139,33 +157,35 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	tFloat32 steeringAngle = sum / (linesSize);
 
 	// Lane keeping
-	if (rightLines.size() == 1 && leftLines.size() == 1) {
-		// TODO/REMARK: If we expect the vectors to be of size 1 each, we might as well
-		// give the lines as a direct parameter. (As in: cv::Vec3f rightLine). ?
-		// -> either cluster again or chose one line each
+	// NOTE: Use first 30 frames or so for optimal line placement detection?
 
-		// TODO: Abstand der rechten und linken linie zum Rand messen und aus dem Verhältnis einen Lenkwinkel berechnen
-		// -> Wie verwursteln wir steeringAngle damit? -> Mittelwert/Gewichtung?
-		// TODO: Usage of sigmoid function
-	}
+	// TODO/REMARK: If we expect the vectors to be of size 1 each, we might as well
+	// give the lines as a direct parameter. (As in: cv::Vec3f rightLine). ?
+	// -> either cluster again or chose one line each
 
-	// This might not be needed using above code
-	if (unclassifiedLines.size() > 0 && linesSize == 1) {
-		cv::Vec3f line = unclassifiedLines.at(0);
+	// TODO: Abstand der rechten und linken linie zum Rand messen und aus dem Verhältnis einen Lenkwinkel berechnen
+	// -> Wie verwursteln wir steeringAngle damit? -> Mittelwert/Gewichtung?
+	// TODO: Usage of sigmoid function
+	// TODO: use arithmetic mean of angles from lane curvature and lane keeping
+	//		 for steering angle
 
-		if (lineIsVertical(line) &&
-				isInRange(xValueOfLineAt(line, screenSize.height/2),
-									screenSize.width/2,
-									screenSize.width*0.4)) {
-			// we found a single, vertical line in the middle of the frame (+/- 2/5)
+	cv::Vec3f rightLine;
+	cv::Vec3f leftLine;
 
-			steeringAngle = 20.0f; // dummy value -- use more sophisticated function like sigmoid
-			// Parameter: Deviation of middle?
-		}
+	poolLines(rightLines, rightLine);
+	poolLines(leftLines, leftLine);
 
-	}
+	float rightDistance = screenSize.x - xValueOfLineAt(rightLine, screenSize.y);
+	float leftDistance  = -xValueOfLineAt(leftLine, screenSize.y);
 
-	return steeringAngle;
+	float deviation = (rightDistance + leftDistance) / 2.0f;
+
+	#define amax deg2rad(25.0f)
+	#define xmax (0.2f * screenSize.x)
+
+	float laneKeepingAngle = (amax / (1 + expf(-14*(fabs(deviation) / xmax - 0.5f)))) * -(deviation / fabs(deviation));
+
+	return (steeringAngle + laneKeepingAngle) / 2.0f;
 }
 
 // classifies a line into one of these categories:
@@ -235,36 +255,15 @@ static float convertPixelToMM(float pixel) {
 
 
 static float distanceFromStopLine(cv::Vec3f& line) {
-	float angle = line[1];
-	float dist = line[0];
-
-	/** The following formula calculates the y value of the
-	 *  line
-	 *
-	 *				              /		      screenSize.width \
-	 * screenSize.height - ( dist  +  ---------------- )
-	 *  			             \  		     2 * tan(angle) /
-	 */
-
-
-	//TODO: Why does this differ from the yValueOfLineAt() function formula?
-
-	// TODO: Which version do we prefer?
-
-	/*return convertPixelToMM(
-		yValueOfLineAt(line, screenSize.width / 2)
-	);*/
-
-
 	return convertPixelToMM(
-		screenSize.height - (dist + screenSize.width / (2 * tan(angle)))
+		yValueOfLineAt(line, screenSize.width / 2)
 	);
 }
 
 
 static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines){
 
-	if(stopLines.size() > 0){
+	if(stopLines.size() > 0) {
 		cv::Vec3f thickestLine = stopLines.at(0);
 
 		// We look for the thickest (most sure) stop line
@@ -313,8 +312,8 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 		}
 
 		clusteredLines.push_back(cv::Vec3f(sumDist / classSize,
-																			 sumAngle / classSize,
-																			 (float) classSize / lines.size()));
+									 	   sumAngle / classSize,
+										   (float) classSize / lines.size()));
 	}
 	/*
 	printf("Clustered:\n");
