@@ -143,10 +143,10 @@ static void poolLines(std::vector<cv::Vec3f>& lines, cv::Vec3f& output) {
 
 // calculates steering angle
 static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
-												 std::vector<cv::Vec3f> leftLines,
-											 	 std::vector<cv::Vec3f> unclassifiedLines) {
+						 std::vector<cv::Vec3f> leftLines,
+					 	 std::vector<cv::Vec3f> unclassifiedLines) {
 
-  int linesSize = rightLines.size() + leftLines.size() + unclassifiedLines.size();
+  	int linesSize = rightLines.size() + leftLines.size() + unclassifiedLines.size();
 	if (linesSize == 0) return 0; //no lane was detected
 	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
 	// Car: "Just go straight and full speed :]"
@@ -175,15 +175,31 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	poolLines(rightLines, rightLine);
 	poolLines(leftLines, leftLine);
 
-	float rightDistance = screenSize.x - xValueOfLineAt(rightLine, screenSize.y);
-	float leftDistance  = -xValueOfLineAt(leftLine, screenSize.y);
+	float rightDistance = screenSize.width - xValueOfLineAt(rightLine, screenSize.height);
+	float leftDistance  = -xValueOfLineAt(leftLine, screenSize.height);
 
 	float deviation = (rightDistance + leftDistance) / 2.0f;
 
 	#define amax deg2rad(25.0f)
-	#define xmax (0.2f * screenSize.x)
+	#define xmax (0.2f * screenSize.width)
 
-	float laneKeepingAngle = (amax / (1 + expf(-14*(fabs(deviation) / xmax - 0.5f)))) * -(deviation / fabs(deviation));
+	/**
+ 	 *          	         amax			              deviation
+ 	 *  ------------------------------------------- * - -------------
+	 * 		    /       / |deviation|  \        \        |deviation|
+	 *   1 + e^( -14 * (---------------) - 0.5  )
+ 	 *		   \	   \	  xmax    /		   /
+ 	 *
+ 	 */
+
+	float laneKeepingAngle =
+		(
+			amax
+				/
+			(1.0f + expf(-14.0f * (fabs(deviation) / xmax - 0.5f)))
+		)
+		* -(deviation / fabs(deviation))
+	;
 
 	return (steeringAngle + laneKeepingAngle) / 2.0f;
 }
