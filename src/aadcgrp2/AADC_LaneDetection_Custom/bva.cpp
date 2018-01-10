@@ -433,7 +433,7 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 		// Normalizing angle and distance so that they are in the following range:
 		// angle:    -90 .. 90
-		// distance:   0 .. inf (always positive)
+		// distance: -inf .. inf
 		if (angle > 90 && angle < 270) {
 			line[0] = -dist;
 			line[1] = deg2rad(angle - 180.0f);
