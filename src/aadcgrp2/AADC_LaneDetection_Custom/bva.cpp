@@ -56,6 +56,7 @@ static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
 	return centerOfLinesAt(first, second, screenSize.height);
 }
 
+
 // returns true if two lines are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
@@ -73,22 +74,29 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 
 		float angle = rad2deg(line[1]);
 
-		if ((angle > -CURVE_THRESH && angle < CURVE_THRESH)
-		 || ((angle < -CURVE_THRESH // linkskurve
-			&& yValueOfLineAt(line, screenSize.width) > screenSize.height * 0.9f)
-		 || (angle > CURVE_THRESH // rechtskurve
-	        && yValueOfLineAt(line, 0) > screenSize.height * 0.9f))) {
+		// Line Classification
+
+		bool lineIsStraight           = angle > -CURVE_THRESH && angle < CURVE_THRESH;
+
+		bool lineCrossesTopScreenEdge = xValueOfLineAt(line, 0)    > 0
+									  	&& xValueOfLineAt(line, 0) < screenSize.width;
+
+		bool lineIsLeftCurve          = angle < -CURVE_THRESH // linkskurve
+										&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
+
+		bool lineIsRightCurve         = angle > CURVE_THRESH // rechtskurve
+				 						&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
+
+		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
+
+		if (lineIsStraight || (lineIsCurve && lineCrossesTopScreenEdge)) {
 				// linie wird für kurveberechnung mit einbezogen
 				sum += angle * line[2];
-
 		} else {
 			printf("Keine Wertung\n");
 		}
 
 	}
-
-
-
 
 	return sum;
 }
@@ -183,9 +191,11 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 		poolLines(rightLines, rightLine);
 		poolLines(leftLines, leftLine);
 
-		float rightDistance = (rightLines.size() > 0) ? screenSize.width - xValueOfLineAt(rightLine, screenSize.height)
+		float rightDistance = (rightLines.size() > 0)
+														? screenSize.width - xValueOfLineAt(rightLine, screenSize.height)
 													  : -1;
-		float leftDistance  = (leftLines.size() > 0)  ? -xValueOfLineAt(leftLine, screenSize.height)
+		float leftDistance  = (leftLines.size() > 0)
+														? -xValueOfLineAt(leftLine, screenSize.height)
 													  :  1;
 
 		float deviation = (rightDistance + leftDistance) / 2.0f;
@@ -239,6 +249,9 @@ static void classifyLines(std::vector<cv::Vec3f>& lines,
 			unclassifiedLines.push_back(line);
 		}
 	}
+
+	// TODO: Normalization of rightLines and leftLines so that we have one of each
+	// only? -> Getting rid of 2 right lines which cross each other X-like.
 }
 
 // draws the detected and clustered lines in the specified color
@@ -421,8 +434,8 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 		float dist = line[0];
 
 		// Normalizing angle and distance so that they are in the following range:
-		// angle:    -90  .. 90
-		// distance: -inf .. inf
+		// angle:    -90 .. 90
+		// distance:   0 .. inf (always positive)
 		if (angle > 90 && angle < 270) {
 			line[0] = -dist;
 			line[1] = deg2rad(angle - 180.0f);

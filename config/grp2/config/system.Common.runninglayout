@@ -29,10 +29,16 @@
   <folder name="components">
    <folder filter_tree_expanded_list="" name="FilterTraceView" />
   </folder>
+  <folder name="windows" />
+ </folder>
+ <folder name="Live">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
   <folder name="windows">
-   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
-   <folder Height="582" PosX="41" PosY="220" Visible="true" Width="731" name="RGB_Display" />
-   <folder Height="548" PosX="0" Visible="true" Width="784" name="Video_Display" />
+   <folder Height="428" Visible="true" Width="624" name="RGB_Display" />
+   <folder Height="548" Visible="true" Width="784" name="Video_Display" />
+   <folder Height="366" PosX="57" PosY="111" Visible="true" Width="725" name="Main-AADC_Sensor_Visualization" />
   </folder>
  </folder>
 </adtf:export>

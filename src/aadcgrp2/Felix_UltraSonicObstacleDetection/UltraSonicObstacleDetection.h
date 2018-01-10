@@ -37,6 +37,7 @@ class cUltraSonicObstacleDetection : public adtf::cFilter {
 
     /*! the pin for the current steering angle. */
     cInputPin m_InputSteeringAngle;
+    cInputPin m_InputSpeed;
 
     /*! the value */
     cOutputPin m_OutputObstacleInFront;
@@ -94,6 +95,9 @@ protected: // overwrites cFilter
         tFloat32 frontDetectionThreshhold;
         tFloat32 rearDetectionThreshhold;
 
+        tFloat32 dynamicSteeringAndSpeedThreshhold;
+        tFloat32 terminalThreshhold;
+
     } m_filterProperties;
 
 
@@ -116,7 +120,7 @@ private:
     tResult CreateUSSInputPin(ucom::IException** __exception_ptr = NULL);
 
 
-    tResult CreateAngleInputPin(__exception);
+    tResult CreateFloatInputPins(__exception);
 
     /*! creates all the output Pins
     * \param __exception_ptr the exception pointer
@@ -129,9 +133,7 @@ private:
     /*! mediadescription for ultrasonic data struct */
     cObjectPtr<IMediaTypeDescription> m_pDescriptionUsData;
 
-
-    /*! mediadescription for ultrasonic data struct */
-    cObjectPtr<IMediaTypeDescription> m_pDescriptionSteeringAngle;
+    cObjectPtr<IMediaTypeDescription> m_pDescriptionFloatValue;
 
 // For encoding output
 
@@ -146,6 +148,7 @@ private:
 // Storing values
 
     tFloat32 m_currentSteeringAngle;
+    tFloat32 m_currentSpeed;
 
 // Own Helper Functions
 

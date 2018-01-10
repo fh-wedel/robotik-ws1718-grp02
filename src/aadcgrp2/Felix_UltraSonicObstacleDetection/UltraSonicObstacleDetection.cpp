@@ -37,6 +37,7 @@ rearCenterFilter(1),
 rearLeftFilter(1),
 m_bDebugModeEnabled(tFalse) {
     m_currentSteeringAngle = 0;
+    m_currentSpeed = 0;
 
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
@@ -49,6 +50,14 @@ m_bDebugModeEnabled(tFalse) {
     SetPropertyFloat("ObstacleDetection::RearThreshhold", 25.0f);
     SetPropertyStr("ObstacleDetection::RearThreshhold" NSSUBPROP_DESCRIPTION, "when should a value be considered as an obstacle");
     SetPropertyBool("ObstacleDetection::RearThreshhold" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    SetPropertyFloat("ObstacleDetection::DynamicSteeringAndSpeedThreshhold", 30.0f);
+    SetPropertyStr("ObstacleDetection::DynamicSteeringAndSpeedThreshhold" NSSUBPROP_DESCRIPTION, "when a value should be considered as an obstacle");
+    SetPropertyBool("ObstacleDetection::DynamicSteeringAndSpeedThreshhold" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    SetPropertyFloat("ObstacleDetection::TerminalThreshhold", 7.0f);
+    SetPropertyStr("ObstacleDetection::TerminalThreshhold" NSSUBPROP_DESCRIPTION, "when a value should be considered as an obstacle");
+    SetPropertyBool("ObstacleDetection::TerminalThreshhold" NSSUBPROP_ISCHANGEABLE, tTrue);
 
     SetPropertyInt("MedianFilter::WindowSize", 10);
     SetPropertyStr("MedianFilter::WindowSize" NSSUBPROP_DESCRIPTION, "the number of values to consider.");
@@ -75,7 +84,7 @@ tResult cUltraSonicObstacleDetection::CreateUSSInputPin(__exception) {
     RETURN_NOERROR;
 }
 
-tResult cUltraSonicObstacleDetection::CreateAngleInputPin(__exception) {
+tResult cUltraSonicObstacleDetection::CreateFloatInputPins(__exception) {
     // create description manager
     cObjectPtr<IMediaDescriptionManager> pDescManager;
     RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
@@ -88,11 +97,15 @@ tResult cUltraSonicObstacleDetection::CreateAngleInputPin(__exception) {
 
     // Input Value
     // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescriptionSteeringAngle));
+    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescriptionFloatValue));
 
     // create pin
     RETURN_IF_FAILED(m_InputSteeringAngle.Create("currentSteeringAngle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(&m_InputSteeringAngle));
+
+    // create pin
+    RETURN_IF_FAILED(m_InputSpeed.Create("currentSpeed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
+    RETURN_IF_FAILED(RegisterPin(&m_InputSpeed));
 
     RETURN_NOERROR;
 }
@@ -135,7 +148,7 @@ tResult cUltraSonicObstacleDetection::Init(tInitStage eStage, __exception) {
     switch (eStage) {
     case StageFirst:
         RETURN_IF_FAILED(CreateUSSInputPin(__exception_ptr));
-        RETURN_IF_FAILED(CreateAngleInputPin(__exception_ptr));
+        RETURN_IF_FAILED(CreateFloatInputPins(__exception_ptr));
         RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
         break;
 
@@ -165,6 +178,12 @@ tResult cUltraSonicObstacleDetection::PropertyChanged(const tChar* strName) {
 
     } else if (cString::IsEqual(strName, "ObstacleDetection::RearThreshhold")) {
         m_filterProperties.rearDetectionThreshhold = GetPropertyFloat("ObstacleDetection::RearThreshhold");
+
+    } else if (cString::IsEqual(strName, "ObstacleDetection::DynamicSteeringAndSpeedThreshhold")) {
+        m_filterProperties.dynamicSteeringAndSpeedThreshhold = GetPropertyFloat("ObstacleDetection::DynamicSteeringAndSpeedThreshhold");
+
+    } else if (cString::IsEqual(strName, "ObstacleDetection::TerminalThreshhold")) {
+        m_filterProperties.terminalThreshhold = GetPropertyFloat("ObstacleDetection::TerminalThreshhold");
 
     } else if (cString::IsEqual(strName, "MedianFilter::WindowSize")) {
 
@@ -198,6 +217,8 @@ tResult cUltraSonicObstacleDetection::OnPinEvent(IPin* pSource, tInt nEventCode,
             }
         } else if (pSource == &m_InputSteeringAngle) {
             m_currentSteeringAngle = readInputValue(pMediaSample);
+        } else if (pSource == &m_InputSpeed) {
+            m_currentSpeed = readInputValue(pMediaSample);
         }
     }
     RETURN_NOERROR;
@@ -248,13 +269,24 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
         ||  rearRightFilter.calculateMedian()   < m_filterProperties.rearDetectionThreshhold;
 
 
-    bool obstacleInDrivingDirection  =
-            getAmplificationForMountingAngle(-45.0f)    * frontLeftFilter.calculateMedian()          < m_filterProperties.frontDetectionThreshhold
-        ||  getAmplificationForMountingAngle(-22.5f)    * frontCenterLeftFilter.calculateMedian()    < m_filterProperties.frontDetectionThreshhold
-        ||  getAmplificationForMountingAngle(0.0f)      * frontCenterFilter.calculateMedian()        < m_filterProperties.frontDetectionThreshhold
-        ||  getAmplificationForMountingAngle(22.5f)     * frontCenterRightFilter.calculateMedian()   < m_filterProperties.frontDetectionThreshhold
-        ||  getAmplificationForMountingAngle(45.0f)     * frontRightFilter.calculateMedian()         < m_filterProperties.frontDetectionThreshhold;
+    // NOTE: React more strictly if velocity is high.
+    #define DEFAULT_SPEED (0.25)
+    tFloat32 detectionThreshhold = m_filterProperties.dynamicSteeringAndSpeedThreshhold;
+    detectionThreshhold *= (m_currentSpeed < DEFAULT_SPEED)
+                            ? 1
+                            : m_currentSpeed / DEFAULT_SPEED;
 
+    bool obstacleInDrivingDirection  =
+            getAmplificationForMountingAngle(-56.0f)    * frontLeftFilter.calculateMedian()          < detectionThreshhold
+        ||  getAmplificationForMountingAngle(-28.0f)    * frontCenterLeftFilter.calculateMedian()    < detectionThreshhold
+        ||  getAmplificationForMountingAngle(0.0f)      * frontCenterFilter.calculateMedian()        < detectionThreshhold
+        ||  getAmplificationForMountingAngle(28.0f)     * frontCenterRightFilter.calculateMedian()   < detectionThreshhold
+        ||  getAmplificationForMountingAngle(56.0f)     * frontRightFilter.calculateMedian()         < detectionThreshhold
+        ||  frontLeftFilter.calculateMedian()           < m_filterProperties.terminalThreshhold
+        ||  frontCenterLeftFilter.calculateMedian()     < m_filterProperties.terminalThreshhold
+        ||  frontCenterFilter.calculateMedian()         < m_filterProperties.terminalThreshhold
+        ||  frontCenterRightFilter.calculateMedian()    < m_filterProperties.terminalThreshhold
+        ||  frontRightFilter.calculateMedian()          < m_filterProperties.terminalThreshhold;
 
 
     if (m_bDebugModeEnabled) {
@@ -306,7 +338,7 @@ tFloat32 cUltraSonicObstacleDetection::readInputValue(IMediaSample* pMediaSample
     {
         // focus for sample read lock
         // read data from the media sample with the coder of the descriptor
-        __adtf_sample_read_lock_mediadescription(m_pDescriptionSteeringAngle, pMediaSample, pCoder);
+        __adtf_sample_read_lock_mediadescription(m_pDescriptionFloatValue, pMediaSample, pCoder);
 
         /*! indicates of bufferIDs were set */
         static tBool m_InputValueDescriptionIsInitialized = false;
