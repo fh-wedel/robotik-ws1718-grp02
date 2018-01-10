@@ -412,12 +412,12 @@
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelLeft_Struct" interface="" source="Base_Config.WheelLeftStruct" />
     <connection connection_priority="50" dest="AADC_Converter_Wheels_Custom_.WheelRight_Struct" interface="" source="Base_Config.WheelRightStruct" />
     <filter alias="Felix_Ultrasonic_Obstacle_Detection" idref="adtf.aadc.felix.UltraSonicObstacleDetection" priority="9">
-     <settings />
+     <settings>
+      <property name="Debug Mode" type="Bool" value="true" />
+     </settings>
     </filter>
     <filter alias="AADC_Realsense_Camera" idref="adtf.aadc.aadc_realsense" priority="10">
-     <settings>
-      <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
-     </settings>
+     <settings />
     </filter>
     <connection connection_priority="50" dest="Felix_Ultrasonic_Obstacle_Detection.UltrasonicStruct" interface="" source="Base_Config.UltrasonicStruct" />
     <connection connection_priority="50" dest="RGB_Display.input" interface="" source="AADC_Realsense_Camera.outputRGB" />

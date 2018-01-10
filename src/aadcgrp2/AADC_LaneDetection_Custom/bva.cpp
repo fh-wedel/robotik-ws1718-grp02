@@ -56,6 +56,7 @@ static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
 	return centerOfLinesAt(first, second, screenSize.height);
 }
 
+
 // returns true if two lines are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
@@ -94,9 +95,6 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 		}
 
 	}
-
-
-
 
 	return sum;
 }
@@ -249,6 +247,9 @@ static void classifyLines(std::vector<cv::Vec3f>& lines,
 			unclassifiedLines.push_back(line);
 		}
 	}
+
+	// TODO: Normalization of rightLines and leftLines so that we have one of each
+	// only? -> Getting rid of 2 right lines which cross each other X-like.
 }
 
 // draws the detected and clustered lines in the specified color
@@ -431,8 +432,8 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 		float dist = line[0];
 
 		// Normalizing angle and distance so that they are in the following range:
-		// angle:    -90  .. 90
-		// distance: -inf .. inf
+		// angle:    -90 .. 90
+		// distance:   0 .. inf (always positive)
 		if (angle > 90 && angle < 270) {
 			line[0] = -dist;
 			line[1] = deg2rad(angle - 180.0f);
