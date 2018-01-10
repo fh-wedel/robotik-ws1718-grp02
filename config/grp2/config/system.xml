@@ -152,7 +152,11 @@
   </configuration>
   <configuration description="" name="Lane_Detection">
    <graph>
-    <filter alias="AADC_Realsense_Camera" idref="adtf.aadc.aadc_realsense" priority="8" />
+    <filter alias="AADC_Realsense_Camera" idref="adtf.aadc.aadc_realsense" priority="8">
+     <settings>
+      <property name="ColourStream::Colour Stream Resolution" type="String" value="1920x1080" />
+     </settings>
+    </filter>
     <filter alias="AADC_Lane_Detection_Custom2" idref="adtf.aadc_LaneDetection_Custom" priority="4">
      <settings>
       <property name="active" type="Bool" value="true" />

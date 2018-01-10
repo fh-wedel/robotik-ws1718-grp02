@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="295" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="294" zoomfactor="1,000000">
    <component height="98" name="Realsense_RGB_Proc_Display2" width="189" x="616" y="526">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -19,11 +19,44 @@
     <output_pin name="steeringAngle" />
     <output_pin name="speed" />
    </component>
-   <component height="146" name="Harddisk_Player" width="172" x="1" y="29">
+   <component height="266" name="Harddisk_Player" width="172" x="1" y="29">
     <output_pin name="WheelLeftStruct" />
     <output_pin name="WheelRightStruct" />
     <output_pin name="Realsense_outputRGB" />
     <output_pin name="RearView_outputRGB" />
+    <output_pin name="InerMeasUnitStruct" />
+    <output_pin name="Realsense_DepthRaw" />
+    <output_pin name="Realsense_DepthVis" />
+    <output_pin name="UltrasonicStruct" />
+    <output_pin name="VoltageStruct" />
+    <property name="alias" type="string" value="Harddisk_Player" />
+    <property name="ask_for_references" type="bool" value="false" />
+    <property name="cached_sectors" type="int" value="2048" />
+    <property name="Category" type="int" value="14" />
+    <property name="ClassLabel" type="string" value="Harddisk Player" />
+    <property name="config_information" type="bool" value="true" />
+    <property name="ConfigId" type="string" value="CFG_MAIN" />
+    <property name="disable_timing_correction" type="bool" value="false" />
+    <property name="embedded_mode" type="bool" value="false" />
+    <property name="emulate_external_clocks" type="bool" value="true" />
+    <property name="enable_loop_mode" type="bool" value="false" />
+    <property name="enable_perf_log" type="bool" value="false" />
+    <property name="filename" timestamp="212379820849000000" type="file" value="../../../../Desktop/Aufnahmen/Beschleunigen_split_001.dat" />
+    <property name="Identifier" type="string" value="adtf.stg.harddisk_player" />
+    <property name="idref" type="string" value="adtf.stg.harddisk_player" />
+    <property name="ignore_unkown_classes" type="bool" value="false" />
+    <property name="keep_multiple_files_open" type="bool" value="false" />
+    <property name="load_references" type="bool" value="true" />
+    <property name="NamespaceType" type="string" value="/item/file/filter" />
+    <property name="perf_warning_treshold" type="int" value="500000" />
+    <property name="playback_rate" type="float" value="1" />
+    <property name="PluginDescriptionAvailable" type="bool" value="true" />
+    <property name="priority" type="int" value="10" />
+    <property name="queue_size" type="int" value="0" />
+    <property name="queue_time_span" type="int" value="1000000" />
+    <property name="reset_recording_time_offset" type="bool" value="true" />
+    <property name="send_forward_seek_reset_events" type="bool" value="true" />
+    <property name="start_paused" type="bool" value="false" />
    </component>
    <component height="98" name="Hough_Display" width="172" x="527" y="130">
     <input_pin name="input" />
@@ -317,9 +350,9 @@
    <connection dest="" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="UltrasonicStruct" x_p2="882" x_p3="882" x_p4="1102" x_p5="1102" y_p2="0" y_p3="536" y_p4="536" y_p5="0" />
    <connection dest="Base_Config" dest_pin="WatchdogAlive" reldiff="0" shape_type="4" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="278" x_p3="278" x_p4="442" x_p5="442" y_p2="0" y_p3="489" y_p4="489" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Live" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="0,694444">
+  <configuration horizontal_scrollbar_value="243" name="Live" show="true" tab_pos="4" vertical_scrollbar_value="251" zoomfactor="0,694444">
    <component height="122" name="Main" width="207" x="1300" y="299" />
-   <component height="146" name="Lane_Detection" width="208" x="23" y="273" />
+   <component height="146" name="Lane_Detection" width="172" x="23" y="273" />
    <component height="122" name="Felix_Ultrasonic_Obstacle_Detection" width="289" x="558" y="694">
     <input_pin name="UltrasonicStruct" />
     <input_pin name="currentSteeringAngle" />
@@ -348,7 +381,7 @@
     <input_pin name="input" />
     <output_pin name="output" />
    </component>
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="259" x_p3="259" x_p4="955" x_p5="955" y_p2="0" y_p3="627" y_p4="627" y_p5="0" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="331" x_p3="331" x_p4="955" x_p5="955" y_p2="0" y_p3="627" y_p4="627" y_p5="0" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1560" x_p3="1560" x_p4="456" x_p5="456" y_p2="341" y_p3="509" y_p4="509" y_p5="784" />
    <connection dest="Main" dest_pin="SpeedController" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1217" x_p3="1217" x_p4="1264" x_p5="1264" y_p2="0" y_p3="341" y_p4="341" y_p5="0" />
    <connection dest="Main" dest_pin="SteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="504" x_p3="504" x_p4="898" x_p5="898" y_p2="0" y_p3="365" y_p4="365" y_p5="0" />
