@@ -31,8 +31,8 @@
   </folder>
   <folder name="windows">
    <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
-   <folder Height="1028" Visible="true" Width="1904" name="RGB_Display" />
-   <folder Height="548" Visible="true" Width="784" name="Video_Display" />
+   <folder Height="582" PosX="41" PosY="220" Visible="true" Width="731" name="RGB_Display" />
+   <folder Height="548" PosX="0" Visible="true" Width="784" name="Video_Display" />
   </folder>
  </folder>
 </adtf:export>
