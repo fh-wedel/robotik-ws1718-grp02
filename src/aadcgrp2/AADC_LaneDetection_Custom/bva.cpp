@@ -74,22 +74,24 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 
 		float angle = rad2deg(line[1]);
 
+		// Line Classification
+
 		bool lineIsStraight           = angle > -CURVE_THRESH && angle < CURVE_THRESH;
+
 		bool lineCrossesTopScreenEdge = xValueOfLineAt(line, 0)    > 0
-																	  && xValueOfLineAt(line, 0) < screenSize.width;
+									  	&& xValueOfLineAt(line, 0) < screenSize.width;
 
 		bool lineIsLeftCurve          = angle < -CURVE_THRESH // linkskurve
-				 														&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
+										&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
 
 		bool lineIsRightCurve         = angle > CURVE_THRESH // rechtskurve
-				 														&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
+				 						&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
+
 		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
 
-		if (lineIsStraight
-		 	 || (lineIsCurved	&& lineCrossesTopScreenEdge) {
+		if (lineIsStraight || (lineIsCurve && lineCrossesTopScreenEdge)) {
 				// linie wird für kurveberechnung mit einbezogen
 				sum += angle * line[2];
-
 		} else {
 			printf("Keine Wertung\n");
 		}
