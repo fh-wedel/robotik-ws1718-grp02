@@ -288,7 +288,7 @@ Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit
 \pagebreak
 
 \section{Übersicht}
-
+% Author: Jan 
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=250pt,keepaspectratio]{assets/bvaFlowchart.jpg}
@@ -314,6 +314,7 @@ Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit
 	% TODO Bilder!
 
 \section{Hough Line Transformation}
+% Author: Jan 
 	Nachdem die Kanten der Fahrbahnen nun gefiltert sind, können aus den Bilddaten die Fahrstreifen abstrahiert werden. Für die Positionsberechnung ist es notwendig, die Fahrbahnen nun in dem gefilterten Bild zu erkennen, und in geeigneter Weise zu mathematisch zu repräsentieren. \\
 	OpenCV bringt die hierfür geeignete Hough Line Transformation mit. Diese transformiert das Bild in den Hough Raum. Über einen Threshhold Parameter kann hierbei die Empfindlichkeit des Filters eingestellt werden. Je niedriger, desto mehr Linien werden im Bild erkannt. Diesen Parameter kann im ADTF zur Laufzeit angepasst werden.\\
 	Ebenfalls probierten wir zu Anfang noch die probabilistic Hough Transformation aus. Diese, ebenfalls von OpenCV mitgebrachte Funktion, hat die zusätzliche Eigenschaft, dass beispielsweise die gestrichelten Mittellinien nicht als eine einzelne Gerade erkannt werden, sondern jeder Strich der Mittellinie als einzelne Gerade. Da uns jedoch nur die Mittlline an sich interessiert, haben wir uns dazu entschieden, diese Transformation nicht zu verwenden. Dies reduziuert zudem die Menge der zu verarbeitenden Geraden.\\
@@ -383,7 +384,14 @@ Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit
 		\label{img-spurzentrierung-function}
 	\end{figure}
 	
+\section{Weitere Überlegungen}
+% Author: Jan 	
+	An dieser Stelle möchten wir noch einige Überlegungen und Erkentnisse festhalten, 
+	die es nicht in die fertige Software geschafft haben. 	
 	
+\subsection{Alternative Fahrstreifenrepräsentation}
+% Author: Jan 
+	In den Anfängen der Implementierung entschieden wir uns dafür, die Fahrstreifen durch Geraden zu repräsentieren und aus diesen den Lenkwinkel zu berechen. Hierdurch können gerade Fahrstreifen sehr präzise dargestellt werden, jedoch zeigt das Verfahren Schwächen bei der Repräsentation von Kurven. Eine andere Form der Darstellung wäre eine Polynomfunktion zweiten Grades. Hierbei kann die Polynomfunktion genau an die Kurve angepasst werden. Da unser Ansatz jedoch schon recht gut funktionierte und wir keine geeignete Funktion für das Anpassen der Polynomfunktion fanden, haben wir uns auf unseren schon implementierten Ansatz weiter konzentriert. 
 	
 	
 \end{document}
