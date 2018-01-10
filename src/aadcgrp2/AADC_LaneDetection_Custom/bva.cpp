@@ -73,11 +73,19 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 
 		float angle = rad2deg(line[1]);
 
-		if ((angle > -CURVE_THRESH && angle < CURVE_THRESH)
-		 || ((angle < -CURVE_THRESH // linkskurve
-			&& yValueOfLineAt(line, screenSize.width) > screenSize.height * 0.9f)
-		 || (angle > CURVE_THRESH // rechtskurve
-	        && yValueOfLineAt(line, 0) > screenSize.height * 0.9f))) {
+		bool lineIsStraight           = angle > -CURVE_THRESH && angle < CURVE_THRESH;
+		bool lineCrossesTopScreenEdge = xValueOfLineAt(line, 0)    > 0
+																	  && xValueOfLineAt(line, 0) < screenSize.width;
+
+		bool lineIsLeftCurve          = angle < -CURVE_THRESH // linkskurve
+				 														&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
+
+		bool lineIsRightCurve         = angle > CURVE_THRESH // rechtskurve
+				 														&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
+		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
+
+		if (lineIsStraight
+		 	 || (lineIsCurved	&& lineCrossesTopScreenEdge) {
 				// linie wird für kurveberechnung mit einbezogen
 				sum += angle * line[2];
 
@@ -183,9 +191,11 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 		poolLines(rightLines, rightLine);
 		poolLines(leftLines, leftLine);
 
-		float rightDistance = (rightLines.size() > 0) ? screenSize.width - xValueOfLineAt(rightLine, screenSize.height)
+		float rightDistance = (rightLines.size() > 0)
+														? screenSize.width - xValueOfLineAt(rightLine, screenSize.height)
 													  : -1;
-		float leftDistance  = (leftLines.size() > 0)  ? -xValueOfLineAt(leftLine, screenSize.height)
+		float leftDistance  = (leftLines.size() > 0)
+														? -xValueOfLineAt(leftLine, screenSize.height)
 													  :  1;
 
 		float deviation = (rightDistance + leftDistance) / 2.0f;
