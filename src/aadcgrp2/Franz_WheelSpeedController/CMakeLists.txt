@@ -1,8 +1,10 @@
 set(FILTER_NAME franz_wheelSpeedController)
- 
+
 # Specify the filter module target
 adtf_add_filter(${FILTER_NAME}
                 stdafx.h
+                ../includes/ADTF_Helper.h
+                ../includes/ADTF_Helper.cpp
                 cWheelSpeedController.h
                 cWheelSpeedController.cpp
 )

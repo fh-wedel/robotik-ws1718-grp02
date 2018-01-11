@@ -49,7 +49,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 ADTF_FILTER_PLUGIN("Franz Wheel Speed Controller", OID_ADTF_WHEELSPEEDCONTROLLER, cWheelSpeedController)
 
-cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cFilter(__info) {
+cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cStdFilter(__info) {
 
     SetPropertyFloat(WSC_PROP_GAIN, 1);
     SetPropertyBool(WSC_PROP_GAIN NSSUBPROP_ISCHANGEABLE, tTrue);
@@ -159,21 +159,8 @@ tResult cWheelSpeedController::CreateInputPins(__exception) {
 }
 
 tResult cWheelSpeedController::CreateOutputPins(__exception) {
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
 
-    // get media tayp
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue,IMediaDescription::MDF_DDL_DEFAULT_VERSION);
-
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescActuator));
-
-    // create pin
-    RETURN_IF_FAILED(m_oOutputActuator.Create("actuator_output", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_oOutputActuator));
+    RETURN_IF_FAILED(registerFloatOutputPin("actuator_output", &m_oOutputActuator, __exception_ptr));
 
     RETURN_NOERROR;
 }
@@ -296,38 +283,10 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
                 m_f64LastOutput = getControllerValue(m_f64MeasuredVariable);
             }
 
-            // Send signal to controller
-
-            //create new media sample
-            cObjectPtr<IMediaSample> pNewMediaSample;
-            AllocMediaSample((tVoid**)&pNewMediaSample);
-
-            //allocate memory with the size given by the descriptor
-            cObjectPtr<IMediaSerializer> pSerializer;
-            m_pDescActuator->GetMediaSampleSerializer(&pSerializer);
-            tInt nSize = pSerializer->GetDeserializedSize();
-            pNewMediaSample->AllocBuffer(nSize);
-
             // Apply gain and change the sign of the output to drive in the right direction
             tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput * m_f64Gain * -1);
-            {
-                // focus for sample write lock
-                //read data from the media sample with the coder of the descriptor
-                __adtf_sample_write_lock_mediadescription(m_pDescActuator, pNewMediaSample, pCoderOut);
 
-                if(!m_bInputActuatorGetID)
-                {
-                    pCoderOut->GetID("f32Value", m_buIDActuatorF32Value);
-                    pCoderOut->GetID("ui32ArduinoTimestamp", m_buIDActuatorArduinoTimestamp);
-                    m_bInputActuatorGetID = tTrue;
-                }
-                //get values from media sample
-                pCoderOut->Set(m_buIDActuatorF32Value, (tVoid*)&outputValue);
-            }
-
-            //transmit media sample over output pin
-            RETURN_IF_FAILED(pNewMediaSample->SetTime(_clock->GetStreamTime()));
-            RETURN_IF_FAILED(m_oOutputActuator.Transmit(pNewMediaSample));
+            RETURN_IF_FAILED(transmitFloatValue(outputValue, &m_oOutputActuator));
 
         } else if (pSource == &m_oInputSetWheelSpeed) {
 

@@ -21,6 +21,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 #define _WHEELSPEEDCONTROLLER_H_
 
 #include "stdafx.h"
+#include "../includes/ADTF_Helper.h"
 
 #define OID_ADTF_WHEELSPEEDCONTROLLER "adtf.aadc.franz.wheelSpeedController"
 /*! @defgroup WheelSpeedController Wheel Speed Controller
@@ -78,7 +79,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 
 
 /*! the main class for the wheel speed controller plugin */
-class cWheelSpeedController : public adtf::cFilter
+class cWheelSpeedController : public cStdFilter
 {
     /*! This macro does all the plugin setup stuff
     * Warning: This macro opens a "protected" scope see UCOM_IMPLEMENT_OBJECT_INFO(...) in object.h
