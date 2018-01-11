@@ -68,9 +68,34 @@ static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
 // gets the weighted angle sum for all the lines in a vector.
 static float getAngleSum(std::vector<cv::Vec3f> lines) {
 	float sum = 0.0f;
-	for (cv::Vec3f v : lines) {
-		float angle = rad2deg(v[1]);
-		sum += angle * v[2];
+	for (cv::Vec3f line : lines) {
+
+		#define CURVE_THRESH 20.0f
+
+		float angle = rad2deg(line[1]);
+
+		// Line Classification
+
+		bool lineIsStraight           = angle > -CURVE_THRESH && angle < CURVE_THRESH;
+
+		bool lineCrossesTopScreenEdge = xValueOfLineAt(line, 0)    > 0
+									  	&& xValueOfLineAt(line, 0) < screenSize.width;
+
+		bool lineIsLeftCurve          = angle < -CURVE_THRESH // linkskurve
+										&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
+
+		bool lineIsRightCurve         = angle > CURVE_THRESH // rechtskurve
+				 						&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
+
+		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
+
+		if (lineIsStraight || (lineIsCurve && lineCrossesTopScreenEdge)) {
+				// linie wird für kurveberechnung mit einbezogen
+				sum += angle * line[2];
+		} else {
+			printf("Keine Wertung\n");
+		}
+
 	}
 
 	return sum;
@@ -159,49 +184,42 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	// Lane keeping
 	// NOTE: Use first 30 frames or so for optimal line placement detection?
 
-	// TODO/REMARK: If we expect the vectors to be of size 1 each, we might as well
-	// give the lines as a direct parameter. (As in: cv::Vec3f rightLine). ?
-	// -> either cluster again or chose one line each
+	if (rightLines.size() > 0 || leftLines.size() > 0) {
+		cv::Vec3f rightLine;
+		cv::Vec3f leftLine;
 
-	// TODO: Abstand der rechten und linken linie zum Rand messen und aus dem Verhältnis einen Lenkwinkel berechnen
-	// -> Wie verwursteln wir steeringAngle damit? -> Mittelwert/Gewichtung?
-	// TODO: Usage of sigmoid function
-	// TODO: use arithmetic mean of angles from lane curvature and lane keeping
-	//		 for steering angle
+		poolLines(rightLines, rightLine);
+		poolLines(leftLines, leftLine);
 
-	cv::Vec3f rightLine;
-	cv::Vec3f leftLine;
+		float rightDistance = (rightLines.size() > 0)
+														? screenSize.width - xValueOfLineAt(rightLine, screenSize.height)
+													  : -1;
+		float leftDistance  = (leftLines.size() > 0)
+														? -xValueOfLineAt(leftLine, screenSize.height)
+													  :  1;
 
-	poolLines(rightLines, rightLine);
-	poolLines(leftLines, leftLine);
+		float deviation = (rightDistance + leftDistance) / 2.0f;
 
-	float rightDistance = screenSize.width - xValueOfLineAt(rightLine, screenSize.height);
-	float leftDistance  = -xValueOfLineAt(leftLine, screenSize.height);
+		#define A_MAX deg2rad(25.0f)
+		#define X_MAX (0.15f * screenSize.width)
 
-	float deviation = (rightDistance + leftDistance) / 2.0f;
+		/**
+	 	 *          	         A_MAX			              deviation
+	 	 *  ------------------------------------------- * - -------------
+		 * 		    /       / |deviation|  \        \        |deviation|
+		 *   1 + e^( -14 * (---------------) - 0.5  )
+	 	 *		   \	   \	 X_MAX    /		   /
+	 	 *
+	 	 */
 
-	#define amax deg2rad(25.0f)
-	#define xmax (0.2f * screenSize.width)
+		float laneKeepingAngle =
+			(A_MAX/(1.0f + expf(-14.0f * (fabs(deviation) / X_MAX - 0.5f))))
+			* -(deviation / fabs(deviation))
+		;
 
-	/**
- 	 *          	         amax			              deviation
- 	 *  ------------------------------------------- * - -------------
-	 * 		    /       / |deviation|  \        \        |deviation|
-	 *   1 + e^( -14 * (---------------) - 0.5  )
- 	 *		   \	   \	  xmax    /		   /
- 	 *
- 	 */
-
-	float laneKeepingAngle =
-		(
-			amax
-				/
-			(1.0f + expf(-14.0f * (fabs(deviation) / xmax - 0.5f)))
-		)
-		* -(deviation / fabs(deviation))
-	;
-
-	return (steeringAngle + laneKeepingAngle) / 2.0f;
+		return (steeringAngle + rad2deg(laneKeepingAngle)) / 2.0f;
+	}
+	return steeringAngle;
 }
 
 // classifies a line into one of these categories:
@@ -417,7 +435,7 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 
 		// Normalizing angle and distance so that they are in the following range:
 		// angle:    -90 .. 90
-		// distance:   0 .. inf (always positive)
+		// distance: -inf .. inf
 		if (angle > 90 && angle < 270) {
 			line[0] = -dist;
 			line[1] = deg2rad(angle - 180.0f);

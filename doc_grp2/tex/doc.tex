@@ -22,6 +22,7 @@
 %\renewcommand{\familydefault}{\sfdefault} % NOTE: Hermann liest am Bildschirm lieber serifenlos --hoe
 
 \usepackage{tikz}
+\usepackage{pgfplots}
 \usetikzlibrary{datavisualization}
 \usetikzlibrary{datavisualization.formats.functions}
 
@@ -152,6 +153,7 @@ Aufgeteilt wurde die Programmierung in Teile mit und ohne Bildanalyse. Wir haben
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Motorregelung}
+% Author: Franz
 
 	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden, da die Arduinos nur Werte zwischen -100 und 100 annehmen musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden um bei verschiedenen Fahrtzuständen immer die soll Geschwindigkeit zu erreichen. \\
 	Über Wheel Encoder kann die zurückgelegte Strecke, und durch Ableiten nach der Zeit die Geschwindigkeit ermittelt werden. \\
@@ -167,8 +169,21 @@ Aufgeteilt wurde die Programmierung in Teile mit und ohne Bildanalyse. Wir haben
 	Durch den HardDisk Recorder konnten die Sensorwerte auf einfache Weise aufgenommen werden. Die Aufgabe bestand so dann darin das Auto Sprungfunktionsartik zu Beschleunigen. \\
 	Auf dem Weg zur Teststrecke nutzten wir den geräumigen Flur vor Hörsaal 5 um einen Test durchzuführen und zeichneten auch diesen auf. \\
 	Zur Auswertung der Messdaten passten wir den Wheel Speed Converter an um die Messwerte in eine CSV Datei zu schreiben. Diese CSV Datei haben wir dann in einer Tabellenkalkulation geöffnet. \\
-	Zuerst bestimmten wir wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da wir nur die Aufnahme starten und stoppen konnten, liefen die Zeitstempel die ganze Zeit mit, so wurde zuerst die Zeit normalisiert. Als Höchstgeschwindigkeit wurde ein mittel der höchsten Geschwindigkeitswerte genommen.
-
+	Zuerst bestimmten wir wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da die Zeitstempel die ganze Zeit mitlaufen, mussten zuerst die Zeiten auf den Anfang der Beschleunigung verschoben werden. Durch diese Anpassungen erhielten wir die Folgenden Graphen.\\
+	\begin{tikzpicture}
+	\begin{axis} [title=Beschleunigung 1, xlabel=Zeit, ylabel=Geschwindigkeit]
+	\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration1.CSV};
+	\end{axis}
+	\end{tikzpicture}
+	\\
+	\begin{tikzpicture}
+	\begin{axis} [title=Beschleunigung 2, xlabel=Zeit, ylabel=Geschwindigkeit]
+	\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration2.CSV};
+	\end{axis}
+	\end{tikzpicture}
+	\\
+	Als Höchstgeschwindigkeit wurde ein mittel der höchsten Geschwindigkeitswerte genommen.
+	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionsvermeidung}
