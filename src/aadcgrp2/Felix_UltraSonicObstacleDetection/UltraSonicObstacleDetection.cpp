@@ -85,59 +85,18 @@ tResult cUltraSonicObstacleDetection::CreateUSSInputPin(__exception) {
 }
 
 tResult cUltraSonicObstacleDetection::CreateFloatInputPins(__exception) {
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
 
-    // get media tayp
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue,IMediaDescription::MDF_DDL_DEFAULT_VERSION);
-
-
-    // Input Value
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescriptionFloatValue));
-
-    // create pin
-    RETURN_IF_FAILED(m_InputSteeringAngle.Create("currentSteeringAngle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_InputSteeringAngle));
-
-    // create pin
-    RETURN_IF_FAILED(m_InputSpeed.Create("currentSpeed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_InputSpeed));
+    registerFloatInputPin("currentSpeed", &m_InputSpeed, __exception_ptr);
+    registerFloatInputPin("currentSteeringAngle", &m_InputSteeringAngle, __exception_ptr);
 
     RETURN_NOERROR;
 }
 
 tResult cUltraSonicObstacleDetection::CreateOutputPins(__exception) {
-    //get the media description manager for this filter
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
-    //get description
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tBoolSignalValue");
-    // checks if exists
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
 
-    //get mediatype
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tBoolSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION);
-
-    //get mediatype description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_OutputValueDescription));
-
-    // create front pin
-    RETURN_IF_FAILED(m_OutputObstacleInFront.Create("obstacleInFront", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_OutputObstacleInFront));
-
-    // create rear pin
-    RETURN_IF_FAILED(m_OutputObstacleBehind.Create("obstacleBehind", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_OutputObstacleBehind));
-
-
-    // create driving direction pin
-    RETURN_IF_FAILED(m_OutputObstacleDrivingDirection.Create("obstacleInDrivingDirection", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_OutputObstacleDrivingDirection));
-
+    RETURN_IF_FAILED(registerBoolOutputPin("obstacleInFront", &m_OutputObstacleInFront, __exception_ptr));
+    RETURN_IF_FAILED(registerBoolOutputPin("obstacleBehind", &m_OutputObstacleBehind, __exception_ptr));
+    RETURN_IF_FAILED(registerBoolOutputPin("obstacleInDrivingDirection", &m_OutputObstacleDrivingDirection, __exception_ptr));
 
     RETURN_NOERROR;
 }
@@ -311,9 +270,9 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
 
     // Transmit Results
 
-    transmitValue(obstacleInFront, &m_OutputObstacleInFront);
-    transmitValue(obstacleBehind, &m_OutputObstacleBehind);
-    transmitValue(obstacleInDrivingDirection, &m_OutputObstacleDrivingDirection);
+    transmitBoolValue(obstacleInFront, &m_OutputObstacleInFront);
+    transmitBoolValue(obstacleBehind, &m_OutputObstacleBehind);
+    transmitBoolValue(obstacleInDrivingDirection, &m_OutputObstacleDrivingDirection);
 
     RETURN_NOERROR;
 }
@@ -327,87 +286,4 @@ tFloat32 cUltraSonicObstacleDetection::getAmplificationForMountingAngle(tFloat32
     }
 
     return amplification;
-}
-
-// Input Value PROCESSING
-
-tFloat32 cUltraSonicObstacleDetection::readInputValue(IMediaSample* pMediaSample) {
-    tFloat32 value = 0;
-    tUInt32 timestamp = 0;
-
-    {
-        // focus for sample read lock
-        // read data from the media sample with the coder of the descriptor
-        __adtf_sample_read_lock_mediadescription(m_pDescriptionFloatValue, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_InputValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the radius input */
-        static tBufferID m_InputValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the timestamp */
-        static tBufferID m_InputValueTimestampID;
-
-        if(!m_InputValueDescriptionIsInitialized) {
-
-            pCoder->GetID("f32Value", m_InputValueDescriptionID);
-            pCoder->GetID("ui32ArduinoTimestamp", m_InputValueTimestampID);
-            m_InputValueDescriptionIsInitialized = true;
-
-        }
-
-        // get values from media sample
-        pCoder->Get(m_InputValueDescriptionID, (tVoid*)&value);
-        pCoder->Get(m_InputValueTimestampID, (tVoid*)&timestamp);
-    }
-
-    return value;
-}
-
-// Write Output Values
-
-tResult cUltraSonicObstacleDetection::transmitValue(tBool value, cOutputPin* outputPin) {
-
-    cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_OutputValueDescription);
-    {
-        // focus for sample write lock
-        // read data from the media sample with the coder of the descriptor
-        __adtf_sample_write_lock_mediadescription(m_OutputValueDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_OutputValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the set speed */
-        static tBufferID m_OutputValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
-        static tBufferID m_OutputValueTimestampID;
-
-        if(!m_OutputValueDescriptionIsInitialized) {
-            pCoder->GetID("bValue", m_OutputValueDescriptionID);
-            pCoder->GetID("ui32ArduinoTimestamp", m_OutputValueTimestampID);
-            m_OutputValueDescriptionIsInitialized = tTrue;
-        }
-
-        //write values to media sample
-        pCoder->Set(m_OutputValueDescriptionID, (tVoid*)&value);
-    }
-
-    //transmit media sample over output pin
-    RETURN_IF_FAILED(pMediaSample->SetTime(_clock->GetStreamTime()));
-    RETURN_IF_FAILED(outputPin->Transmit(pMediaSample));
-
-    RETURN_NOERROR;
-}
-
-cObjectPtr<IMediaSample> cUltraSonicObstacleDetection::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
-
-    // determine size in memory using the type descriptor
-    cObjectPtr<IMediaSerializer> pSerializer;
-    typeDescription->GetMediaSampleSerializer(&pSerializer);
-    tInt nSize = pSerializer->GetDeserializedSize();
-
-    // create new media sample
-    cObjectPtr<IMediaSample> pMediaSample;
-    AllocMediaSample((tVoid**)&pMediaSample);
-    pMediaSample->AllocBuffer(nSize);
-
-    return pMediaSample;
 }

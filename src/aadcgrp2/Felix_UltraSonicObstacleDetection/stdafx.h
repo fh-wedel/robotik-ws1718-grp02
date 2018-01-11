@@ -22,7 +22,6 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 // ADTF header
 #include <adtf_platform_inc.h>
 #include <adtf_plugin_sdk.h>
-//#include <additional/adtf_signal_registry_support.h>
 #include <iostream>
 using namespace adtf;
 

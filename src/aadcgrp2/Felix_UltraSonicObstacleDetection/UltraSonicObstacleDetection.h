@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include "stdafx.h"
 #include "../Felix_MedianFilter/median.h"
+#include "../includes/ADTF_Helper.h"
 #include "aadc_structs.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.UltraSonicObstacleDetection"
@@ -155,13 +156,6 @@ private:
     tFloat32 getAmplificationForMountingAngle(tFloat32 mountingAngle);
 
     tResult OnValueChanged(tUltrasonicStruct* pSampleData);
-
-    tFloat32 readInputValue(IMediaSample* pMediaSample);
-
-    tResult transmitValue(tBool value, cOutputPin* outputPin);
-
-    cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
-
 
 };
 /*! @} */ // end of group

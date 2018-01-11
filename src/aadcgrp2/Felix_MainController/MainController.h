@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define _MainController_H_
 
 #include "stdafx.h"
+#include "../includes/ADTF_Helper.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.MainController"
 #define FILTER_NAME "Felix MainController"
@@ -121,22 +122,6 @@ private:
     */
     tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
 
-// For decoding input
-
-    /*! media description for the input pin */
-    cObjectPtr<IMediaTypeDescription> m_InputValueDescription;
-
-    /*! media description for the input gain pin */
-    cObjectPtr<IMediaTypeDescription> m_InputGainDescription;
-
-    /*! media description for the input offset pin */
-    cObjectPtr<IMediaTypeDescription> m_InputOffsetDescription;
-
-// For encoding output
-
-    /*! media description for the output pin  */
-    cObjectPtr<IMediaTypeDescription> m_OutputValueDescription;
-
 // Debug
 
     /*! if the debug mode is enabled */
@@ -145,14 +130,6 @@ private:
 // Own Helper Functions
 
     tResult OnValueChanged();
-
-    tFloat32 readInputFloatValue(IMediaSample* pMediaSample);
-    tBool readInputBoolValue(IMediaSample* pMediaSample);
-
-    tResult transmitFloatValue(tFloat32 value, cOutputPin* outputPin);
-    tResult transmitBoolValue(tBool value, cOutputPin* outputPin);
-
-    cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
 };
 /*! @} */ // end of group
