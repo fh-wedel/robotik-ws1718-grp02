@@ -25,7 +25,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define FILTER_NAME "Felix Ultrasonic Obstacle Detection"
 
 /*! this is the main class for the steering controller filter */
-class cUltraSonicObstacleDetection : public adtf::cFilter {
+class cUltraSonicObstacleDetection : public cStdFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -133,13 +133,6 @@ private:
 
     /*! mediadescription for ultrasonic data struct */
     cObjectPtr<IMediaTypeDescription> m_pDescriptionUsData;
-
-    cObjectPtr<IMediaTypeDescription> m_pDescriptionFloatValue;
-
-// For encoding output
-
-    /*! media description for the output pin  */
-    cObjectPtr<IMediaTypeDescription> m_OutputValueDescription;
 
 // Debug
 

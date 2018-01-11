@@ -26,7 +26,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cUltraSonicObstacleDetection)
 
-cUltraSonicObstacleDetection::cUltraSonicObstacleDetection(const tChar* __info) : cFilter(__info),
+cUltraSonicObstacleDetection::cUltraSonicObstacleDetection(const tChar* __info) : cStdFilter(__info),
 frontRightFilter(1),
 frontCenterRightFilter(1),
 frontCenterFilter(1),
@@ -175,9 +175,9 @@ tResult cUltraSonicObstacleDetection::OnPinEvent(IPin* pSource, tInt nEventCode,
                 pMediaSample->Unlock(pSampleData);
             }
         } else if (pSource == &m_InputSteeringAngle) {
-            m_currentSteeringAngle = readInputValue(pMediaSample);
+            m_currentSteeringAngle = readFloatValue(pMediaSample);
         } else if (pSource == &m_InputSpeed) {
-            m_currentSpeed = readInputValue(pMediaSample);
+            m_currentSpeed = readFloatValue(pMediaSample);
         }
     }
     RETURN_NOERROR;

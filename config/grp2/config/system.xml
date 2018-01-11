@@ -310,6 +310,7 @@
     <connection connection_priority="50" dest="Main.SpeedController" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
     <connection connection_priority="50" dest="Felix_Ultrasonic_Obstacle_Detection.currentSpeed" interface="" source="Main.measured_speed" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Lane_Detection.speed" />
+    <connection connection_priority="50" dest="Felix_Ultrasonic_Obstacle_Detection.UltrasonicStruct" interface="" source="Main.UltrasonicStruct" />
    </graph>
   </configuration>
  </configurations>

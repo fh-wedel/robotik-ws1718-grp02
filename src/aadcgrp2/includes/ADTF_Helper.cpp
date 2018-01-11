@@ -1,10 +1,16 @@
 #include "ADTF_Helper.h"
 
 
+// Construction / Deconstruction
+
+cStdFilter::cStdFilter(const tChar* __info) : cFilter(__info) {}
+cStdFilter::~cStdFilter() {}
+
+
 
 // Pin Registration
 
-static tResult registerFloatInputPin(cString name, cInputPin* inputPin, __exception) {
+tResult cStdFilter::registerFloatInputPin(cString name, cInputPin* inputPin, __exception) {
     // create description manager
     cObjectPtr<IMediaDescriptionManager> pDescManager;
     RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
@@ -22,8 +28,11 @@ static tResult registerFloatInputPin(cString name, cInputPin* inputPin, __except
     // create pin
     RETURN_IF_FAILED(inputPin->Create(name, pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(inputPin));
+
+    RETURN_NOERROR;
 }
-static tResult registerBoolInputPin(cString name, cInputPin* inputPin, __exception) {
+
+tResult cStdFilter::registerBoolInputPin(cString name, cInputPin* inputPin, __exception) {
 
     //get the media description manager for this filter
     cObjectPtr<IMediaDescriptionManager> pDescManager;
@@ -42,9 +51,11 @@ static tResult registerBoolInputPin(cString name, cInputPin* inputPin, __excepti
     // create pin
     RETURN_IF_FAILED(inputPin->Create(name, pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(inputPin));
+
+    RETURN_NOERROR;
 }
 
-static tResult registerFloatOutputPin(cString name, cOutputPin* outputPin, __exception) {
+tResult cStdFilter::registerFloatOutputPin(cString name, cOutputPin* outputPin, __exception) {
     // create description manager
     cObjectPtr<IMediaDescriptionManager> pDescManager;
     RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
@@ -62,8 +73,10 @@ static tResult registerFloatOutputPin(cString name, cOutputPin* outputPin, __exc
     // create pin
     RETURN_IF_FAILED(outputPin->Create(name, pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(outputPin));
+
+    RETURN_NOERROR;
 }
-static tResult registerBoolOutputPin(cString name, cOutputPin* outputPin, __exception) {
+tResult cStdFilter::registerBoolOutputPin(cString name, cOutputPin* outputPin, __exception) {
 
     //get the media description manager for this filter
     cObjectPtr<IMediaDescriptionManager> pDescManager;
@@ -82,13 +95,15 @@ static tResult registerBoolOutputPin(cString name, cOutputPin* outputPin, __exce
     // create pin
     RETURN_IF_FAILED(outputPin->Create(name, pTypeSignalValue, static_cast<IPinEventSink*> (this)));
     RETURN_IF_FAILED(RegisterPin(outputPin));
+
+    RETURN_NOERROR;
 }
 
 
 
 // Input Value Processing
 
-static tFloat32 readFloatValue(IMediaSample* pMediaSample) {
+tFloat32 cStdFilter::readFloatValue(IMediaSample* pMediaSample) {
     tFloat32 value = 0;
     tUInt32 timestamp = 0;
 
@@ -119,7 +134,7 @@ static tFloat32 readFloatValue(IMediaSample* pMediaSample) {
 
     return value;
 }
-static tBool readBoolValue(IMediaSample* pMediaSample) {
+tBool cStdFilter::readBoolValue(IMediaSample* pMediaSample) {
     tBool value = false;
     tUInt32 timestamp = 0;
 
@@ -155,7 +170,7 @@ static tBool readBoolValue(IMediaSample* pMediaSample) {
 
 // Output Value Transmission
 
-static cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
+cObjectPtr<IMediaSample> cStdFilter::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
 
     // determine size in memory using the type descriptor
     cObjectPtr<IMediaSerializer> pSerializer;
@@ -170,7 +185,7 @@ static cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription
     return pMediaSample;
 }
 
-static tResult transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
+tResult cStdFilter::transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
 
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_OutputFloatValueDescription);
     {
@@ -202,7 +217,7 @@ static tResult transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
 
     RETURN_NOERROR;
 }
-static tResult transmitBoolValue(tBool value, cOutputPin* outputPin) {
+tResult cStdFilter::transmitBoolValue(tBool value, cOutputPin* outputPin) {
 
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_OutputBoolValueDescription);
     {
