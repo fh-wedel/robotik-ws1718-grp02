@@ -233,7 +233,7 @@ tResult cStdFilter::transmitBoolValue(tBool value, cOutputPin* outputPin) {
         static tBufferID m_OutputBoolValueTimestampID;
 
         if(!m_OutputBoolValueDescriptionIsInitialized) {
-            pCoder->GetID("f32Value", m_OutputBoolValueDescriptionID);
+            pCoder->GetID("bValue", m_OutputBoolValueDescriptionID);
             pCoder->GetID("ui32ArduinoTimestamp", m_OutputBoolValueTimestampID);
             m_OutputBoolValueDescriptionIsInitialized = tTrue;
         }

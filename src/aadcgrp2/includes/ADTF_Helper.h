@@ -6,9 +6,6 @@
 
 class cStdFilter : public adtf::cFilter {
 
-// TODO: can we place this in the subclasses?
-//    ADTF_DECLARE_FILTER_VERSION(UNIQUE_FILTER_ID, FILTER_NAME, OBJCAT_DataFilter, FILTER_NAME, 1, 0, 0, "");
-
 //######################################//
 
 public:
@@ -20,9 +17,6 @@ public:
 
     /*! Destructor. */
     ~cStdFilter();
-
-
-
 
 //######################################//
 
