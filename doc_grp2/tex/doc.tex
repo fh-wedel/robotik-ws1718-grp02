@@ -170,18 +170,31 @@ Aufgeteilt wurde die Programmierung in Teile mit und ohne Bildanalyse. Wir haben
 	Auf dem Weg zur Teststrecke nutzten wir den geräumigen Flur vor Hörsaal 5 um einen Test durchzuführen und zeichneten auch diesen auf. \\
 	Zur Auswertung der Messdaten passten wir den Wheel Speed Converter an um die Messwerte in eine CSV Datei zu schreiben. Diese CSV Datei haben wir dann in einer Tabellenkalkulation geöffnet. \\
 	Zuerst bestimmten wir wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da die Zeitstempel die ganze Zeit mitlaufen, mussten zuerst die Zeiten auf den Anfang der Beschleunigung verschoben werden. Durch diese Anpassungen erhielten wir die Folgenden Graphen.\\
-	\begin{tikzpicture}
-	\begin{axis} [title=Beschleunigung 1, xlabel=Zeit, ylabel=Geschwindigkeit]
-	\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration1.CSV};
-	\end{axis}
-	\end{tikzpicture}
-	\\
-	\begin{tikzpicture}
-	\begin{axis} [title=Beschleunigung 2, xlabel=Zeit, ylabel=Geschwindigkeit]
-	\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration2.CSV};
-	\end{axis}
-	\end{tikzpicture}
-	\\
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}
+		\begin{axis} [xlabel=Zeit, ylabel=Geschwindigkeit]
+		\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration1.CSV};
+		\end{axis}
+		\end{tikzpicture}
+		
+		\caption{Beschleunigung 1}
+		\label{img-accelleration1}
+	\end{figure}
+
+	%TODO: Display units on axis values like  m/s : https://tex.stackexchange.com/questions/126188/how-do-i-set-units-in-pgfplots-without-square-brackets#126189
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}
+		\begin{axis} [xlabel=Zeit, ylabel=Geschwindigkeit]
+		\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration2.CSV};
+		\end{axis}
+		\end{tikzpicture}
+		
+		\caption{Beschleunigung 2}
+		\label{img-accelleration2}
+	\end{figure}
+	
 	Als Höchstgeschwindigkeit wurde ein mittel der höchsten Geschwindigkeitswerte genommen.
 	
 
@@ -241,7 +254,6 @@ Aufgeteilt wurde die Programmierung in Teile mit und ohne Bildanalyse. Wir haben
 
 	\begin{figure}[ht]
 		\centering
-		%\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/uss-function.jpg}
 		\begin{tikzpicture}
 		\datavisualization [
 		scientific axes=clean,
