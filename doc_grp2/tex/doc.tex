@@ -59,97 +59,99 @@
 \chapter{Einführung}
 % Author: Thorger Dittmann
 
-Begleitend zur Vorlesung ``Einführung in die Robotik'', gehalten von Prof. Dr. Ulrich Hoffmann, fand das Robotik-Praktikum statt. Ziel war es, die Inhalte der Vorlesung anhand eigener Erfahrungen zu vertiefen und zu lernen, Algorithmen für grundlegende Problemstellungen zu entwickeln. Speziell bestand die Aufgabe darin, für ein AADC 2017 Modellfahrzeug eine Programmierung auszuarbeiten. Die Idee bestand darin, dass dieses Modellfahrzeug autonom und ohne Kollisionen ein bestimmtes, nicht weiter definiertes Ziel erreicht. Im Verlauf des Praktikums sollte man sich daher auch mit den Eigenheiten des vorgegebenen Frameworks auseinandersetzen.
-
+	Begleitend zur Vorlesung ``Einführung in die Robotik'', gehalten von Prof. Dr. Ulrich Hoffmann, fand das Robotik-Praktikum statt. Ziel war es, die Inhalte der Vorlesung anhand eigener Erfahrungen zu vertiefen und zu lernen, Algorithmen für grundlegende Problemstellungen zu entwickeln. Speziell bestand die Aufgabe darin, für ein AADC 2017 Modellfahrzeug eine Programmierung auszuarbeiten. Die Idee bestand darin, dass dieses Modellfahrzeug autonom und ohne Kollisionen ein bestimmtes, nicht weiter definiertes Ziel erreicht. Im Verlauf des Praktikums sollte man sich daher auch mit den Eigenheiten des vorgegebenen Frameworks auseinandersetzen.
+	
 \section{Aufgabenstellung}
-Aufgeteilt wurde die Programmierung in Teile mit und ohne Bildanalyse. Wir haben uns in der Bildanalyse hauptsächlich mit der Kamerabildauswertung, speziell der Linienerkennung beschäftigt. Das Modellfahrzeug sollte einer auf dem Boden abgeklebten ``Straße'' folgen können. Im Bereich ohne Bildanalyse wurde sich mit der Sensorik und Aktorik des Fahrzeugs beschäftigt.\\
-
+	Aufgeteilt wurde die Programmierung in Teile mit und ohne Bildanalyse. Wir haben uns in der Bildanalyse hauptsächlich mit der Kamerabildauswertung, speziell der Linienerkennung beschäftigt. Das Modellfahrzeug sollte einer auf dem Boden abgeklebten ``Straße'' folgen können. Im Bereich ohne Bildanalyse wurde sich mit der Sensorik und Aktorik des Fahrzeugs beschäftigt.\\
+	
 \section{Umsetzung im Framework}
-% Author: Felix Maaß
-
-Das uns zur Verfügung gestellte Framework \emph{Automotive Data and Time-Triggered Framework} (kurz: ADTF) der Firma Elektrobit Automotive GmbH\footnote{Weitere Informationen: \url{https://www.elektrobit.com/products/eb-assist/adtf/}} dient zur asynchronen Analyse, Interpretation und Visualisierung von Eingabedaten. 
-Daran anknüpfend folgt die Datenausgabe.
-\\
-In unserem Fall sieht dies wie folgt aus:
-\begin{enumerate}
-	\item{\textbf{Sensorik:} Erfassen der Umwelt
-		\begin{enumerate}
-			\item 10x Ultraschallsensoren in verschiedenen Montagewinkeln
-			\item 2x Drehimpulsgeber an den Hinterrädern
-			\item Intel\textregistered\ RealSense\texttrademark\ R200 Tiefenkamera
-			\item Gyroskop, Beschleunigungsmesser und Kompass
-			\item Weitwinkel-Rückkamera\footnote{Wird nicht ausgewertet.}
-		\end{enumerate}
-	}
-	\item{\textbf{Logik:} Analyse und Interpretation der Daten
-		\begin{enumerate}
-			\item Aktuelle Geschwindigkeit und Fahrtrichtung
-			\item Hindernis- und Kollisionserkennung
-			\item Fahrbahnerkennung
-		\end{enumerate}
-	}
-	\item{\textbf{Aktorik:} Instruktionen an die Hardware
-		\begin{enumerate}
-			\item Motorsteuerung
-			\item Lenksteuerung
-			\item Frontscheinwerfer sowie Blink- und Bremslichter
-		\end{enumerate}
-	}
-\end{enumerate}
-
+	% Author: Felix Maaß
+	
+	Das uns zur Verfügung gestellte Framework \emph{Automotive Data and Time-Triggered Framework} (kurz: ADTF) der Firma Elektrobit Automotive GmbH\footnote{Weitere Informationen: \url{https://www.elektrobit.com/products/eb-assist/adtf/}} dient zur asynchronen Analyse, Interpretation und Visualisierung von Eingabedaten. 
+	Daran anknüpfend folgt die Datenausgabe.
+	\\
+	In unserem Fall sieht dies wie folgt aus:
+	\begin{enumerate}
+		\item{\textbf{Sensorik:} Erfassen der Umwelt
+			\begin{enumerate}
+				\item 10x Ultraschallsensoren in verschiedenen Montagewinkeln
+				\item 2x Drehimpulsgeber an den Hinterrädern
+				\item Intel\textregistered\ RealSense\texttrademark\ R200 Tiefenkamera
+				\item Gyroskop, Beschleunigungsmesser und Kompass
+				\item Weitwinkel-Rückkamera\footnote{Wird nicht ausgewertet.}
+			\end{enumerate}
+		}
+		\item{\textbf{Logik:} Analyse und Interpretation der Daten
+			\begin{enumerate}
+				\item Aktuelle Geschwindigkeit und Fahrtrichtung
+				\item Hindernis- und Kollisionserkennung
+				\item Fahrbahnerkennung
+			\end{enumerate}
+		}
+		\item{\textbf{Aktorik:} Instruktionen an die Hardware
+			\begin{enumerate}
+				\item Motorsteuerung
+				\item Lenksteuerung
+				\item Frontscheinwerfer sowie Blink- und Bremslichter
+			\end{enumerate}
+		}
+	\end{enumerate}
+	
 \subsection{Konzept der Filter}
-% Author: Felix Maaß
-
-Zur Strukturierung und Modularisierung setzt das ADTF auf sogenannte Filter.
-Dies sind kleine Module die aus Inputs, Logik und Outputs bestehen.
-Sie werden in ADTF anschaulich als Blöcke visualisiert (siehe \autoref{img_LaneDetectionConfig}).
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LaneDetectionConfig}
-	\caption{Visualisierung im Konfigurationseditor}
-	\label{img_LaneDetectionConfig}
-\end{figure}
-
-Jedes Modul ist dabei eine \emph{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Outputpins übernimmt.
-Das Modul benachrichtigt, wenn neue Daten an einem Pin anliegen, also zur Verarbeitung zur Verfügung stehen.
-Sodann wird die Logik auf die eingelesenen Daten angewandt und die Ergebnisse über die Outputs wieder nach ``draußen'' gegeben.
-
-%TODO: Erklärung der FilterProperties?
-
+	% Author: Felix Maaß
+	
+	Zur Strukturierung und Modularisierung setzt das ADTF auf sogenannte Filter.
+	Dies sind kleine Module die aus Inputs, Logik und Outputs bestehen.
+	Sie werden in ADTF anschaulich als Blöcke visualisiert (siehe \autoref{img_LaneDetectionConfig}).
+	
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LaneDetectionConfig}
+		\caption{Visualisierung im Konfigurationseditor}
+		\label{img_LaneDetectionConfig}
+	\end{figure}
+	
+	Jedes Modul ist dabei eine \emph{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Outputpins übernimmt.
+	Das Modul benachrichtigt, wenn neue Daten an einem Pin anliegen, also zur Verarbeitung zur Verfügung stehen.
+	Sodann wird die Logik auf die eingelesenen Daten angewandt und die Ergebnisse über die Outputs wieder nach ``draußen'' gegeben.
+	
+	%TODO: Erklärung der FilterProperties?
+	
 \subsection{Konzept der Konfigurationen}
-% Author: Felix Maaß
-
-Um Filter zu verwenden, müssen diese in Konfigurationen integriert werden.
-Hier können mehrere Filter gleichzeitig platziert werden.
-Eine erste Konfiguration wurde bereits in \autoref{img_LaneDetectionConfig} gezeigt.
-Hier können die durch Filter repräsentierten Logikabschnitte miteinander verbunden werden.
-Die Outputs des einen Filters können dabei also die Inputs des Nächsten darstellen.
-\\
-Dies sieht dann zum Beispiel so aus:\footnote{Visualisiert in \autoref{img_LiveConfig}.}
-\begin{enumerate}
-	\item Arduino triggert und liest Ultraschallsensoren aus.
-	\item Daten stehen der Hinderniserkennung (siehe \autoref{section_ObstacleDetection}) zur Verfügung.
-	\item Motorregler erhält ``Hindernis erkannt''-Signal und leitet Nothalt ein.
-	\item Arduino stoppt die Motoren.
-\end{enumerate}
-
-Um Filter miteinander verbinden zu können, muss die Typkompatibilität gewährleistet sein.
-So ist es zum Beispiel nicht möglich, einen Wahrheitswert an einen Eingang weiterzugeben, der eine Fließkommazahl erwartet.
-
+	% Author: Felix Maaß
+	
+	Um Filter zu verwenden, müssen diese in Konfigurationen integriert werden.
+	Hier können mehrere Filter gleichzeitig platziert werden.
+	Eine erste Konfiguration wurde bereits in \autoref{img_LaneDetectionConfig} gezeigt.
+	Hier können die durch Filter repräsentierten Logikabschnitte miteinander verbunden werden.
+	Die Outputs des einen Filters können dabei also die Inputs des Nächsten darstellen.
+	\\
+	Dies sieht dann zum Beispiel so aus:\footnote{Visualisiert in \autoref{img_LiveConfig}.}
+	\begin{enumerate}
+		\item Arduino triggert und liest Ultraschallsensoren aus.
+		\item Daten stehen der Hinderniserkennung (siehe \autoref{section_ObstacleDetection}) zur Verfügung.
+		\item Motorregler erhält ``Hindernis erkannt''-Signal und leitet Nothalt ein.
+		\item Arduino stoppt die Motoren.
+	\end{enumerate}
+	
+	Um Filter miteinander verbinden zu können, muss die Typkompatibilität gewährleistet sein.
+	So ist es zum Beispiel nicht möglich, einen Wahrheitswert an einen Eingang weiterzugeben, der eine Fließkommazahl erwartet.
+	
 \subsubsection{Verschachtelung}
+% Author: Felix Maaß
+	
+	Ebenso ist es möglich, Konfigurationen in Anderen einzubetten, sie also zu verschachteln.
+	In unserer ``Live''-Konfiguration (siehe \autoref{img_LiveConfig}) wurde die Fahrbahnerkennung, die zur Übersichtlichkeit ihre eigene Konfiguration besitzt, eingebettet.
+	Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständig sind, in die ``Main''-Konfiguration ausgelagert.
+	
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LiveConfig}
+		\caption{Verschachtelungen von Konfigurationen}
+		\label{img_LiveConfig}
+	\end{figure}
 
-Ebenso ist es möglich, Konfigurationen in Anderen einzubetten, sie also zu verschachteln.
-In unserer ``Live''-Konfiguration (siehe \autoref{img_LiveConfig}) wurde die Fahrbahnerkennung, die zur Übersichtlichkeit ihre eigene Konfiguration besitzt, eingebettet.
-Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständig sind, in die ``Main''-Konfiguration ausgelagert.
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LiveConfig}
-	\caption{Verschachtelungen von Konfigurationen}
-	\label{img_LiveConfig}
-\end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Allgemeine Themen}
 \section{Standard-Filter}
 % Author: Felix Maaß
@@ -195,7 +197,7 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 \chapter{Lenkung}
 % Autor: Felix Maaß
 
-%TODO: Hier ein bisschen was über die beiden Filter schreiben + Ackermann Steering Approximation + Theoretische Überlegungen auf zettel und papier
+%TODO: Theoretische Überlegungen auf zettel und papier
 %https://en.wikipedia.org/wiki/Steering
 	Dieses Kapitel befasst sich mit der Ansteuerung des Lenkservomotors und den dabei aufgetretenen Schwierigkeiten.
 	Es existiert bereits eine vorgefertigte Implementation eines Filters, 
@@ -223,7 +225,6 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/Lenkwinkel-Skizze.png}
-		% NOTE: Skizze ist gut. --hoe
 		\caption{Skizze des idealisierten Lenkwinkels}
 		\label{img-steering-angles-sketch}
 	\end{figure}
@@ -317,7 +318,7 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 \chapter{Kollisionsvermeidung}
 % Author: Felix Maaß
 
-	Mit hilfe der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
+	Mithilfe der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
 	Dadurch soll es möglich sein, zu reagieren bevor eine Kollision stattfindet.
 
 \section{Genauigkeit der Ultraschallsensoren}
@@ -347,7 +348,7 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 \section{Hinderniserkennung}
 \label{section_ObstacleDetection}
 
-	Mit Hilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
+	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
 	\footnote{Dieses Feature befindet sich noch in Entwicklung.} % TODO: Whitespace vor Fußnoten entfernen. --hoe
 
 \subsection{Theoretische Überlegungen}
@@ -419,16 +420,16 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 % TODO: Perspektivische Verzerrung erwähnen
 
 \section{CPU vs. GPU}
-Im Zusammenhang mit der Nutzung der OpenCV-Bibliothek sahen wir uns mit dem Problem, ob wir für die Bildverarbeitung die CPU oder die GPU verwenden, konfrontiert, da beides in OpenCV angeboten wird.
+	Im Zusammenhang mit der Nutzung der OpenCV-Bibliothek sahen wir uns mit dem Problem, ob wir für die Bildverarbeitung die CPU oder die GPU verwenden, konfrontiert, da beides in OpenCV angeboten wird.
 
-Standardmäßig wird der Code von OpenCV auf der CPU -- im Gegensatz zur GPU -- augeführt.
-Während die OpenCV-CPU-Schnittstelle generell einfacher zu nutzen ist, bietet die GPU-Implementierung einen Performance-Vorteil, da GPUs für Matrixoperationen und die Arbeit auf 2D- und 3D-Bildern optimiert sind.
-Diese Optimierung war trotz der echtzeitnahen Bildverarbeitung nicht zwingend notwendig.
-Da das Modellauto allerdings mit einer aktuellen Grafikkarte -- der nVidia GeForce GTX 1050Ti -- ausgestattet ist, sahen wir in der GPU-Nutzung eine Möglichkeit, uns mit der Programmierung auf der GPU auseinanderzusetzen und Erfahrungen damit zu sammeln, weshalb wir uns für Programmcode entschieden haben, der weitestgehend auf der GPU ausgeführt wird.
-
-Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs ohne nVidia-Grafikkarte ausführen lassen konnte, da die OpenCV-GPU-Implementierung auf der CUDA-Bibliothek basiert, die nur für nVidia-Grafikkarten nutzbar ist.
-Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
-
+	Standardmäßig wird der Code von OpenCV auf der CPU -- im Gegensatz zur GPU -- augeführt.
+	Während die OpenCV-CPU-Schnittstelle generell einfacher zu nutzen ist, bietet die GPU-Implementierung einen Performance-Vorteil, da GPUs für Matrixoperationen und die Arbeit auf 2D- und 3D-Bildern optimiert sind.
+	Diese Optimierung war trotz der echtzeitnahen Bildverarbeitung nicht zwingend notwendig.
+	Da das Modellauto allerdings mit einer aktuellen Grafikkarte -- der nVidia GeForce GTX 1050Ti -- ausgestattet ist, sahen wir in der GPU-Nutzung eine Möglichkeit, uns mit der Programmierung auf der GPU auseinanderzusetzen und Erfahrungen damit zu sammeln, weshalb wir uns für Programmcode entschieden haben, der weitestgehend auf der GPU ausgeführt wird.
+	
+	Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs ohne nVidia-Grafikkarte ausführen lassen konnte, da die OpenCV-GPU-Implementierung auf der CUDA-Bibliothek basiert, die nur für nVidia-Grafikkarten nutzbar ist.
+	Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
+	
 % NOTE: Erfahrungen a la "Blöd, zwischen GPU/CPU zu switchen?" -- "Doch ziemlich leichte Handhabung" -- "Wenig Codebeispiele" ?
 
 
