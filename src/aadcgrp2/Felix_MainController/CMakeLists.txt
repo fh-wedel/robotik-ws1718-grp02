@@ -3,6 +3,8 @@ set(FILTER_NAME MainController)
 # Specify the filter module target
 adtf_add_filter(${FILTER_NAME}
                 stdafx.h
+                ../includes/StdFilter.h
+                ../includes/StdFilter.cpp
                 MainController.h
                 MainController.cpp
 )

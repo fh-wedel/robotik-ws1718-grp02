@@ -21,7 +21,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 #define _WHEELSPEEDCONTROLLER_H_
 
 #include "stdafx.h"
-#include "../includes/ADTF_Helper.h"
+#include "../includes/StdFilter.h"
 
 #define OID_ADTF_WHEELSPEEDCONTROLLER "adtf.aadc.franz.wheelSpeedController"
 /*! @defgroup WheelSpeedController Wheel Speed Controller

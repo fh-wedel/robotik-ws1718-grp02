@@ -3,8 +3,8 @@ set(FILTER_NAME LinearFunction)
 # Specify the filter module target
 adtf_add_filter(${FILTER_NAME}
                 stdafx.h
-                ../includes/ADTF_Helper.h
-                ../includes/ADTF_Helper.cpp
+                ../includes/StdFilter.h
+                ../includes/StdFilter.cpp
                 LinearFunction.h
                 LinearFunction.cpp
 )

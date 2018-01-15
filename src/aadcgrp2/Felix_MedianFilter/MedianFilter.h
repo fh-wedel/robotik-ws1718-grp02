@@ -18,7 +18,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include "stdafx.h"
 #include "median.h"
-#include "../includes/ADTF_Helper.h"
+#include "../includes/StdFilter.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.MedianFilter"
 #define FILTER_NAME "Felix MedianFilter"

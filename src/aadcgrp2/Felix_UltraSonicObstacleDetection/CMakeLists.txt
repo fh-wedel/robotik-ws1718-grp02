@@ -5,8 +5,8 @@ adtf_add_filter(${FILTER_NAME}
                 stdafx.h
                 ../Felix_MedianFilter/median.h
                 ../Felix_MedianFilter/median.cpp
-                ../includes/ADTF_Helper.h
-                ../includes/ADTF_Helper.cpp
+                ../includes/StdFilter.h
+                ../includes/StdFilter.cpp
                 UltraSonicObstacleDetection.h
                 UltraSonicObstacleDetection.cpp
 )

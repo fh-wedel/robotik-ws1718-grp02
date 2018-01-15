@@ -5,8 +5,8 @@ adtf_add_filter(${FILTER_NAME}
                 median.h
                 median.cpp
                 stdafx.h
-                ../includes/ADTF_Helper.h
-                ../includes/ADTF_Helper.cpp
+                ../includes/StdFilter.h
+                ../includes/StdFilter.cpp
                 MedianFilter.h
                 MedianFilter.cpp
 )

@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define _RadiusToAngleConverter_H_
 
 #include "stdafx.h"
-#include "../includes/ADTF_Helper.h"
+#include "../includes/StdFilter.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.RadiusToAngleConverter"
 #define FILTER_NAME "Felix RadiusToAngle Converter"

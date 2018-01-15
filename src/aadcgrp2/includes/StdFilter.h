@@ -1,9 +1,15 @@
-#ifndef  _ADTFHelper_H_
-#define  _ADTFHelper_H_
+#ifndef  _StdFilter_H_
+#define  _StdFilter_H_
 
 #include "commonIncludes.h"
 
-
+//! A convenience implementation of cFilter.
+/*!
+ * 
+ *
+ *
+ *
+ */
 class cStdFilter : public adtf::cFilter {
 
 //######################################//
@@ -52,4 +58,4 @@ protected:
 
 
 };
-#endif //  _ADTFHelper_H_
+#endif //  _StdFilter_H_
