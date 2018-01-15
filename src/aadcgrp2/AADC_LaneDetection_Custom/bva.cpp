@@ -82,10 +82,10 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 									  	&& xValueOfLineAt(line, 0) < screenSize.width;
 
 		bool lineIsLeftCurve          = angle < -CURVE_THRESH // linkskurve
-										&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
+										&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.4f;
 
 		bool lineIsRightCurve         = angle > CURVE_THRESH // rechtskurve
-				 						&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
+				 						&& yValueOfLineAt(line, 0) > screenSize.height * 0.4f;
 
 		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="286" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="283" zoomfactor="1,000000">
    <component height="98" name="Realsense_RGB_Proc_Display2" width="189" x="616" y="526">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -41,7 +41,7 @@
     <property name="emulate_external_clocks" type="bool" value="true" />
     <property name="enable_loop_mode" type="bool" value="false" />
     <property name="enable_perf_log" type="bool" value="false" />
-    <property name="filename" timestamp="212379820849000000" type="file" value="../../../../Desktop/Aufnahmen/Beschleunigen_split_001.dat" />
+    <property name="filename" type="file" value="../../../../Desktop/Aufnahmen/Beschleunigen_split_001.dat" />
     <property name="Identifier" type="string" value="adtf.stg.harddisk_player" />
     <property name="idref" type="string" value="adtf.stg.harddisk_player" />
     <property name="ignore_unkown_classes" type="bool" value="false" />
@@ -350,7 +350,7 @@
    <connection dest="" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="UltrasonicStruct" x_p2="882" x_p3="882" x_p4="1102" x_p5="1102" y_p2="0" y_p3="536" y_p4="536" y_p5="0" />
    <connection dest="Base_Config" dest_pin="WatchdogAlive" reldiff="0" shape_type="4" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="278" x_p3="278" x_p4="442" x_p5="442" y_p2="0" y_p3="489" y_p4="489" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="13" name="Live" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="0,694444">
+  <configuration horizontal_scrollbar_value="8" name="Live" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="0,694444">
    <component height="122" name="Main" width="207" x="1300" y="299" />
    <component height="146" name="Lane_Detection" width="208" x="23" y="273" />
    <component height="122" name="Felix_Ultrasonic_Obstacle_Detection" width="289" x="558" y="694">
@@ -381,9 +381,8 @@
     <input_pin name="input" />
     <output_pin name="output" />
    </component>
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="emergencystop" reldiff="0" shape_type="4" source="Felix_Ultrasonic_Obstacle_Detection" source_pin="obstacleInDrivingDirection" x_p2="867" x_p3="867" x_p4="947" x_p5="947" y_p2="0" y_p3="675" y_p4="675" y_p5="0" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="UltrasonicStruct" reldiff="0" shape_type="1" source="Main" source_pin="UltrasonicStruct" x_p2="1523" x_p3="1523" x_p4="534" x_p5="534" y_p2="377" y_p3="547" y_p4="547" y_p5="736" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="691" x_p3="691" x_p4="955" x_p5="955" y_p2="0" y_p3="627" y_p4="627" y_p5="0" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="835" x_p3="835" x_p4="955" x_p5="955" y_p2="0" y_p3="627" y_p4="627" y_p5="0" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1560" x_p3="1560" x_p4="456" x_p5="456" y_p2="341" y_p3="509" y_p4="509" y_p5="784" />
    <connection dest="Main" dest_pin="SpeedController" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1217" x_p3="1217" x_p4="1264" x_p5="1264" y_p2="0" y_p3="341" y_p4="341" y_p5="0" />
    <connection dest="Main" dest_pin="SteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="504" x_p3="504" x_p4="898" x_p5="898" y_p2="0" y_p3="365" y_p4="365" y_p5="0" />
