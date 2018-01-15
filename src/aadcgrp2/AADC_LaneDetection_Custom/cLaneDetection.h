@@ -109,7 +109,16 @@ protected:
     /*! input for rgb image */
     cVideoPin           m_oVideoInputPin;
 
-    /*! output for rgb image */
+    /*! output for binary image (after HSV range operation) */
+    cVideoPin           m_oDebugBinaryVideoOutputPin;
+
+    /*! output for canny image */
+    cVideoPin           m_oDebugCannyVideoOutputPin;
+
+    /*! output for perspective warp image */
+    cVideoPin           m_oDebugPerspWarpVideoOutputPin;
+
+    /*! output for final rgb image */
     cVideoPin           m_oVideoOutputPin;
 
     /*! output for lines */
