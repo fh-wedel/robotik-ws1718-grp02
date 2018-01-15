@@ -29,18 +29,17 @@
 \usetikzlibrary{datavisualization.formats.functions}
 
 
-%TODO: Einführung - ✓
+%DONE: Einführung - ✓
+%DONE: Autor der jeweiligen Funktion - ✓
+%DONE: Sinnabschnitte - ✓
+%DONE: Literatur/Quellverzeichnis - ✓
+
 %TODO: Gruppenfoto (mit Auto)
 %TODO: Passiver Schreibstil
 %TODO: Bilder
 %TODO: Allgemeine Beschreibungen der Kapitel
-%TODO: Autor der jeweiligen Funktion - ✓
 %TODO: Fazit
-%TODO: Zwischenfazit für jedes Kaptiel?
-%TODO: Sinnabschnitte
-%TODO: Literatur/Quellverzeichnis
-
-%TODO: Rückinstallation der Baslerkamera (3 Unterlegscheiben) für die Realsense-Kamera für Hermann
+%TODO: Zwischenfazit für jedes Kapitel?
 
 \begin{document}
 
@@ -55,7 +54,6 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \chapter{Einführung}
 % Author: Thorger Dittmann
 
@@ -111,7 +109,7 @@
 		\label{img_LaneDetectionConfig}
 	\end{figure}
 	
-	Jedes Modul ist dabei eine \emph{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Outputpins übernimmt.
+	Jedes Modul ist dabei eine \texttt{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Outputpins übernimmt.
 	Das Modul benachrichtigt, wenn neue Daten an einem Pin anliegen, also zur Verarbeitung zur Verfügung stehen.
 	Sodann wird die Logik auf die eingelesenen Daten angewandt und die Ergebnisse über die Outputs wieder nach ``draußen'' gegeben.
 	
@@ -157,7 +155,7 @@
 % Author: Felix Maaß
 
 	Um einen ADTF-Filter zu implementieren, muss leider sehr viel Code geschrieben werden, bevor man überhaupt mit der wirklichen Logik anfangen kann.
-	Um uns diesen Schritt zu vereinfachen, wurde eine abstrakte Klasse \emph{cStdFilter} erstellt, die von der vorgegebenen Klasse \emph{cFilter} erbt.
+	Um uns diesen Schritt zu vereinfachen, wurde eine abstrakte Klasse \texttt{cStdFilter} erstellt, die von der vorgegebenen Klasse \texttt{cFilter} erbt.
 	Sie bietet uns Standard-Implementationen sowie Hilfsroutinen und vermeidet somit Redundanzen über die ganze Code-Basis.
 	Dadurch ließen sich im Durchschnitt etwa 170 Zeilen Code pro Filter sparen.
 	Der jedoch größte Gewinn besteht darin, dass Korrekturen und Implementationen weiterer Hilfsfunktionen so nur einmal an einer zentralen Stelle durchzuführen sind und dadurch eine höhere Übersichtlichkeit gewährleistet wird.
@@ -200,9 +198,8 @@
 %TODO: Theoretische Überlegungen auf zettel und papier
 %https://en.wikipedia.org/wiki/Steering
 	Dieses Kapitel befasst sich mit der Ansteuerung des Lenkservomotors und den dabei aufgetretenen Schwierigkeiten.
-	Es existiert bereits eine vorgefertigte Implementation eines Filters, 
-
-	Standardmäßig erwartet der vorgefertigte Arduino-Controller-Filter in ADTF einen Wert zwischen $-100$ und $+100$, um den Servomotor für die Lenkung richtig zu instruieren.
+	Es existiert bereits eine vorgefertigte Implementation eines Filters, welcher sich um die Kommunikation mit den Arduinos kümmert.
+	Standardmäßig erwartet dieser Arduino-Controller einen Wert zwischen $-100$ und $+100$, um den Servomotor für die Lenkung richtig zu instruieren.
 
 	Es wurde eine Modularisierung eingeführt, die das Vorhaben der Ansteuerung in die im folgenden beschriebenen Bereiche aufteilt.
 
@@ -270,6 +267,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Motorregelung}
 % Author: Franz Wernicke
+
+%TODO: Passivieren!! :)
 
 	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden, da die Arduinos nur Werte zwischen -100 und 100 annehmen musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden um bei verschiedenen Fahrtzuständen immer die soll Geschwindigkeit zu erreichen. \\
 	Über Wheel Encoder kann die zurückgelegte Strecke, und durch Ableiten nach der Zeit die Geschwindigkeit ermittelt werden. \\
@@ -551,6 +550,11 @@
 \subsection{Alternative Fahrstreifenrepräsentation}
 
 	In den Anfängen der Implementierung entschieden wir uns dafür, die Fahrstreifen durch Geraden zu repräsentieren und aus diesen den Lenkwinkel zu berechen. Hierdurch können gerade Fahrstreifen sehr präzise dargestellt werden, jedoch zeigt das Verfahren Schwächen bei der Repräsentation von Kurven. Eine andere Form der Darstellung wäre eine Polynomfunktion zweiten Grades. Hierbei kann die Polynomfunktion genau an die Kurve angepasst werden. Da unser Ansatz jedoch schon recht gut funktionierte und wir keine geeignete Funktion für das Anpassen der Polynomfunktion fanden, haben wir uns auf unseren schon implementierten Ansatz weiter konzentriert.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Modifikationen am Fahrzeug}
+
+%TODO: Rückinstallation der Baslerkamera (3 Unterlegscheiben) für die Realsense-Kamera für Hermann als Text
 
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
