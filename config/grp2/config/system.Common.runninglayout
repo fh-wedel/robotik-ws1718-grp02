@@ -41,4 +41,15 @@
    <folder Height="366" PosX="149" PosY="478" Visible="true" Width="725" name="Main-AADC_Sensor_Visualization" />
   </folder>
  </folder>
+ <folder name="Main">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
+  </folder>
+ </folder>
+ <folder name="components">
+  <folder name="FilterTraceView" />
+ </folder>
 </adtf:export>

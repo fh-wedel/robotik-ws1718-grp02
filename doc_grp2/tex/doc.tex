@@ -317,8 +317,7 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 \chapter{Kollisionsvermeidung}
 % Author: Felix Maaß
 
-	Mithilfe % TODO: Ändern in "Mit Hilfe". "Mithilfe" bedeutet "Unterstützung". --hoe
-	der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
+	Mit hilfe der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
 	Dadurch soll es möglich sein, zu reagieren bevor eine Kollision stattfindet.
 
 \section{Genauigkeit der Ultraschallsensoren}
@@ -336,7 +335,7 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 
 	Damit diese falschen Werte dennoch nicht mit in kommende Berechnungen einbezogen werden, musste eine entsprechende Lösung gefunden werden.
 
-	\paragraph{Resultat.} % TODO: Das ist nicht das Resultat, sondern die Maßnahme. In Resultat wird die Effektivität der Maßnahme (die Verbesserung durch den Filter) dargestellt. --hoe
+	\paragraph{Maßnahme.}
 	Zur Stabilisierung der Messwerte entschieden wir uns für eine Filterung.
 	Es wurde nach einem Filter gesucht, der robust gegenüber Ausreißern ist.
 	Hier kam uns als Erstes der Median in den Sinn.
@@ -348,8 +347,7 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 \section{Hinderniserkennung}
 \label{section_ObstacleDetection}
 
-	Mit Hilfe % TODO: siehe oben --hoe
-	der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
+	Mit Hilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
 	\footnote{Dieses Feature befindet sich noch in Entwicklung.} % TODO: Whitespace vor Fußnoten entfernen. --hoe
 
 \subsection{Theoretische Überlegungen}
@@ -417,7 +415,7 @@ Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständi
 \chapter{Fahrbahnerkennung}
 % Author: Frauke Jörgens und Jan Ottmüller
 
-% TODO gut funktionierende Parameter in der BVA erklären/auflisten
+
 % TODO: Perspektivische Verzerrung erwähnen
 
 \section{CPU vs. GPU}
@@ -452,6 +450,9 @@ Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit
 \section{Linienerkennung (Binarisierung)}
 	Die von einer Kamera (Realsense oder Basler) aufgenommene RGB-Bilder werden zunächst in das HSV-Farbmodell übertragen, um eine genauere Segmentierung anhand von Farben im Bild zu ermöglichen.
 	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt. Die zugehörigen Parameter ($hue$, $saturation$ und $value$), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
+	Die für uns Idealen Parameter für das Blaue Klebeband sind:
+	%TODO formatiertung? tabelle?
+	Hue High: 120, Hue Low: 90, Saturation: 100, Value: 80.
 	Das Ergebnis dieser Operation ist ein Binärbild es unterteilt die Pixel des HSV-Bilds in Pixel, die Teil des Unterraums sind (weiß) und solche, die nicht Teil des Unterraums sind (schwarz). Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \texttt{cv::inRange} genutzt.
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
 
@@ -467,7 +468,7 @@ Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit
 % Author: Jan Ottmüller
 
 	Nachdem die Kanten der Fahrbahnen nun gefiltert sind, können aus den Bilddaten die Fahrstreifen abstrahiert werden. Für die Positionsberechnung ist es notwendig, die Fahrbahnen nun in dem gefilterten Bild zu erkennen, und in geeigneter Weise zu mathematisch zu repräsentieren. \\
-	OpenCV bringt die hierfür geeignete Hough Line Transformation mit. Diese transformiert das Bild in den Hough Raum. Über einen Threshhold Parameter kann hierbei die Empfindlichkeit des Filters eingestellt werden. Je niedriger, desto mehr Linien werden im Bild erkannt. Diesen Parameter kann im ADTF zur Laufzeit angepasst werden.\\
+	OpenCV bringt die hierfür geeignete Hough Line Transformation mit. Diese transformiert das Bild in den Hough Raum. Über einen Threshhold Parameter kann hierbei die Empfindlichkeit des Filters eingestellt werden. Je niedriger, desto mehr Linien werden im Bild erkannt. Diesen Parameter kann im ADTF zur Laufzeit angepasst werden. Für uns passt der Wert 250 für den Hough Threshold.\\
 	Ebenfalls probierten wir zu Anfang noch die probabilistic Hough Transformation aus. Diese, ebenfalls von OpenCV mitgebrachte Funktion, hat die zusätzliche Eigenschaft, dass beispielsweise die gestrichelten Mittellinien nicht als eine einzelne Gerade erkannt werden, sondern jeder Strich der Mittellinie als einzelne Gerade. Da uns jedoch nur die Mittlline an sich interessiert, haben wir uns dazu entschieden, diese Transformation nicht zu verwenden. Dies reduziuert zudem die Menge der zu verarbeitenden Geraden.\\
 	Die mit Hilfe der Hough Line Transformation erkannten Geraden werden in Polarkoordinaten dargestellt. Hierbei befindet sich der Ursprung oben links im Bild. Von diesem Punkt aus wird die Gerade mit einem Stützvektor mit dem Winkel $\theta$ und der Länge $r$ beschrieben.\\
 	Aufgrund der Tatsache, dass das Bild so verzerrt wurde, dass wir die Straße aus einer senkrechten Obersicht betrachten, Entsprechen die Winkel der gefunden Geraden nun dem relativen Winkel der Fahrbahn zu unserem Model.
@@ -477,8 +478,12 @@ Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit
 	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden. Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt. Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden. Der Vergleich erfolgt anhand des Winkels des Normalenvektors der Linie und die Länge dieses Normalenvektors. Nach der Clusterung gibt es eine Zuordnung jeder Linie in eine Klasse. Alle Linien einer Klasse werden anschließend zu einer Linie zusammengefasst, indem Winkel und Abstand der Klasse zugehörigen Linien gemittelt werden.
 
 \section{Klassifizierung}
+%TODO machen
 
 \subsection{Haltelinien}
+% Author: Jan Ottmüller
+	
+	Wird eine Wagerechte Linie erkannt, so wird sie als Stopplinie klassifiziert. Je näher sich das Fahrzeug dieser Linie nähert, desdo langsamer wird es. Dieser Anhaltealgorithmus ist jedoch nur aktiv, wenn Genügend Stopplinien erkannt wurde. So vermeiden wir, dass das Auto schon anhält, wenn es nur eine sehr schwache Stopplinie erkannt hat, was durch Rauschen ausgelöst werden kann. Dieser Threshold kann mit dem ADTF Parameter 'Stop Threshold' angepasst werden. Für uns hat der Wert 0,4 gut funktioniert. Es müssen dann also mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält. 
 
 \section{Zentrierung in der Fahrspur}
 % Author: Felix Maaß
