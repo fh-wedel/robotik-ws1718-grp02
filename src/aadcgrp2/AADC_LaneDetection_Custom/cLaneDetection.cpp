@@ -103,7 +103,7 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 	SetPropertyStr("Algorithm::Value" NSSUBPROP_DESCRIPTION, "Lower threshold for Value");
 	SetPropertyBool("Algorithm::Value" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-  SetPropertyInt("Algorithm::Hough Threshold", 250);
+  	SetPropertyInt("Algorithm::Hough Threshold", 250);
 	SetPropertyStr("Algorithm::Hough Threshold" NSSUBPROP_DESCRIPTION, "Threshold for hough votes");
 	SetPropertyBool("Algorithm::Hough Threshold" NSSUBPROP_ISCHANGEABLE, tTrue);
 
@@ -152,6 +152,13 @@ tResult cLaneDetection::CreateOutputPins(__exception) {
 	RETURN_IF_FAILED(m_oVideoOutputPin.Create("Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
 	RETURN_IF_FAILED(RegisterPin(&m_oVideoOutputPin));
 
+	RETURN_IF_FAILED(m_oDebugBinaryVideoOutputPin.Create("Binary_Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
+	RETURN_IF_FAILED(RegisterPin(&m_oDebugBinaryVideoOutputPin));
+
+	RETURN_IF_FAILED(m_oDebugCannyVideoOutputPin.Create("Canny_Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
+	RETURN_IF_FAILED(RegisterPin(&m_oDebugCannyVideoOutputPin));
+
+	// TODO perspective transform
 
 	m_oGCLOutputPin.Create("GCL", new adtf::cMediaType(MEDIA_TYPE_COMMAND, MEDIA_SUBTYPE_COMMAND_GCL), static_cast<IPinEventSink*>(this));
 	RegisterPin(&m_oGCLOutputPin);
@@ -313,7 +320,16 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 {
 
 	RETURN_IF_POINTER_NULL(pSample);
-	// new image for result
+	// images for each bva step
+	cv::Mat binary;         // binary image of street
+	cv::cuda::GpuMat canny; // canny image of street
+	cv::cuda::GpuMat persp; // image after applying perspective transform
+
+	// debug images without using the GPU
+	cv::Mat dbgCanny;
+	cv::Mat dbgPersp;
+
+	// final output image -- colored and weighted lines from hough line transform
 	cv::Mat outputImage;
 	// here we store the pixel lines in the image where we search for lanes
 	vector<tInt> detectionLines;
@@ -334,50 +350,75 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 		{
 			m_inputImage.data = (uchar*)(l_pSrcBuffer);
 
-		/*	cv::Mat transform_matrix;
-			cv::Point2f source_points[4];
-			cv::Point2f dest_points[4];
-			int bottomCornerInset = m_filterProperties.minLineContrast; //300
-			cv::cuda::GpuMat image(m_inputImage);
-
-			// Schachbrettmuster: 24.7 / 14.3
-			cv::Point2f refPoint = cv::Point(m_filterProperties.minLineWidth, m_filterProperties.maxLineWidth); //200, 850
-			source_points[0] = refPoint;
-			source_points[1] = cv::Point(0, image.rows - 1); // bottom left corner
-			source_points[2] = cv::Point(image.cols - 1, image.rows - 1); // bottom right corner
-			source_points[3] = cv::Point(image.cols - 1 - refPoint.x, refPoint.y);
-
-			dest_points[0] = cv::Point2f(0, 0);
-			dest_points[1] = cv::Point2f(bottomCornerInset, image.rows - 1);
-			dest_points[2] = cv::Point2f(image.cols - bottomCornerInset, image.rows - 1);
-			dest_points[3] = cv::Point2f(image.cols - 1, 0);
-
-			transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
-			cv::cuda::GpuMat imageWarped;
-			cv::cuda::warpPerspective(
-				image,
-				imageWarped,
-				transform_matrix,
-				image.size()
-			);
-			imageWarped.download(outputImage);*/
-
 			// Binarization of specified range
-			bva::lineBinarization(m_inputImage, outputImage,
+			bva::lineBinarization(m_inputImage, binary,
 				m_filterProperties.hueLow, m_filterProperties.hueHigh,
 				m_filterProperties.saturation, m_filterProperties.value);
 
+			// Applying Canny Edge Detection
+			bva::applyCanny(binary, canny, m_bDebugModeEnabled, dbgCanny);
 
-			if (m_bDebugModeEnabled) printf("stopThresh im Filter: %.3f\n", m_filterProperties.stopThresh);
+			// Applying perspective warp of street image
+			bva::applyPerspectiveWarp(canny, persp, m_bDebugModeEnabled, dbgPersp);
 
-			//find the lines in image and calculate the desired steering angle
-			bva::findLines(outputImage, outputImage, m_filterProperties.houghThresh,
+			// find the lines in image and calculate the desired steering angle as well as speed
+			bva::findLines(persp, outputImage, m_filterProperties.houghThresh,
 								m_filterProperties.angleThresh, m_filterProperties.distanceThresh,
 								m_filterProperties.stopThresh, angle, speed);
 
 
 		}
 		pSample->Unlock(l_pSrcBuffer);
+	}
+
+	if (m_bDebugModeEnabled) {
+		if (!binary.empty() && m_oDebugBinaryVideoOutputPin.IsConnected()) {
+
+			//create a cImage from CV Matrix (not necessary, just for demonstration)
+			cImage newImage;
+			newImage.Create(
+				m_sOutputFormat.nWidth,
+				m_sOutputFormat.nHeight,
+				m_sOutputFormat.nBitsPerPixel,
+				m_sOutputFormat.nBytesPerLine,
+				binary.data
+			);
+
+			//create the new media sample
+			cObjectPtr<IMediaSample> pMediaSample;
+			RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
+			//updating media sample
+			RETURN_IF_FAILED(pMediaSample->Update(_clock->GetStreamTime(), newImage.GetBitmap(), newImage.GetSize(), IMediaSample::MSF_None));
+			//transmitting
+			RETURN_IF_FAILED(m_oDebugBinaryVideoOutputPin.Transmit(pMediaSample));
+
+			binary.release();
+		}
+
+		if (!canny.empty() && m_oDebugCannyVideoOutputPin.IsConnected()) {
+
+			//create a cImage from CV Matrix (not necessary, just for demonstration)
+			cImage newImage;
+			newImage.Create(
+				m_sOutputFormat.nWidth,
+				m_sOutputFormat.nHeight,
+				m_sOutputFormat.nBitsPerPixel,
+				m_sOutputFormat.nBytesPerLine,
+				canny.data
+			);
+
+			//create the new media sample
+			cObjectPtr<IMediaSample> pMediaSample;
+			RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
+			//updating media sample
+			RETURN_IF_FAILED(pMediaSample->Update(_clock->GetStreamTime(), newImage.GetBitmap(), newImage.GetSize(), IMediaSample::MSF_None));
+			//transmitting
+			RETURN_IF_FAILED(m_oDebugCannyVideoOutputPin.Transmit(pMediaSample));
+
+			canny.release();
+		}
+
+		// TODO perspective transform image
 	}
 
 	if (!outputImage.empty() && m_oVideoOutputPin.IsConnected())

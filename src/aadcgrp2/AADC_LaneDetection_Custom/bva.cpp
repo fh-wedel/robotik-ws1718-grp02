@@ -1,5 +1,11 @@
 #include "bva.hpp"
 
+#define WRITE_DEBUG_VIDEO(out, debug, debugOutput) \
+	if (debug) { \
+		out.download(debugOutput); \
+		cv::cvtColor(debugOutput, debugOutput, CV_GRAY2RGB); \
+	}
+
 #define rad2deg(x) (x) * 180.0f / CV_PI
 
 #define deg2rad(x) (x) / 180.0f * CV_PI
@@ -295,7 +301,7 @@ static float distanceFromStopLine(cv::Vec3f& line) {
 }
 
 
-static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines){
+static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines) {
 
 	if(stopLines.size() > 0) {
 		cv::Vec3f thickestLine = stopLines.at(0);
@@ -324,6 +330,76 @@ static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines){
 	return 1;
 }
 
+void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
+          int hueLow, int hueHigh, int saturation, int value) {
+	cv::Mat hsv;
+	//convert to HSV colorspace
+	cv::cvtColor(input_img, hsv, CV_BGR2HSV);
+
+	//Filter blue color (range: ~90-120 saturation: ~120-255)
+	cv::inRange(hsv,
+				cv::Scalar(hueLow, saturation, value),
+				cv::Scalar(hueHigh, 255, 255),
+				out
+	);
+
+	//closing
+	int kernelSize = 6;
+	cv::Mat kernel = cv::getStructuringElement(0, cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1), cv::Point(kernelSize, kernelSize));
+	int operation = 3;
+	cv::morphologyEx(out, out, operation, kernel);
+
+	// Gaussian filter for flattening edges after closing
+	cv::GaussianBlur(out, out, cv::Size(5, 5), 0, 0);
+}
+
+void bva::applyCanny(cv::Mat& src, cv::cuda::GpuMat& out,
+						bool debug, cv::Mat& debugOutput) {
+	cv::cuda::GpuMat image(src);
+
+	cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(0, 10, 3, false);
+	canny->detect(image, out);
+
+	WRITE_DEBUG_VIDEO(out, debug, debugOutput)
+}
+
+void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
+							bool debug, cv::Mat& debugOutput) {
+	cv::Mat transform_matrix;
+	cv::Point2f source_points[4];
+	cv::Point2f dest_points[4];
+
+	// Parameters
+	cv::Point2f refPoint = cv::Point(230, 270);
+	int bottomCornerInset = 550;
+
+	/*	TODO: refPoint.x < imageSize.width / 2
+	 * 	-> ansonsten wird das bild gespiegelt?!
+	 *
+	 * 	vielleicht hier lieber eine eingabe in prozent verwenden?
+	 * 	(länge der oberen kante des trapezes beträgt x% der bildbreite)
+	 */
+
+	source_points[0] = refPoint;
+	source_points[1] = cv::Point(0, img.rows - 1); // bottom left corner
+	source_points[2] = cv::Point(img.cols - 1, img.rows - 1); // bottom right corner
+	source_points[3] = cv::Point(img.cols - 1 - refPoint.x, refPoint.y);
+
+	dest_points[0] = cv::Point(0, 0);
+	dest_points[1] = cv::Point(bottomCornerInset, 1486 - 1);
+	dest_points[2] = cv::Point(img.cols - bottomCornerInset, 1486 - 1);
+	dest_points[3] = cv::Point(img.cols - 1, 0);
+
+	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
+	cv::cuda::warpPerspective(
+		img,
+		out,
+		transform_matrix,
+		cv::Size(1920,1486)
+	);
+
+	WRITE_DEBUG_VIDEO(out, debug, debugOutput)
+}
 
 //MARK: - Clustering and Detection
 
@@ -344,76 +420,23 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 				sumAngle += lines.at(label)[1];
 			}
 		}
-
 		clusteredLines.push_back(cv::Vec3f(sumDist / classSize,
 									 	   sumAngle / classSize,
 										   (float) classSize / lines.size()));
 	}
-	/*
-	printf("Clustered:\n");
-	for (cv::Vec3f v : clusteredLines) {
-		printf("dist: %.3f angle: %.3f weight: %.3f\n", v[0], rad2deg(v[1]), v[2]);
-	}
-	*/
 }
 
-
 // own implementation of line detection
-void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
+void bva::findLines(cv::cuda::GpuMat& img, cv::Mat& out, int houghThresh,
 						float angleThresh, float distanceThresh, float stopThresh,
-						tFloat32& angle, tFloat32& speed)
-{
-
-	//--------------------canny-------------------------
-	cv::cuda::GpuMat image(src);
-
-	cv::cuda::GpuMat contours;
-
-	cv::Ptr<cv::cuda::CannyEdgeDetector> canny = cv::cuda::createCannyEdgeDetector(0, 10, 3, false);
-	canny->detect(image, contours);
-
-	//--------------perspective warp------------------
-	cv::Mat transform_matrix;
-	cv::Point2f source_points[4];
-	cv::Point2f dest_points[4];
-
-	// Parameters
-	cv::Point2f refPoint = cv::Point(230, 270);
-	int bottomCornerInset = 550;
-
-	/*	TODO: refPoint.x < imageSize.width / 2
-	 * 	-> ansonsten wird das bild gespiegelt?!
-	 *
-	 * 	vielleicht hier lieber eine eingabe in prozent verwenden?
-	 * 	(länge der oberen kante des trapezes beträgt x% der bildbreite)
-	 */
-
-	source_points[0] = refPoint;
-	source_points[1] = cv::Point(0, contours.rows - 1); // bottom left corner
-	source_points[2] = cv::Point(contours.cols - 1, contours.rows - 1); // bottom right corner
-	source_points[3] = cv::Point(contours.cols - 1 - refPoint.x, refPoint.y);
-
-	dest_points[0] = cv::Point(0, 0);
-	dest_points[1] = cv::Point(bottomCornerInset, 1486 - 1);
-	dest_points[2] = cv::Point(contours.cols - bottomCornerInset, 1486 - 1);
-	dest_points[3] = cv::Point(contours.cols - 1, 0);
-
-	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
-	cv::cuda::GpuMat contoursWarped;
-	cv::cuda::warpPerspective(
-		contours,
-		contoursWarped,
-		transform_matrix,
-		cv::Size(1920,1486)
-	);
-
+						tFloat32& angle, tFloat32& speed) {
 	//---------------hough transformation---------------------------
 	cv::cuda::GpuMat GpuMatLines;
 	std::vector<cv::Vec2f> lines;
 
 	cv::Ptr<cv::cuda::HoughLinesDetector> hough = cv::cuda::createHoughLinesDetector(1, CV_PI / 180, houghThresh);
 
-	hough->detect(contoursWarped, GpuMatLines);
+	hough->detect(img, GpuMatLines);
 	hough->downloadResults(GpuMatLines, lines);
 
 	// Apply Normalization for better recognition of vertical lines (angle doesn't jump from 0 to 180)
@@ -446,8 +469,8 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	}
 
 	// Create our final mat on GPU and write the contours to it.
-	cv::cuda::GpuMat result(image.size(), CV_8U);
-	contoursWarped.copyTo(result);
+	cv::cuda::GpuMat result(img.size(), CV_8U);
+	img.copyTo(result);
 
 	// Cluster the detected hough lines and draw them onto the mat
 	//
@@ -493,28 +516,4 @@ void bva::findLines(cv::Mat& src, cv::Mat& out, int houghThresh,
 	cv::Point textOrgSpeed(10, 200);
 	cv::putText(out, textAngle, textOrgAngle, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
 	cv::putText(out, textSpeed, textOrgSpeed, fontFace, fontScale, cv::Scalar::all(255), thickness, 8);
-}
-
-void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
-          int hueLow, int hueHigh, int saturation, int value)
-{
-	cv::Mat hsv;
-	//convert to HSV colorspace
-	cv::cvtColor(input_img, hsv, CV_BGR2HSV);
-
-	//Filter blue color (range: ~90-120 saturation: ~120-255)
-	cv::inRange(hsv,
-				cv::Scalar(hueLow, saturation, value),
-				cv::Scalar(hueHigh, 255, 255),
-				out
-	);
-
-	//closing
-	int kernelSize = 6;
-	cv::Mat kernel = cv::getStructuringElement(0, cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1), cv::Point(kernelSize, kernelSize));
-	int operation = 3;
-	cv::morphologyEx(out, out, operation, kernel);
-
-	//Gauss filter for flattening edges after closing
-	cv::GaussianBlur(out, out, cv::Size(5, 5), 0, 0);
 }
