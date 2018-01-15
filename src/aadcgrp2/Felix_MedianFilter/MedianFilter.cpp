@@ -28,9 +28,10 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cMedianFilter)
 
-cMedianFilter::cMedianFilter(const tChar* __info) : cFilter(__info), medianFilter(1), m_bDebugModeEnabled(tFalse) {
+cMedianFilter::cMedianFilter(const tChar* __info) : cStdFilter(__info), medianFilter(1), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
+    SetPropertyBool(SC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
 
     SetPropertyInt("Filter::WindowSize", 40);
     SetPropertyStr("Filter::WindowSize" NSSUBPROP_DESCRIPTION, "Number of values to keep in storage.");
@@ -40,55 +41,12 @@ cMedianFilter::cMedianFilter(const tChar* __info) : cFilter(__info), medianFilte
 cMedianFilter::~cMedianFilter() {}
 
 
-tResult cMedianFilter::CreateInputPins(__exception) {
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
-
-    // get media tayp
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue,IMediaDescription::MDF_DDL_DEFAULT_VERSION);
-
-
-    // Input Value
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_InputValueDescription));
-
-    // create pin
-    RETURN_IF_FAILED(m_InputValue.Create("input", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_InputValue));
-
-    RETURN_NOERROR;
-}
-
-tResult cMedianFilter::CreateOutputPins(__exception) {
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
-
-    // get media type
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //TODO: Soll angeblich ein "deprecated constructor" sein !!
-
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_OutputValueDescription));
-
-    // create pin
-    RETURN_IF_FAILED(m_OutputValue.Create("output", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_OutputValue));
-
-
-    RETURN_NOERROR;
-}
-
 tResult cMedianFilter::Init(tInitStage eStage, __exception) {
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
 
     if (eStage == StageFirst) {
-        RETURN_IF_FAILED(CreateInputPins(__exception_ptr));
-        RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
+        RETURN_IF_FAILED(registerFloatInputPin("input", &m_InputValue, __exception_ptr));
+        RETURN_IF_FAILED(registerFloatOutputPin("output", &m_OutputValue, __exception_ptr));
     } else if (eStage == StageNormal) {
         m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
     } else if(eStage == StageGraphReady) {}
@@ -105,6 +63,8 @@ tResult cMedianFilter::PropertyChanged(const tChar* strName) {
     //associate the properties to the member
     if (cString::IsEqual(strName, "Filter::WindowSize")) {
         medianFilter.windowSize = GetPropertyFloat("Filter::WindowSize");
+    } else if (cString::IsEqual(strName, SC_PROP_DEBUG_MODE)) {
+        m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
     }
 
 	RETURN_NOERROR;
@@ -115,7 +75,7 @@ tResult cMedianFilter::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, 
         RETURN_IF_POINTER_NULL(pMediaSample);
 
         if (pSource == &m_InputValue) {
-            tFloat32 newValue = readInputValue(pMediaSample);
+            tFloat32 newValue = readFloatValue(pMediaSample);
             return OnValueChanged(newValue);
         }
     }
@@ -129,89 +89,7 @@ tResult cMedianFilter::OnValueChanged(tFloat32 newValue) {
 
     // apply median filter and transmit
     tFloat32 median = medianFilter.calculateMedian();
-    transmitValue(median);
+    transmitFloatValue(median, &m_OutputValue);
 
     RETURN_NOERROR;
-}
-
-
-// Input Value PROCESSING
-
-tFloat32 cMedianFilter::readInputValue(IMediaSample* pMediaSample) {
-    tFloat32 value = 0;
-    tUInt32 timestamp = 0;
-
-    {
-        // focus for sample read lock
-        // read data from the media sample with the coder of the descriptor
-        __adtf_sample_read_lock_mediadescription(m_InputValueDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_InputValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the radius input */
-        static tBufferID m_InputValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the timestamp */
-        static tBufferID m_InputValueTimestampID;
-
-        if(!m_InputValueDescriptionIsInitialized) {
-
-            pCoder->GetID("f32Value", m_InputValueDescriptionID);
-            pCoder->GetID("ui32ArduinoTimestamp", m_InputValueTimestampID);
-            m_InputValueDescriptionIsInitialized = true;
-
-        }
-
-        // get values from media sample
-        pCoder->Get(m_InputValueDescriptionID, (tVoid*)&value);
-        pCoder->Get(m_InputValueTimestampID, (tVoid*)&timestamp);
-    }
-
-    return value;
-}
-
-tResult cMedianFilter::transmitValue(tFloat32 value) {
-
-    cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_OutputValueDescription);
-    {
-        // focus for sample write lock
-        // read data from the media sample with the coder of the descriptor
-        __adtf_sample_write_lock_mediadescription(m_OutputValueDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_OutputValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the set speed */
-        static tBufferID m_OutputValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
-        static tBufferID m_OutputValueTimestampID;
-
-        if(!m_OutputValueDescriptionIsInitialized) {
-            pCoder->GetID("f32Value", m_OutputValueDescriptionID);
-            pCoder->GetID("ui32ArduinoTimestamp", m_OutputValueTimestampID);
-            m_OutputValueDescriptionIsInitialized = tTrue;
-        }
-
-        //write values to media sample
-        pCoder->Set(m_OutputValueDescriptionID, (tVoid*)&value);
-    }
-
-    //transmit media sample over output pin
-    RETURN_IF_FAILED(pMediaSample->SetTime(_clock->GetStreamTime()));
-    RETURN_IF_FAILED(m_OutputValue.Transmit(pMediaSample));
-
-    RETURN_NOERROR;
-}
-
-cObjectPtr<IMediaSample> cMedianFilter::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
-
-    // determine size in memory using the type descriptor
-    cObjectPtr<IMediaSerializer> pSerializer;
-    typeDescription->GetMediaSampleSerializer(&pSerializer);
-    tInt nSize = pSerializer->GetDeserializedSize();
-
-    // create new media sample
-    cObjectPtr<IMediaSample> pMediaSample;
-    AllocMediaSample((tVoid**)&pMediaSample);
-    pMediaSample->AllocBuffer(nSize);
-
-    return pMediaSample;
 }

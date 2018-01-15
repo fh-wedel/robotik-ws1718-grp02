@@ -17,12 +17,13 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define _RadiusToAngleConverter_H_
 
 #include "stdafx.h"
+#include "../includes/ADTF_Helper.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.RadiusToAngleConverter"
 #define FILTER_NAME "Felix RadiusToAngle Converter"
 
 /*! this is the main class for the steering controller filter */
-class cRadiusToAngleConverter : public adtf::cFilter {
+class cRadiusToAngleConverter : public cStdFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -88,51 +89,13 @@ protected: // overwrites cFilter
     /*! the filter properties*/
     m_filterProperties;
 
-
-// TIME TRIGGERED Filter
-/*
-    tResult Cycle(__exception=NULL);
-
-    tResult SetInterval(tTimeStamp nInterval);
-*/
 private:
-    /*! creates all the input Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
-    tResult CreateInputPins(ucom::IException** __exception_ptr = NULL);
-
-    /*! creates all the output Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
-    tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
-
-// For decoding radius input
-
-    /*! media description for the Radius input pin */
-    cObjectPtr<IMediaTypeDescription> m_RadiusDescription;
-
-// For encoding angle output
-
-    /*! media description for the Angle output pin  */
-    cObjectPtr<IMediaTypeDescription> m_AngleDescription;
-
 // Debug
 
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
 
-// Own Helper Functions
-
-    tFloat32 readRadius(IMediaSample* pMediaSample);
     tFloat32 convertRadiusToAngle(tFloat32 radius);
-
-    tResult transmitAngle(tFloat32 angle);
-
-    cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
-
-
 };
 /*! @} */ // end of group
 #endif // _RadiusToAngleConverter_H_

@@ -18,12 +18,13 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include "stdafx.h"
 #include "median.h"
+#include "../includes/ADTF_Helper.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.MedianFilter"
 #define FILTER_NAME "Felix MedianFilter"
 
 /*! this is the main class for the steering controller filter */
-class cMedianFilter : public adtf::cFilter {
+class cMedianFilter : public cStdFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -91,26 +92,6 @@ protected: // overwrites cFilter
     cMedian medianFilter;
 
 private:
-    /*! creates all the input Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
-    tResult CreateInputPins(ucom::IException** __exception_ptr = NULL);
-
-    /*! creates all the output Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
-    tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
-
-// Coding
-
-    /*! media description for the input pin */
-    cObjectPtr<IMediaTypeDescription> m_InputValueDescription;
-
-    /*! media description for the output pin  */
-    cObjectPtr<IMediaTypeDescription> m_OutputValueDescription;
-
 // Debug
 
     /*! if the debug mode is enabled */
@@ -119,12 +100,6 @@ private:
 // Own Helper Functions
 
     tResult OnValueChanged(tFloat32 value);
-
-    tFloat32 readInputValue(IMediaSample* pMediaSample);
-    tResult transmitValue(tFloat32 value);
-
-    cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
-
 
 };
 /*! @} */ // end of group

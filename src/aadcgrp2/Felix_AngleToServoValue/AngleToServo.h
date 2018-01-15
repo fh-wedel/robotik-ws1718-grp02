@@ -17,12 +17,13 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define _AngleToServoConverter_H_
 
 #include "stdafx.h"
+#include "../includes/ADTF_Helper.h"
 
 #define UNIQUE_FILTER_ID "adtf.aadc.felix.AngleToServoConverter"
 #define FILTER_NAME "Felix AngleToServo Converter"
 
 /*! this is the main class for the steering controller filter */
-class cAngleToServoConverter : public adtf::cFilter {
+class cAngleToServoConverter : public cStdFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -90,43 +91,11 @@ protected: // overwrites cFilter
 
 
 private:
-    /*! creates all the input Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
-    tResult CreateInputPins(ucom::IException** __exception_ptr = NULL);
-
-    /*! creates all the output Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
-    tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
-
-// For decoding servo input
-
-    /*! media description for the Servo output pin */
-    cObjectPtr<IMediaTypeDescription> m_ServoDescription;
-
-// For encoding angle input
-
-    /*! media description for the Angle input pin  */
-    cObjectPtr<IMediaTypeDescription> m_AngleDescription;
-
 // Debug
-
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
 
-// Own Helper Functions
-
-    tFloat32 readAngle(IMediaSample* pMediaSample);
     tFloat32 convertAngleToServoValue(tFloat32 angle);
-
-    tResult transmitValue(tFloat32 servoValue);
-
-    cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
-
-
 };
 /*! @} */ // end of group
 #endif // _AngleToServoConverter_H_

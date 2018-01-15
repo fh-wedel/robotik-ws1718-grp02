@@ -28,10 +28,10 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cRadiusToAngleConverter)
 
-cRadiusToAngleConverter::cRadiusToAngleConverter(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
+cRadiusToAngleConverter::cRadiusToAngleConverter(const tChar* __info) : cStdFilter(__info), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
-
+    SetPropertyBool(SC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
 
     /*! the distance between axles (Radstand). */
     SetPropertyFloat("Algorithm::WheelBase", 360.0);
@@ -47,53 +47,12 @@ cRadiusToAngleConverter::cRadiusToAngleConverter(const tChar* __info) : cFilter(
 
 cRadiusToAngleConverter::~cRadiusToAngleConverter() {}
 
-
-tResult cRadiusToAngleConverter::CreateInputPins(__exception) {
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
-
-    // get media tayp
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue,IMediaDescription::MDF_DDL_DEFAULT_VERSION);
-
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_RadiusDescription));
-
-    // create pins
-    RETURN_IF_FAILED(m_InputRadius.Create("radius", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_InputRadius));
-
-    RETURN_NOERROR;
-}
-
-tResult cRadiusToAngleConverter::CreateOutputPins(__exception) {
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
-
-    // get media type
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //TODO: Soll angeblich ein "deprecated constructor" sein !!
-
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_AngleDescription));
-
-    // create pin
-    RETURN_IF_FAILED(m_OutputAngle.Create("angle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_OutputAngle));
-
-    RETURN_NOERROR;
-}
-
 tResult cRadiusToAngleConverter::Init(tInitStage eStage, __exception) {
     RETURN_IF_FAILED(cFilter::Init(eStage, __exception_ptr))
 
     if (eStage == StageFirst) {
-        RETURN_IF_FAILED(CreateInputPins(__exception_ptr));
-        RETURN_IF_FAILED(CreateOutputPins(__exception_ptr));
+        RETURN_IF_FAILED(registerFloatInputPin("radius", &m_InputRadius, __exception_ptr));
+        RETURN_IF_FAILED(registerFloatOutputPin("angle", &m_OutputAngle, __exception_ptr));
     } else if (eStage == StageNormal) {
         m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
     } else if(eStage == StageGraphReady) {}
@@ -112,6 +71,8 @@ tResult cRadiusToAngleConverter::PropertyChanged(const tChar* strName) {
         m_filterProperties.wheelbase = GetPropertyFloat("Algorithm::WheelBase");
     else if (cString::IsEqual(strName, "Algorithm::Tread"))
         m_filterProperties.tread = GetPropertyFloat("Algorithm::Tread");
+    else if (cString::IsEqual(strName, SC_PROP_DEBUG_MODE))
+        m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
 
 	RETURN_NOERROR;
 }
@@ -123,52 +84,18 @@ tResult cRadiusToAngleConverter::OnPinEvent(IPin* pSource, tInt nEventCode, tInt
         if (pSource == &m_InputRadius) {
             IfDebug("Received Radius | Reading...")
 
-            tFloat32 radius = readRadius(pMediaSample);
+            tFloat32 radius = readFloatValue(pMediaSample);
             IfDebug(cString::Format("Read Radius: %lf | Converting...", radius))
 
             tFloat32 angle = convertRadiusToAngle(radius);
             IfDebug(cString::Format("Converted to Angle: %lf | Transmitting...", angle))
 
-            return transmitAngle(angle);
+            return transmitFloatValue(angle, &m_OutputAngle);
         }
     }
     RETURN_NOERROR;
 }
 
-
-// RADIUS PROCESSING
-
-tFloat32 cRadiusToAngleConverter::readRadius(IMediaSample* pMediaSample) {
-    tFloat32 radius = 0;
-    tUInt32 timestamp = 0;
-
-    {
-        // focus for sample read lock
-        // read data from the media sample with the coder of the descriptor
-        __adtf_sample_read_lock_mediadescription(m_RadiusDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_RadiusDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the radius input */
-        static tBufferID m_RadiusDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the timestamp */
-        static tBufferID m_RadiusTimestampID;
-
-        if(!m_RadiusDescriptionIsInitialized) {
-
-            pCoder->GetID("f32Value", m_RadiusDescriptionID);
-            pCoder->GetID("ui32ArduinoTimestamp", m_RadiusTimestampID);
-            m_RadiusDescriptionIsInitialized = tTrue;
-
-        }
-
-        // get values from media sample
-        pCoder->Get(m_RadiusDescriptionID, (tVoid*)&radius);
-        pCoder->Get(m_RadiusTimestampID, (tVoid*)&timestamp);
-    }
-
-    return radius;
-}
 
 tFloat32 cRadiusToAngleConverter::convertRadiusToAngle(tFloat32 radius) {
 
@@ -179,65 +106,3 @@ tFloat32 cRadiusToAngleConverter::convertRadiusToAngle(tFloat32 radius) {
 
     return (tFloat32) atan(m_filterProperties.wheelbase / radius) * 180 / 3.14159265;
 }
-
-tResult cRadiusToAngleConverter::transmitAngle(tFloat32 angle) {
-
-    cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_AngleDescription);
-    {
-        // focus for sample write lock
-        // read data from the media sample with the coder of the descriptor
-        __adtf_sample_write_lock_mediadescription(m_AngleDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_AngleDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the set speed */
-        static tBufferID m_AngleDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
-        static tBufferID m_AngleTimestampID;
-
-
-        if(!m_AngleDescriptionIsInitialized) {
-            //TODO: Am I allowed to rename the dictionary entry? (f32Value)
-            pCoder->GetID("f32Value", m_AngleDescriptionID);
-            pCoder->GetID("ui32ArduinoTimestamp", m_AngleTimestampID);
-            m_AngleDescriptionIsInitialized = tTrue;
-        }
-
-        //write values to media sample
-        pCoder->Set(m_AngleDescriptionID, (tVoid*)&angle);
-    }
-
-    //transmit media sample over output pin
-    RETURN_IF_FAILED(pMediaSample->SetTime(_clock->GetStreamTime()));
-    RETURN_IF_FAILED(m_OutputAngle.Transmit(pMediaSample));
-
-    RETURN_NOERROR;
-}
-
-cObjectPtr<IMediaSample> cRadiusToAngleConverter::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
-
-    // determine size in memory using the type descriptor
-    cObjectPtr<IMediaSerializer> pSerializer;
-    typeDescription->GetMediaSampleSerializer(&pSerializer);
-    tInt nSize = pSerializer->GetDeserializedSize();
-
-    // create new media sample
-    cObjectPtr<IMediaSample> pMediaSample;
-    AllocMediaSample((tVoid**)&pMediaSample);
-    pMediaSample->AllocBuffer(nSize);
-
-    return pMediaSample;
-}
-
-
-// TIME TRIGGERED MEDIAN
-/*
-tResult Cycle(__exception=NULL) {
-    IfDebug("Cycling :-)")
-}
-
-tResult SetInterval(tTimeStamp nInterval) {
-    nInterval = 500;
-    RETURN_NOERROR;
-}
-*/
