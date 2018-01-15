@@ -123,24 +123,24 @@ protected:
 
 public:
     /*! default constructor for template class
-        \param __info   [in] This is the name of the filter instance.
-    */
+     *    \param __info   [in] This is the name of the filter instance.
+     */
     cLaneDetection(const tChar* __info);
 
     /*! default destructor */
     virtual ~cLaneDetection();
 
     /*! Implements the default cFilter state machine call. It will be
-    *	    called automatically by changing the filters state and needs
-    *	    to be overwritten by the special filter.
-    *    Please see page_filter_life_cycle for further information on when the state of a filter changes.
-    *
-    *    \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
-    *        If not using the cException smart pointer, the interface has to
-    *        be released by calling Unref().
-    *    \param  [in] eStage The Init function will be called when the filter state changes as follows:\n
-    *    \return Standard Result Code.
-    */
+     *	    called automatically by changing the filters state and needs
+     *	    to be overwritten by the special filter.
+     *    Please see page_filter_life_cycle for further information on when the state of a filter changes.
+     *
+     *    \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
+     *        If not using the cException smart pointer, the interface has to
+     *        be released by calling Unref().
+     *    \param  [in] eStage The Init function will be called when the filter state changes as follows:\n
+     *    \return Standard Result Code.
+     */
     tResult Init(tInitStage eStage, ucom::IException** __exception_ptr);
 
     tResult CreateInputPins(__exception);
@@ -148,64 +148,64 @@ public:
     tResult CreateOutputPins(__exception);
 
     /*!
-    *   Implements the default cFilter state machine call. It will be
-    *   called automatically by changing the filters state and needs
-    *   to be overwritten by the special filter.
-    *   Please see page_filter_life_cycle for further information on when the state of a filter changes.
-    *
-    *   \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
-    *                                   If not using the cException smart pointer, the interface has to
-    *                                   be released by calling Unref().
-    *   \param  [in] eStage The Init function will be called when the filter state changes as follows:\n   *
-    *   \result Returns a standard result code.
-    *
-    */
+     *   Implements the default cFilter state machine call. It will be
+     *   called automatically by changing the filters state and needs
+     *   to be overwritten by the special filter.
+     *   Please see page_filter_life_cycle for further information on when the state of a filter changes.
+     *
+     *   \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
+     *                                   If not using the cException smart pointer, the interface has to
+     *                                   be released by calling Unref().
+     *   \param  [in] eStage The Init function will be called when the filter state changes as follows:\n   *
+     *   \result Returns a standard result code.
+     *
+     */
     tResult Shutdown(tInitStage eStage, ucom::IException** __exception_ptr = NULL);
 
     /*! This Function will be called by all pins the filter is registered to.
-    *   \param [in] pSource Pointer to the sending pin's IPin interface.
-    *   \param [in] nEventCode Event code. For allowed values see IPinEventSink::tPinEventCode
-    *   \param [in] nParam1 Optional integer parameter.
-    *   \param [in] nParam2 Optional integer parameter.
-    *   \param [in] pMediaSample Address of an IMediaSample interface pointers.
-    *   \return   Returns a standard result code.
-    *   \warning This function will not implement a thread-safe synchronization between the calls from different sources.
-    *   You need to synchronize this call by your own. Have a look to adtf_util::__synchronized , adtf_util::__synchronized_obj .
-    */
+     *   \param [in] pSource Pointer to the sending pin's IPin interface.
+     *   \param [in] nEventCode Event code. For allowed values see IPinEventSink::tPinEventCode
+     *   \param [in] nParam1 Optional integer parameter.
+     *   \param [in] nParam2 Optional integer parameter.
+     *   \param [in] pMediaSample Address of an IMediaSample interface pointers.
+     *   \return   Returns a standard result code.
+     *   \warning This function will not implement a thread-safe synchronization between the calls from different sources.
+     *   You need to synchronize this call by your own. Have a look to adtf_util::__synchronized , adtf_util::__synchronized_obj .
+     */
     tResult OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample);
 
     /*! Implements the default cFilter state machine calls. It will be
-    *    called automatically by changing the filters state IFilter::State_Ready -> IFilter::State_Running
-    *    and can be overwritten by the special filter.
-    *    \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
-    *        If not using the cException smart pointer, the interface has to
-    *        be released by calling Unref().
-    *    \return Standard Result Code.
-    *    \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
-    *    (see:  section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
-    *
-    */
+     *    called automatically by changing the filters state IFilter::State_Ready -> IFilter::State_Running
+     *    and can be overwritten by the special filter.
+     *    \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
+     *        If not using the cException smart pointer, the interface has to
+     *        be released by calling Unref().
+     *    \return Standard Result Code.
+     *    \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
+     *    (see:  section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
+     *
+     */
     tResult Start(ucom::IException** __exception_ptr = NULL);
 
     /*!  Implements the default cFilter state machine calls. It will be
-    *   called automatically by changing the filters state IFilter::State_Running -> IFilter::State_Ready
-    *   and can be overwritten by the special filter.
-    *   \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
-    *   If not using the cException smart pointer, the interface has to
-    *   be released by calling Unref().
-    *   \return Standard Result Code.
-    *   \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
-    *   (see: section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
-    */
+     *   called automatically by changing the filters state IFilter::State_Running -> IFilter::State_Ready
+     *   and can be overwritten by the special filter.
+     *   \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
+     *   If not using the cException smart pointer, the interface has to
+     *   be released by calling Unref().
+     *   \return Standard Result Code.
+     *   \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
+     *   (see: section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
+     */
     tResult Stop(ucom::IException** __exception_ptr = NULL);
 
     /*! This Function is always called when any property has changed. This should be the only place
-    *    to read from the properties itself and store their values in a member.
-    *
-    *    \param [in] strName the name of the property that has changed.
-    *    \
-    *    \return   Returns a standard result code.
-    */
+     *    to read from the properties itself and store their values in a member.
+     *
+     *    \param [in] strName the name of the property that has changed.
+     *    \
+     *    \return   Returns a standard result code.
+     */
     tResult PropertyChanged(const tChar* strName);
 
 private: // private methods
@@ -228,25 +228,25 @@ private: // private methods
      *
      * \return  The detection lines.
      */
-     tResult getDetectionLines(vector<tInt>& detectionLines);
+    tResult getDetectionLines(vector<tInt>& detectionLines);
 
     /*! function to set the m_sProcessFormat and the  m_sInputFormat variables
-    *   \param pFormat the new format for the input pin
-    *   \return Standard Result Code.
-    */
+     *   \param pFormat the new format for the input pin
+     *   \return Standard Result Code.
+     */
     tResult UpdateInputImageFormat(const tBitmapFormat* pFormat);
 
     /*! function to set the output image format
-    *   \param outputImage the new format for the input pin
-    *   \return Standard Result Code.
-    */
+     *   \param outputImage the new format for the input pin
+     *   \return Standard Result Code.
+     */
     tResult UpdateOutputImageFormat(const cv::Mat& outputImage);
 
 
     /*! function to process the mediasample
-    *   \param pSample the new media sample
-    *   \return Standard Result Code.
-    */
+     *   \param pSample the new media sample
+     *   \return Standard Result Code.
+     */
     tResult ProcessVideo(IMediaSample* pSample);
 
     /*! bitmap format of input pin */
