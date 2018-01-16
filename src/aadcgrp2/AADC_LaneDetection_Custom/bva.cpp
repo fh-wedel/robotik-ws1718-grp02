@@ -10,12 +10,10 @@
 /** The maximum speed our car should be able to drive at the moment. */
 #define MAX_SPEED  0.25f
 
-<<<<<<< HEAD
 #define CURVE_THRESH 12.0f //20
 
-=======
 /** Threshold for the angle for hough line transform. */
->>>>>>> 76725f9a74ee20664c9ba89aa36b413bf7495021
+
 static float bva_angleThresh;
 
 /** Threshold for the distance for hough line transform. */
