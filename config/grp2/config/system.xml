@@ -174,7 +174,8 @@
       <property name="Algorithm::Saturation" type="Int" value="100" />
       <property name="Algorithm::Stop Threshold" type="Float" value="0,4.0" />
       <property name="Algorithm::Value" type="Int" value="80" />
-      <property name="Debug Mode" type="Bool" value="true" />
+      <property name="Algorithm::Hough Threshold" type="Int" value="200" />
+      <property name="Algorithm::Hue Low" type="Int" value="100" />
      </settings>
     </filter>
     <outport alias="video_lanes" />

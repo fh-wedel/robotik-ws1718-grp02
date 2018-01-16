@@ -12,6 +12,8 @@
 
 #define MAX_SPEED  0.25f
 
+#define CURVE_THRESH 12.0f //20
+
 static float bva_angleThresh;
 static float bva_distanceThresh;
 
@@ -76,7 +78,7 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 	float sum = 0.0f;
 	for (cv::Vec3f line : lines) {
 
-		#define CURVE_THRESH 20.0f
+
 
 		float angle = rad2deg(line[1]);
 
@@ -87,20 +89,34 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 		bool lineCrossesTopScreenEdge = xValueOfLineAt(line, 0)    > 0
 									  	&& xValueOfLineAt(line, 0) < screenSize.width;
 
-		bool lineIsLeftCurve          = angle < -CURVE_THRESH // linkskurve
-										&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.4f;
+		bool lineIsLeftCurve          = angle < -CURVE_THRESH; // linkskurve
+										//&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
 
-		bool lineIsRightCurve         = angle > CURVE_THRESH // rechtskurve
-				 						&& yValueOfLineAt(line, 0) > screenSize.height * 0.4f;
+		bool lineIsRightCurve         = angle > CURVE_THRESH; // rechtskurve
+				 						//&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
 
 		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
 
-		if (lineIsStraight || (lineIsCurve && lineCrossesTopScreenEdge)) {
-				// linie wird für kurveberechnung mit einbezogen
-				sum += angle * line[2];
-		} else {
-			printf("Keine Wertung\n");
+		float factor = 1.0f;
+
+		if(lineIsLeftCurve){
+			angle = max(0.0f, min(yValueOfLineAt(line, screenSize.width * 0.6) / screenSize.height * factor, 1.0f )) * angle ;
 		}
+
+		if(lineIsRightCurve){
+			angle = max(0.0f, min(yValueOfLineAt(line, screenSize.width * 0.4) / screenSize.height * factor, 1.0f)) * angle ;
+		}
+
+
+		/*if (lineIsStraight || (lineIsCurve && lineCrossesTopScreenEdge)) {
+				// linie wird für kurveberechnung mit einbezogen
+				if(lineIsCurve){
+					angle = max(0.0f, min(yValueOfLineAt(line, screenSize.width / 2) / screenSize.height * factor, 1.0f)) * angle ;
+				}*/
+				sum += angle * line[2];
+		/*} else {
+			printf("Keine Wertung\n");
+		}*/
 
 	}
 
@@ -127,7 +143,7 @@ static bool lineIsVertical(cv::Vec3f& line) {
 
 		//NOTE: We're dealing with the normal vector.
 
-		return fabs(angle) < 20.0f;
+		return fabs(angle) < CURVE_THRESH; //20
 }
 
 // returns if a line is a stop line
