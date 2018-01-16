@@ -1,4 +1,5 @@
-#include "bva.hpp"
+#include "bva.h"
+#include "helper.h"
 
 #define WRITE_DEBUG_VIDEO(out, debug, debugOutput) \
 	if (debug) { \
@@ -6,62 +7,14 @@
 		cv::cvtColor(debugOutput, debugOutput, CV_GRAY2RGB); \
 	}
 
-#define rad2deg(x) (x) * 180.0f / CV_PI
-
-#define deg2rad(x) (x) / 180.0f * CV_PI
-
+/** The maximum speed our car should be able to drive at the moment. */
 #define MAX_SPEED  0.25f
 
+/** Threshold for the angle for hough line transform. */
 static float bva_angleThresh;
+
+/** Threshold for the distance for hough line transform. */
 static float bva_distanceThresh;
-
-static cv::Size screenSize (1920,1486);
-
-
-//MARK: - Helper Functions
-// TODO: Maybe outsource helper functions into its own module -- helper._pp ?
-
-static float xValueOfLineAt(float distance, float angle, float yValue) {
-	return distance / cos(angle) + tan(angle) * yValue;
-}
-static float xValueOfLineAt(cv::Vec2f& line, float yValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return xValueOfLineAt(distance, angle, yValue);
-}
-static float xValueOfLineAt(cv::Vec3f& line, float yValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return xValueOfLineAt(distance, angle, yValue);
-}
-
-
-static float yValueOfLineAt(float distance, float angle, float xValue) {
-	return (distance / sin(angle)) - xValue / tan(angle);
-}
-static float yValueOfLineAt(cv::Vec2f& line, float xValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return yValueOfLineAt(distance, angle, xValue);
-}
-static float yValueOfLineAt(cv::Vec3f& line, float xValue) {
-	float distance = line[0];
-	float angle = line[1];
-
-	return yValueOfLineAt(distance, angle, xValue);
-}
-
-
-static float centerOfLinesAt(cv::Vec3f& first, cv::Vec3f& second, float yValue) {
-	return (xValueOfLineAt(first, yValue) + xValueOfLineAt(second, yValue)) / 2;
-}
-static float centerOfLinesAtBottom(cv::Vec3f& first, cv::Vec3f& second) {
-	return centerOfLinesAt(first, second, screenSize.height);
-}
-
 
 // returns true if two lines are similar
 static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
@@ -84,14 +37,14 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 
 		bool lineIsStraight           = angle > -CURVE_THRESH && angle < CURVE_THRESH;
 
-		bool lineCrossesTopScreenEdge = xValueOfLineAt(line, 0)    > 0
-									  	&& xValueOfLineAt(line, 0) < screenSize.width;
+		bool lineCrossesTopScreenEdge = help::xValueOfLineAt(line, 0)    > 0
+									  	&& help::xValueOfLineAt(line, 0) < help::screenSize.width;
 
 		bool lineIsLeftCurve          = angle < -CURVE_THRESH // linkskurve
-										&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.4f;
+										&& help::yValueOfLineAt(line, help::screenSize.width)  > help::screenSize.height * 0.4f;
 
 		bool lineIsRightCurve         = angle > CURVE_THRESH // rechtskurve
-				 						&& yValueOfLineAt(line, 0) > screenSize.height * 0.4f;
+				 						&& help::yValueOfLineAt(line, 0) > help::screenSize.height * 0.4f;
 
 		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
 
@@ -106,53 +59,6 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 
 	return sum;
 }
-
-// return if a value lies in a range with specified tolerance
-static bool isInRange(float value, float rangeMiddle, float tolerance) {
-	return value > rangeMiddle - tolerance &&
-				 value < rangeMiddle + tolerance;
-}
-//MARK: - Line Classification
-
-static bool lineIsHorizontal(cv::Vec3f& line) {
-		float angle = rad2deg(line[1]);
-
-		//NOTE: We're dealing with the normal vector.
-
-		return (fabs(angle) > 75.0f);
-}
-
-static bool lineIsVertical(cv::Vec3f& line) {
-		float angle = rad2deg(line[1]);
-
-		//NOTE: We're dealing with the normal vector.
-
-		return fabs(angle) < 20.0f;
-}
-
-// returns if a line is a stop line
-static bool lineIsStopLine(cv::Vec3f& line) {
-	return lineIsHorizontal(line);
-}
-
-// returns if a line is a left line
-static bool lineIsLeftLine(cv::Vec3f& line) {
-	float dist = line[0];
-
-	//NOTE: We're dealing with the normal vector.
-
-	return (lineIsVertical(line) && dist < screenSize.width / 2.0f);
-}
-
-// returns if a line is a right line
-static bool lineIsRightLine(cv::Vec3f& line) {
-	float dist = line[0];
-
-	//NOTE: We're dealing with the normal vector.
-
-	return (lineIsVertical(line) && dist > screenSize.width / 2.0f);
-}
-
 
 static void poolLines(std::vector<cv::Vec3f>& lines, cv::Vec3f& output) {
 	int amountOfLines = (int)lines.size();
@@ -198,16 +104,16 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 		poolLines(leftLines, leftLine);
 
 		float rightDistance = (rightLines.size() > 0)
-														? screenSize.width - xValueOfLineAt(rightLine, screenSize.height)
+														? help::screenSize.width - help::xValueOfLineAt(rightLine, help::screenSize.height)
 													  : -1;
 		float leftDistance  = (leftLines.size() > 0)
-														? -xValueOfLineAt(leftLine, screenSize.height)
+														? -help::xValueOfLineAt(leftLine, help::screenSize.height)
 													  :  1;
 
 		float deviation = (rightDistance + leftDistance) / 2.0f;
 
 		#define A_MAX deg2rad(25.0f)
-		#define X_MAX (0.15f * screenSize.width)
+		#define X_MAX (0.15f * help::screenSize.width)
 
 		/**
 	 	 *          	         A_MAX			              deviation
@@ -242,13 +148,13 @@ static void classifyLines(std::vector<cv::Vec3f>& lines,
 	std::vector<cv::Vec3f>& unclassifiedLines) {
 
 	for (cv::Vec3f& line : lines) {
-		if (lineIsStopLine(line)) {
+		if (help::lineIsStopLine(line)) {
 			stopLines.push_back(line);
 
-		} else if (lineIsLeftLine(line)) {
+		} else if (help::lineIsLeftLine(line)) {
 			leftLines.push_back(line);
 
-		} else if (lineIsRightLine(line)) {
+		} else if (help::lineIsRightLine(line)) {
 			rightLines.push_back(line);
 
 		} else {
@@ -271,7 +177,7 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
     // point of intersection of the line with first row
 		cv::Point pt1(rho / cos(theta), 0);
 		// point of intersection of the line with last row
-		cv::Point pt2((rho - screenSize.height*sin(theta)) / cos(theta), screenSize.height);
+		cv::Point pt2((rho - help::screenSize.height*sin(theta)) / cos(theta), help::screenSize.height);
 		// draw a line: Color = Scalar(R, G, B), thickness
 		cv::line(out, pt1, pt2, color, weight * 50);
 
@@ -293,7 +199,7 @@ static float convertPixelToMM(float pixel) {
 
 static float distanceFromStopLine(cv::Vec3f& line) {
 	return convertPixelToMM(
-		yValueOfLineAt(line, screenSize.width / 2)
+		help::yValueOfLineAt(line, help::screenSize.width / 2)
 	);
 }
 
@@ -309,13 +215,13 @@ static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines) {
 		 		thickestLine = line;
 			}
 		}
-	 float dist = yValueOfLineAt(thickestLine, screenSize.width / 2);
+	 float dist = help::yValueOfLineAt(thickestLine, help::screenSize.width / 2);
 
 	 #define BREAK_DISTANCE 0.1f
-	 float lowerPart = screenSize.height * BREAK_DISTANCE;
-	 float upperPart = screenSize.height - lowerPart;
+	 float lowerPart = help::screenSize.height * BREAK_DISTANCE;
+	 float upperPart = help::screenSize.height - lowerPart;
 
-	 return 1 / (upperPart) * (screenSize.height-dist);
+	 return 1 / (upperPart) * (help::screenSize.height - dist);
 	}
 
 	return 1;
@@ -377,8 +283,8 @@ void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
 	source_points[3] = cv::Point(img.cols - 1 - refPoint.x, refPoint.y);
 
 	dest_points[0] = cv::Point(0, 0);
-	dest_points[1] = cv::Point(bottomCornerInset, 1486 - 1);
-	dest_points[2] = cv::Point(img.cols - bottomCornerInset, 1486 - 1);
+	dest_points[1] = cv::Point(bottomCornerInset, help::screenSize.width - 1);
+	dest_points[2] = cv::Point(img.cols - bottomCornerInset, help::screenSize.width - 1);
 	dest_points[3] = cv::Point(img.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
@@ -386,7 +292,7 @@ void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
 		img,
 		out,
 		transform_matrix,
-		cv::Size(1920,1486)
+		help::screenSize
 	);
 
 	WRITE_DEBUG_VIDEO(out, debug, debugOutput)
