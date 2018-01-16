@@ -214,52 +214,76 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
 
     // Check for Obstacles
 
+    float frontLeftMedian = frontLeftFilter.calculateMedian();
+    float frontCenterLeftMedian = frontCenterLeftFilter.calculateMedian();
+    float frontCenterMedian = frontCenterFilter.calculateMedian();
+    float frontCenterRightMedian = frontCenterRightFilter.calculateMedian();
+    float frontRightMedian = frontRightFilter.calculateMedian();
+
+    float rearLeftMedian = rearLeftFilter.calculateMedian();
+    float rearCenterMedian = rearCenterFilter.calculateMedian();
+    float rearRightMedian = rearRightFilter.calculateMedian();
+
+    bool frontLeftSensorIsValid         = frontLeftMedian           > 0;
+    bool frontCenterLeftSensorIsValid   = frontCenterLeftMedian     > 0;
+    bool frontCenterSensorIsValid       = frontCenterMedian         > 0;
+    bool frontCenterRightSensorIsValid  = frontCenterRightMedian    > 0;
+    bool frontRightSensorIsValid        = frontRightMedian          > 0;
+
+    bool rearLeftSensorIsValid          = rearLeftMedian    > 0;
+    bool rearCenterSensorIsValid        = rearCenterMedian  > 0;
+    bool rearRightSensorIsValid         = rearRightMedian   > 0;
+
     bool obstacleInFront =
-            frontLeftFilter.calculateMedian()           < m_filterProperties.frontDetectionThreshhold
-        ||  frontCenterLeftFilter.calculateMedian()     < m_filterProperties.frontDetectionThreshhold
-        ||  frontCenterFilter.calculateMedian()         < m_filterProperties.frontDetectionThreshhold
-        ||  frontCenterRightFilter.calculateMedian()    < m_filterProperties.frontDetectionThreshhold
-        ||  frontRightFilter.calculateMedian()          < m_filterProperties.frontDetectionThreshhold;
+            (frontLeftSensorIsValid         && frontLeftMedian         < m_filterProperties.frontDetectionThreshhold)
+        ||  (frontCenterLeftSensorIsValid   && frontCenterLeftMedian   < m_filterProperties.frontDetectionThreshhold)
+        ||  (frontCenterSensorIsValid       && frontCenterMedian       < m_filterProperties.frontDetectionThreshhold)
+        ||  (frontCenterRightSensorIsValid  && frontCenterRightMedian  < m_filterProperties.frontDetectionThreshhold)
+        ||  (frontRightSensorIsValid        && frontRightMedian        < m_filterProperties.frontDetectionThreshhold);
 
 
     bool obstacleBehind  =
-            rearLeftFilter.calculateMedian()    < m_filterProperties.rearDetectionThreshhold
-        ||  rearCenterFilter.calculateMedian()  < m_filterProperties.rearDetectionThreshhold
-        ||  rearRightFilter.calculateMedian()   < m_filterProperties.rearDetectionThreshhold;
+            (rearLeftSensorIsValid   && rearLeftMedian    < m_filterProperties.rearDetectionThreshhold)
+        ||  (rearCenterSensorIsValid && rearCenterMedian  < m_filterProperties.rearDetectionThreshhold)
+        ||  (rearRightSensorIsValid  && rearRightMedian   < m_filterProperties.rearDetectionThreshhold);
 
 
-    // NOTE: React more strictly if velocity is high.
-    #define DEFAULT_SPEED (0.25)
     tFloat32 detectionThreshhold = m_filterProperties.dynamicSteeringAndSpeedThreshhold;
-    detectionThreshhold *= (m_currentSpeed < DEFAULT_SPEED)
-                            ? 1
-                            : m_currentSpeed / DEFAULT_SPEED;
 
     bool obstacleInDrivingDirection  =
-            getAmplificationForMountingAngle(-56.0f)    * frontLeftFilter.calculateMedian()          < detectionThreshhold
-        ||  getAmplificationForMountingAngle(-28.0f)    * frontCenterLeftFilter.calculateMedian()    < detectionThreshhold
-        ||  getAmplificationForMountingAngle(0.0f)      * frontCenterFilter.calculateMedian()        < detectionThreshhold
-        ||  getAmplificationForMountingAngle(28.0f)     * frontCenterRightFilter.calculateMedian()   < detectionThreshhold
-        ||  getAmplificationForMountingAngle(56.0f)     * frontRightFilter.calculateMedian()         < detectionThreshhold
-        ||  frontLeftFilter.calculateMedian()           < m_filterProperties.terminalThreshhold
-        ||  frontCenterLeftFilter.calculateMedian()     < m_filterProperties.terminalThreshhold
-        ||  frontCenterFilter.calculateMedian()         < m_filterProperties.terminalThreshhold
-        ||  frontCenterRightFilter.calculateMedian()    < m_filterProperties.terminalThreshhold
-        ||  frontRightFilter.calculateMedian()          < m_filterProperties.terminalThreshhold;
-
+            (frontLeftSensorIsValid
+            && (getAmplificationForMountingAngle(-56.0f)    * frontLeftMedian          < detectionThreshhold
+                || frontLeftMedian           < m_filterProperties.terminalThreshhold)
+            )
+        ||  (frontCenterLeftSensorIsValid
+            && (getAmplificationForMountingAngle(-28.0f)    * frontCenterLeftMedian    < detectionThreshhold
+                ||  frontCenterLeftMedian     < m_filterProperties.terminalThreshhold)
+            )
+        ||  (frontCenterSensorIsValid
+            && (getAmplificationForMountingAngle(0.0f)      * frontCenterMedian        < detectionThreshhold
+                ||  frontCenterMedian         < m_filterProperties.terminalThreshhold)
+            )
+        ||  (frontCenterRightSensorIsValid
+            && (getAmplificationForMountingAngle(28.0f)     * frontCenterRightMedian   < detectionThreshhold
+                ||  frontCenterRightMedian    < m_filterProperties.terminalThreshhold)
+            )
+        ||  (frontRightSensorIsValid
+            && (getAmplificationForMountingAngle(56.0f)     * frontRightMedian         < detectionThreshhold
+                ||  frontRightMedian          < m_filterProperties.terminalThreshhold)
+            );
 
     if (m_bDebugModeEnabled) {
         printf("\n\t\t<%4.2f | %4.2f | %4.2f | %4.2f | %4.2f>\n",
-            frontLeftFilter.calculateMedian(),
-            frontCenterLeftFilter.calculateMedian(),
-            frontCenterFilter.calculateMedian(),
-            frontCenterRightFilter.calculateMedian(),
-            frontRightFilter.calculateMedian()
+            frontLeftMedian,
+            frontCenterLeftMedian,
+            frontCenterMedian,
+            frontCenterRightMedian,
+            frontRightMedian
         );
         printf("\t\t<%4.2f | %4.2f | %4.2f>\n\n",
-            rearLeftFilter.calculateMedian(),
-            rearCenterFilter.calculateMedian(),
-            rearRightFilter.calculateMedian()
+            rearLeftMedian,
+            rearCenterMedian,
+            rearRightMedian
         );
     }
 
@@ -279,7 +303,14 @@ tResult cUltraSonicObstacleDetection::OnValueChanged(tUltrasonicStruct* pSampleD
 
 tFloat32 cUltraSonicObstacleDetection::getAmplificationForMountingAngle(tFloat32 mountingAngle) {
 
-    tFloat32 amplification = 2.0f - expf(-3.0f * powf((mountingAngle - m_currentSteeringAngle) / 180 * M_PI, 2.0f));
+    // NOTE: React more strictly if velocity is high.
+    #define DEFAULT_SPEED (0.25)
+    tFloat speedFactor = (m_currentSpeed < DEFAULT_SPEED)
+                        ? 1
+                        : DEFAULT_SPEED / m_currentSpeed;
+
+
+    tFloat32 amplification = (2.0f * sqrtf(speedFactor)) - expf(-3.0f / speedFactor * powf((mountingAngle - m_currentSteeringAngle) / 180 * M_PI, 2.0f));
 
     if (m_bDebugModeEnabled) {
         printf("\nSteeringAngle: %4.2f \t\t| MountingAngle: %4.2f \t\t| Amplification: %4.2f\n", m_currentSteeringAngle, mountingAngle, amplification);

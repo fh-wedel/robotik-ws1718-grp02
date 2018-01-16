@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 **********************************************************************/
 #include "stdafx.h"
 #include "cLaneDetection.h"
-#include "bva.hpp"
+#include "bva.h"
 
 #include <iostream>
 
