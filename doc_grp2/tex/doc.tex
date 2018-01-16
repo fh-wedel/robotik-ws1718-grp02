@@ -34,6 +34,7 @@
 %DONE: Sinnabschnitte - ✓
 %DONE: Literatur/Quellverzeichnis - ✓
 
+%TODO: In Vergangenheit schreiben
 %TODO: Gruppenfoto (mit Auto)
 %TODO: Passiver Schreibstil
 %TODO: Bilder
@@ -99,7 +100,7 @@
 	% Author: Felix Maaß
 	
 	Zur Strukturierung und Modularisierung setzt das ADTF auf sogenannte Filter.
-	Dies sind kleine Module die aus Inputs, Logik und Outputs bestehen.
+	Dies sind kleine Module, welche aus Inputs, Logik und Outputs bestehen.
 	Sie werden in ADTF anschaulich als Blöcke visualisiert (siehe \autoref{img_LaneDetectionConfig}).
 	
 	\begin{figure}[ht]
@@ -139,7 +140,7 @@
 % Author: Felix Maaß
 	
 	Ebenso ist es möglich, Konfigurationen in Anderen einzubetten, sie also zu verschachteln.
-	In unserer ``Live''-Konfiguration (siehe \autoref{img_LiveConfig}) wurde die Fahrbahnerkennung, die zur Übersichtlichkeit ihre eigene Konfiguration besitzt, eingebettet.
+	In unserer ``Live''-Konfiguration (siehe \autoref{img_LiveConfig}) wurde die Fahrbahnerkennung, die zur Übersichtlichkeit eine eigene Konfiguration besitzt, eingebettet.
 	Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständig sind, in die ``Main''-Konfiguration ausgelagert.
 	
 	\begin{figure}[ht]
@@ -154,11 +155,11 @@
 \section{Standard-Filter}
 % Author: Felix Maaß
 
-	Um einen ADTF-Filter zu implementieren, muss leider sehr viel Code geschrieben werden, bevor man überhaupt mit der wirklichen Logik anfangen kann.
-	Um uns diesen Schritt zu vereinfachen, wurde eine abstrakte Klasse \texttt{cStdFilter} erstellt, die von der vorgegebenen Klasse \texttt{cFilter} erbt.
-	Sie bietet uns Standard-Implementationen sowie Hilfsroutinen und vermeidet somit Redundanzen über die ganze Code-Basis.
+	Um einen ADTF-Filter zu implementieren, musste viel Code geschrieben werden, bevor man überhaupt mit der wirklichen Logik anfangen konnte.
+	Um uns diesen Schritt zu vereinfachen, wurde eine abstrakte Klasse \texttt{cStdFilter} erstellt, die von der vorgegebenen Klasse \texttt{cFilter} erbte.
+	Sie bietete uns Standard-Implementationen sowie Hilfsroutinen und vermied somit Redundanzen über die ganze Code-Basis.
 	Dadurch ließen sich im Durchschnitt etwa 170 Zeilen Code pro Filter sparen.
-	Der jedoch größte Gewinn besteht darin, dass Korrekturen und Implementationen weiterer Hilfsfunktionen so nur einmal an einer zentralen Stelle durchzuführen sind und dadurch eine höhere Übersichtlichkeit gewährleistet wird.
+	Der jedoch größte Gewinn bestand darin, dass Korrekturen und Implementationen weiterer Hilfsfunktionen so nur einmal an einer zentralen Stelle durchzuführen waren und dadurch eine höhere Übersichtlichkeit gewährleistet wurde.
 	
 \section{Lineare Funktion}
 % Author: Felix Maaß
@@ -182,9 +183,9 @@
 \section{Float Wert Generator}
 % Author: Franz Wernicke
 
-	Um verschiedene Filter zu testen, die einen Wert als Eingang benötigen, wurde dieser Block erstellt.
+	Um verschiedene Filter zu testen, die einen Wert als Eingang benötigten, wurde dieser Block erstellt.
 
-	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst werden, wurde ein \texttt{WatchDog} als Input definiert. So wird mit jedem Auslösen des WatchDog der Wert gesendet. Der Wert kann in den Einstellungen des Filters während der Laufzeit gesetzt werden.
+	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst wurden, definierten wir einen \texttt{WatchDog} als Input. So wurde mit jedem Auslösen des WatchDog der Wert gesendet. Der Wert konnte in den Einstellungen des Filters während der Laufzeit gesetzt werden.
 
 
 \subsection{In Entwicklung}
@@ -270,21 +271,21 @@
 
 %TODO: Passivieren!! :)
 
-	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden, da die Arduinos nur Werte zwischen -100 und 100 annehmen musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden um bei verschiedenen Fahrtzuständen immer die soll Geschwindigkeit zu erreichen. \\
-	Über Wheel Encoder kann die zurückgelegte Strecke, und durch Ableiten nach der Zeit die Geschwindigkeit ermittelt werden. \\
-	Im ADTF sind bereits zwei nutzbare Filter vorhanden:
+	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden, da die Arduinos nur Werte zwischen -100 und 100 annehmen musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden, um bei verschiedenen Fahrtzuständen immer die soll Geschwindigkeit zu erreichen. \\
+	Über Wheel Encoder konnte die zurückgelegte Strecke und durch Ableiten nach der Zeit die Geschwindigkeit ermittelt werden. \\
+	Im ADTF waren bereits zwei nutzbare Filter vorhanden:
 	\begin{enumerate}[label=]
 		\item Wheel Speed Converter, der die Werte der Wheel Encoder in eine Geschwindigkeit umrechnet. \\
 		\item Motor Controller, der verschiedene Regelalgorithemen darstellt.	%TODO Genaue Namen nachschauen \\
 	\end{enumerate}
-	Die fertigen Filter baten bereits einen guten Ausgangspunkt und wurden zuerst übernommen. Um einen guten Regler zu erhalten sollte zu erst das System des Autos bestimmt werden. Dazu sollte eine Sprungfunktion aufgenommen werden. Dies erwies sich als schwieriger als erwartet, da das Auto eine recht hohe Endgeschwindigkeit besitzt und der Boden in der Robotik und in dem Flur davor sich als sehr rutschig herausstellte. \\
-	Nach einigen Überlegungen fiel die Wahl der Teststrecke auf den Flur vor dem Rechnernetzelabor. Dieser ist sehr lang, eben und bietet direkt vor der Tür des Labors eine Fussmatte, die eine hohe Beschleunigung erlaubt. \\
+	Die fertigen Filter baten bereits einen guten Ausgangspunkt und wurden zuerst übernommen. Um einen guten Regler zu erhalten, sollte zuerst das System des Autos bestimmt werden. Dazu sollte eine Sprungfunktion aufgenommen werden. Dies erwies sich als schwieriger als erwartet, da das Auto eine recht hohe Endgeschwindigkeit besaß und der Boden in der Robotik und in dem Flur davor sich als sehr rutschig herausstellte. \\
+	Nach einigen Überlegungen fiel die Wahl der Teststrecke auf den Flur vor dem Rechnernetzelabor. Dieser war sehr lang, eben und bietete direkt vor der Tür des Labors eine Fussmatte, die eine hohe Beschleunigung erlaubte. \\
 
 	\section{Aufnahme der Sprungfunktion}
 	Durch den HardDisk Recorder konnten die Sensorwerte auf einfache Weise aufgenommen werden. Die Aufgabe bestand so dann darin das Auto Sprungfunktionsartik zu Beschleunigen. \\
 	Auf dem Weg zur Teststrecke nutzten wir den geräumigen Flur vor Hörsaal 5 um einen Test durchzuführen und zeichneten auch diesen auf. \\
-	Zur Auswertung der Messdaten passten wir den Wheel Speed Converter an um die Messwerte in eine CSV Datei zu schreiben. Diese CSV Datei haben wir dann in einer Tabellenkalkulation geöffnet. \\
-	Zuerst bestimmten wir wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da die Zeitstempel die ganze Zeit mitlaufen, mussten zuerst die Zeiten auf den Anfang der Beschleunigung verschoben werden. Durch diese Anpassungen erhielten wir die Folgenden Graphen.\\
+	Zur Auswertung der Messdaten passten wir den Wheel Speed Converter an, um die Messwerte in eine CSV Datei zu schreiben. Diese CSV Datei haben wir dann in einer Tabellenkalkulation geöffnet. \\
+	Zuerst bestimmten wir wann die Beschleunigung begann und wann die Höchstgeschwindigkeit erreicht war. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da die Zeitstempel die ganze Zeit mitliefen, mussten zuerst die Zeiten auf den Anfang der Beschleunigung verschoben werden. Durch diese Anpassungen erhielten wir die Folgenden Graphen.\\
 	\begin{figure}[ht]
 		\centering
 		\begin{tikzpicture}
@@ -310,35 +311,35 @@
 		\label{img-accelleration2}
 	\end{figure}
 	
-	Als Höchstgeschwindigkeit wurde ein mittel der höchsten Geschwindigkeitswerte genommen.
+	Als Höchstgeschwindigkeit wurde ein Mittel der höchsten Geschwindigkeitswerte genommen.
 	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionsvermeidung}
 % Author: Felix Maaß
 
-	Mithilfe der Ultraschallsensoren sind vorn und hinten Hindernisse zu erkennen.
-	Dadurch soll es möglich sein, zu reagieren bevor eine Kollision stattfindet.
+	Mithilfe der Ultraschallsensoren waren vorn und hinten Hindernisse zu erkennen.
+	Dadurch sollte es möglich sein zu reagieren, bevor eine Kollision stattfand.
 
 \section{Genauigkeit der Ultraschallsensoren}
 
 	\paragraph{Situation.}
-	Die Ultraschallsensoren liefern einzeln betrachtet recht akkurate Werte.
+	Die Ultraschallsensoren lieferten einzeln betrachtet recht akkurate Werte.
 	Die Genauigkeit wurde zu $\pm1cm$ bestimmt.
 
 	\paragraph{Problem.}
-	Leider ist es jedoch der Fall, dass die Messungen Ausreißer aufweisen.
+	Leider war es jedoch der Fall, dass die Messungen Ausreißer aufwiesen.
 	Teils wurden leicht erkennbare Fehler zurückgegeben ($-1$). Teils wichen die Werte aber auch um erhebliche Beträge ab.
 
 	Den Grund für Letzteres diagnostizierten wir in der gleichzeitigen Ansteuerung der Sensoren.
-	Da jedoch der Code der Arduinos (welche sich um die Erfassung der Werte kümmern) nicht offen liegt, können wir vorerst keine Änderungen daran vornehmen.
+	Da jedoch der Code der Arduinos (welche sich um die Erfassung der Werte kümmern) nicht offen lag, konnten wir vorerst keine Änderungen daran vornehmen.
 
-	Damit diese falschen Werte dennoch nicht mit in kommende Berechnungen einbezogen werden, musste eine entsprechende Lösung gefunden werden.
+	Damit diese falschen Werte dennoch nicht mit in kommende Berechnungen einbezogen wurden, musste eine entsprechende Lösung gefunden werden.
 
 	\paragraph{Maßnahme.}
 	Zur Stabilisierung der Messwerte entschieden wir uns für eine Filterung.
 	Es wurde nach einem Filter gesucht, der robust gegenüber Ausreißern ist.
-	Hier kam uns als Erstes der Median in den Sinn.
+	Hier kam uns als Erstes ein Medianfilter in den Sinn.
 
 	Ein entsprechender Filter wurde nun sowohl als C++ Klasse als auch als ADTF-Filter erstellt.
 
