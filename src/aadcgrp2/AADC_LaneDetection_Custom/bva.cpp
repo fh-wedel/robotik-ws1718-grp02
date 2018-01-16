@@ -255,9 +255,6 @@ static void classifyLines(std::vector<cv::Vec3f>& lines,
 			unclassifiedLines.push_back(line);
 		}
 	}
-
-	// TODO: Normalization of rightLines and leftLines so that we have one of each
-	// only? -> Getting rid of 2 right lines which cross each other X-like.
 }
 
 // draws the detected and clustered lines in the specified color
@@ -319,12 +316,6 @@ static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines) {
 	 float upperPart = screenSize.height - lowerPart;
 
 	 return 1 / (upperPart) * (screenSize.height-dist);
-
-	 // TODO: The slowing down process seems to be too slow -- sometimes we
-	 // drive over the stop line
-
-	 // TODO: Calculation is based off percentage of stop line in frame.
-	 // Maybe use a different function?
 	}
 
 	return 1;
