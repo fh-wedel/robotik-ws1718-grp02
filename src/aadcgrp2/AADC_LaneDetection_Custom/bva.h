@@ -1,9 +1,9 @@
-#ifndef __BVA_HPP__
-#define __BVA_HPP__
+#ifndef __BVA_H__
+#define __BVA_H__
 
 #include "stdafx.h"
 
-namespace bva {
+namespace bva {	
 	void lineBinarization(cv::Mat& input_img, cv::Mat& out,
                 int hueLow,	int hueHigh, int saturation, int value);
 
