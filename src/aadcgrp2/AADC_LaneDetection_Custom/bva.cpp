@@ -54,11 +54,13 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 		float factor = 1.0f;
 
 		if(lineIsLeftCurve){
-			angle = max(0.0f, min(yValueOfLineAt(line, screenSize.width * 0.6) / screenSize.height * factor, 1.0f )) * angle ;
+			angle = max(0.0f, min(help::yValueOfLineAt(line, help::screenSize.width * 0.6)
+														/ help::screenSize.height * factor, 1.0f )) * angle ;
 		}
 
 		if(lineIsRightCurve){
-			angle = max(0.0f, min(yValueOfLineAt(line, screenSize.width * 0.4) / screenSize.height * factor, 1.0f)) * angle ;
+			angle = max(0.0f, min(help::yValueOfLineAt(line, help::screenSize.width * 0.4)
+														/ help::screenSize.height * factor, 1.0f)) * angle ;
 		}
 
 
@@ -76,53 +78,6 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 
 	return sum;
 }
-
-// return if a value lies in a range with specified tolerance
-static bool isInRange(float value, float rangeMiddle, float tolerance) {
-	return value > rangeMiddle - tolerance &&
-				 value < rangeMiddle + tolerance;
-}
-//MARK: - Line Classification
-
-static bool lineIsHorizontal(cv::Vec3f& line) {
-		float angle = rad2deg(line[1]);
-
-		//NOTE: We're dealing with the normal vector.
-
-		return (fabs(angle) > 75.0f);
-}
-
-static bool lineIsVertical(cv::Vec3f& line) {
-		float angle = rad2deg(line[1]);
-
-		//NOTE: We're dealing with the normal vector.
-
-		return fabs(angle) < CURVE_THRESH; //20
-}
-
-// returns if a line is a stop line
-static bool lineIsStopLine(cv::Vec3f& line) {
-	return lineIsHorizontal(line);
-}
-
-// returns if a line is a left line
-static bool lineIsLeftLine(cv::Vec3f& line) {
-	float dist = line[0];
-
-	//NOTE: We're dealing with the normal vector.
-
-	return (lineIsVertical(line) && dist < screenSize.width / 2.0f);
-}
-
-// returns if a line is a right line
-static bool lineIsRightLine(cv::Vec3f& line) {
-	float dist = line[0];
-
-	//NOTE: We're dealing with the normal vector.
-
-	return (lineIsVertical(line) && dist > screenSize.width / 2.0f);
-}
-
 
 static void poolLines(std::vector<cv::Vec3f>& lines, cv::Vec3f& output) {
 	int amountOfLines = (int)lines.size();
