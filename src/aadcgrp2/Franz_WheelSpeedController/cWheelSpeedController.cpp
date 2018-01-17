@@ -330,10 +330,3 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
 tTimeStamp cWheelSpeedController::GetTime() {
     return (_clock != NULL) ? _clock->GetTime () : cSystem::GetTime();
 }
-
-
-tUInt cWheelSpeedController::Ref() { return cFilter::Ref(); }
-
-tUInt cWheelSpeedController::Unref() { return cFilter::Unref(); }
-
-tVoid cWheelSpeedController::Destroy() { delete this; }

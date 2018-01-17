@@ -307,27 +307,6 @@ public: // implements IObject
      */
     tResult GetInterface(const tChar* idInterface, tVoid** ppvObject);
 
-    /*!
-     * Gets the reference. ucom::IObject::Ref
-     *
-     * \return  A tUInt reference
-     */
-    tUInt Ref();
-
-    /*!
-     * Gets the unref. ucom::IObject::Unref
-     *
-     * \return  the unreferenced id
-     */
-    tUInt Unref();
-
-    /*!
-     * Destroys this object. ucom::IObject::Destroy
-     *
-     * \return  A tVoid.
-     */
-    tVoid Destroy();
-
     /*! members for signal registry. */
     typedef std::set<tSignalID> tActiveSignals;
 
