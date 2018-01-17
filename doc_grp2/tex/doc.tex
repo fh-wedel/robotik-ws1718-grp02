@@ -28,6 +28,7 @@
 \usetikzlibrary{datavisualization}
 \usetikzlibrary{datavisualization.formats.functions}
 
+\usepackage{titlepic} % mit Bild auf der Titelseite
 
 %DONE: Einführung - ✓
 %DONE: Autor der jeweiligen Funktion - ✓
@@ -49,6 +50,7 @@
 	\title{Robotik Praktikum -- Gruppe 2}
 	\author{Frauke Jörgens (minf101207) \and Franz Wernicke (ite101729) \and Thorger Dittmann (ite101646) \and Jan Ottmüller (tinf101737) \and Felix Maaß (ite101754)}
 	\date{\today}
+	\titlepic{\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/group_photo}}
 	\maketitle
 
 	\tableofcontents
@@ -358,12 +360,23 @@
 
 	Es wurde eine Funktion synthetisiert, die die Relevanz der einzelnen Messwerte zu dem Lenkwinkel in Relation setzt:
 
-		\[y=2-e^{-3 \cdot \left( x-a \right)^2}\]
+	\begin{align*}
+		y=\frac{2}{\sqrt{b}} - e^{-3b \cdot \left( x-a \right)^2}
+		&&||\quad b=
+		\begin{cases} 
+			1,					& \text{wenn } v \leq v_{std} \\
+			\frac{v}{v_{std}}, 	& \text{andernfalls}
+		\end{cases}
+	\end{align*}
+
 
 	Sie bietet eine Gewichtung für Messwerte der jeweiligen Sensoren.
 	Hierbei steht $x$ für den Montagewinkel des zu gewichtenden Sensors, $a$ für den aktuellen Lenkwinkel und $y$ für die Gewichtung (den Skalierungsfaktor).
+	Des Weiteren stellt $v$ die aktuelle Geschwindigkeit und $v_{std}$ die Standard-Geschwindigkeit\footnote{Ein Wert von $v_{std} = 0,25\meter\per\second$ hat sich als gut herausgestellt.}.
 
 	Dies bewirkt, dass Messwerte von Sensoren, die nicht in Fahrtrichtung zeigen, weniger stark in die Hinderniserkennung mit eingehen, ohne diese gänzlich ausschließen zu müssen.
+	Darüber hinaus wird die Kurve mit zunehmender Geschwindigkeit entlang der Abszisse gestaucht und entlang der Ordinate in negative Richtung verschoben.
+	Dies wiederum hat den Effekt, dass die Erkennung empfindlicher gegenüber der Entfernung zu Hindernissen ist und seitliche Gegenständig noch weiter vernachlässigt werden.
 
 	\paragraph{Veranschaulichung.} \autoref{img-uss-function} zeigt die Funktion bei $a = 0\degree$ und $a = 25\degree$ Auslenkung.
 	Das Minimum der Kurve befindet sich stets bei dem aktuellen Lenkwinkel, da hier gilt: $x = a$.
@@ -376,22 +389,28 @@
 		style sheet=strong colors,
 		style sheet=vary dashing,
 		all axes={grid},
-		y axis={label=Verstärkung, ticks=few},
+		y axis={label=Verstärkung, ticks={step=0.25}, include value=0}, yscale=2,
 		x axis={label=Montagewinkel, ticks={step=15, tick unit=\degree}},
-		visualize as smooth line/.list={func0,func25},
-		func0={label in legend={text=Lenkwinkel $0\degree$}},
+		visualize as smooth line/.list={func0, func25, funcSpeed},
+		func0={label in legend={text=Standard}},
 		func25={label in legend={text=Lenkwinkel $+25\degree$}},
+		funcSpeed={label in legend={text=Geschwindigkeit 2x}},
 		data/format=function
 		]
 
 		data [set=func0] {
-			var x : interval [-45:45] samples 70;
+			var x : interval [-45:45] samples 30;
 			func y = 2 - e^(-3 * (\value x / 180 * pi)^2);
 		}
 
 		data [set=func25] {
-			var x : interval [-45:45] samples 70;
+			var x : interval [-45:45] samples 30;
 			func y = 2 - e^(-3 * (\value x / 180 * pi - 25 * pi/180)^2);
+		}
+	
+		data [set=funcSpeed] {
+			var x : interval [-45:45] samples 30;
+			func y = 2 / sqrt(0.5 / 0.25) - e^(-3 * (0.5 / 0.25) * (\value x / 180 * pi)^2);
 		};
 		\end{tikzpicture}
 
