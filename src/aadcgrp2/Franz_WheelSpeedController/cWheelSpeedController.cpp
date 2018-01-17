@@ -229,7 +229,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
           // Receive new measured Speed
 
-            m_f64MeasuredVariable = static_cast<tFloat32>(readFloatValue(pMediaSample));
+            m_f64MeasuredVariable = static_cast<tFloat64>(readFloatValue(pMediaSample));
 
             //calculation
             // if the desired output speed is 0 and we have stoped, immediately stop the motor
@@ -243,8 +243,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
                 m_f64LastOutput = getControllerValue(m_f64MeasuredVariable);
             }
 
-            // Apply gain and change the sign of the output to drive in the right direction
-            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput * m_f64Gain * -1);
+            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput);
 
             RETURN_IF_FAILED(transmitFloatValue(outputValue, &m_oOutputActuator));
 
@@ -305,16 +304,18 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
         std::cout << "Output Value before limit " << f64Result  << '\n';
     }
 
+    // Apply gain and change the sign of the output to drive in the right direction
+    f64Result *= m_f64Gain * -1;
+
     // checking for minimum and maximum limits
     //f64Result = min(m_f64PIDMaximumOutput, max(m_f64PIDMinimumOutput, f64Result));
     if(f64Result > m_f64PIDMaximumOutput) f64Result = m_f64PIDMaximumOutput;
     if(f64Result < m_f64PIDMinimumOutput) f64Result = m_f64PIDMinimumOutput;
 
     if (m_bShowDebug) {
-        std::cout << "Output Value after limit " << f64Result  << '\n';
+        std::cout << "Output Value after limit and Output gain applied" << f64Result  << '\n';
     }
 
-    m_f64LastOutput = f64Result;
     return f64Result;
 }
 
