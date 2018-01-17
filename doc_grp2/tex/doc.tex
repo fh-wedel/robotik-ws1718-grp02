@@ -270,47 +270,92 @@
 
 %TODO: Passivieren!! :)
 
-	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden, da die Arduinos nur Werte zwischen -100 und 100 annehmen musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden um bei verschiedenen Fahrtzuständen immer die soll Geschwindigkeit zu erreichen. \\
-	Über Wheel Encoder kann die zurückgelegte Strecke, und durch Ableiten nach der Zeit die Geschwindigkeit ermittelt werden. \\
+	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden, da die Arduinos nur Werte zwischen -100 und 100 annehmen musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden, um bei verschiedenen Fahrtzuständen immer die soll Geschwindigkeit zu erreichen. \\
+	Über Wheel Encoder wird die zurückgelegte Strecke, und durch Ableiten nach der Zeit die Geschwindigkeit ermittelt. \\
 	Im ADTF sind bereits zwei nutzbare Filter vorhanden:
 	\begin{enumerate}[label=]
-		\item Wheel Speed Converter, der die Werte der Wheel Encoder in eine Geschwindigkeit umrechnet. \\
-		\item Motor Controller, der verschiedene Regelalgorithemen darstellt.	%TODO Genaue Namen nachschauen \\
+		\item Converter Wheels, der die Werte der Wheel Encoder in eine Geschwindigkeit umrechnet. \\
+		\item Wheel Speed Controller, der verschiedene Regelalgorithemen darstellt. \\
 	\end{enumerate}
 	Die fertigen Filter baten bereits einen guten Ausgangspunkt und wurden zuerst übernommen. Um einen guten Regler zu erhalten sollte zu erst das System des Autos bestimmt werden. Dazu sollte eine Sprungfunktion aufgenommen werden. Dies erwies sich als schwieriger als erwartet, da das Auto eine recht hohe Endgeschwindigkeit besitzt und der Boden in der Robotik und in dem Flur davor sich als sehr rutschig herausstellte. \\
 	Nach einigen Überlegungen fiel die Wahl der Teststrecke auf den Flur vor dem Rechnernetzelabor. Dieser ist sehr lang, eben und bietet direkt vor der Tür des Labors eine Fussmatte, die eine hohe Beschleunigung erlaubt. \\
 
 	\section{Aufnahme der Sprungfunktion}
-	Durch den HardDisk Recorder konnten die Sensorwerte auf einfache Weise aufgenommen werden. Die Aufgabe bestand so dann darin das Auto Sprungfunktionsartik zu Beschleunigen. \\
-	Auf dem Weg zur Teststrecke nutzten wir den geräumigen Flur vor Hörsaal 5 um einen Test durchzuführen und zeichneten auch diesen auf. \\
-	Zur Auswertung der Messdaten passten wir den Wheel Speed Converter an um die Messwerte in eine CSV Datei zu schreiben. Diese CSV Datei haben wir dann in einer Tabellenkalkulation geöffnet. \\
-	Zuerst bestimmten wir wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da die Zeitstempel die ganze Zeit mitlaufen, mussten zuerst die Zeiten auf den Anfang der Beschleunigung verschoben werden. Durch diese Anpassungen erhielten wir die Folgenden Graphen.\\
+	Durch den HardDisk Recorder konnten die Sensorwerte auf einfache Weise aufgenommen werden. Die Aufgabe bestand so dann darin, dass Auto Sprungfunktionsartik zu Beschleunigen. \\
+	Auf dem Weg zur Teststrecke wurde der geräumigen Flur vor Hörsaal 5 genutzten, um einen Test durchzuführen und auch diesen aufzuzeichnen. \\
+	Zur Auswertung der Messdaten wurde der Wheel Speed Converter angepasst, um die Messwerte in eine CSV Datei zu schreiben. Diese CSV Datei haben wurde dann in einer Tabellenkalkulation bearbeitet. \\
+	Zuerst wurde bestimmt wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da die Zeitstempel die ganze Zeit mitlaufen, mussten die Zeiten auf den Anfang der Beschleunigung verschoben werden. Durch diese Anpassungen erhielten wir die Graphen \ref{img-accelleration1} und \ref{img-accelleration2}.\\
 	\begin{figure}[ht]
 		\centering
 		\begin{tikzpicture}
-		\begin{axis} [xlabel=Zeit, ylabel=Geschwindigkeit]
+		\begin{axis} [xlabel=Zeit in \second, ylabel=Geschwindigkeit in \meter\per\second]
 		\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration1.CSV};
 		\end{axis}
 		\end{tikzpicture}
 		
-		\caption{Beschleunigung 1}
+		\caption{Beschleunigung vor HS5}
 		\label{img-accelleration1}
 	\end{figure}
 
-	%TODO: Display units on axis values like  m/s : https://tex.stackexchange.com/questions/126188/how-do-i-set-units-in-pgfplots-without-square-brackets#126189
+	%DONE: Display units on axis values like  m/s : https://tex.stackexchange.com/questions/126188/how-do-i-set-units-in-pgfplots-without-square-brackets#126189
 	\begin{figure}[ht]
 		\centering
 		\begin{tikzpicture}
-		\begin{axis} [xlabel=Zeit, ylabel=Geschwindigkeit]
+		\begin{axis} [xlabel=Zeit in \second, ylabel=Geschwindigkeit in \meter\per\second]
 		\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration2.CSV};
 		\end{axis}
 		\end{tikzpicture}
 		
-		\caption{Beschleunigung 2}
+		\caption{Beschleunigung vor RN-Labor}
 		\label{img-accelleration2}
 	\end{figure}
 	
-	Als Höchstgeschwindigkeit wurde ein mittel der höchsten Geschwindigkeitswerte genommen.
+	\paragraph{Auswertung}
+	Als Höchstgeschwindigkeit wurde ein mittel der höchsten Geschwindigkeitswerte genommen. Dazu wurden die Werte betrachtet und mithilfe von verschieden breiten Medianen die Werte gefiltert. Nun wurden die Differenzen betrachtet. Da es durch die Messungenauigkeiten immer wieder zu negativen Differenzen kam, wurden alle Werte nachdem die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß als erreichte Höchstgeschwindigkeit interpretiert. \\
+	Die erste Beschleunigung diente nur als Test um ein Gefühl für das Fahrverhalten des Autos bei höheren Geschwindigkeiten zu bekommen, bevor der eigentliche Test im deutlich engeren Flur durchgeführt wurde. So wurde auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.\\
+	Aus der zweiten Beschleunigung ermittelten wir eine Höchstgeschwindigkeit von 4,75 \meter\per\second.\\
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=250pt,keepaspectratio]{assets/PT1-Sprungantwort.PNG}
+		\caption{Sprungantwort eines PT1 Gliedes}
+		\label{img-PT1-Sprungantwort}
+	\end{figure}\\
+	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort} verglichen, liegt es nahe, dass sich das Auto wie ein PT1 Glied verhält. Daher wurde von einem $PT_1$-Glied ausgegangen. \\ 
+	Wie in der Grafik \ref{img-PT1-Sprungantwort} ließen sich dann die Werte des Gliedes bestimmen.\\
+	So wurde bei unserem Auto $K_p$ mit 5,75 \meter\per\second\usk und $T_1$ mit 0,5\second\usk ermittelt.\\
+	
+	\paragraph{Bestimmen der Regelparameter}
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=250pt,keepaspectratio]{assets/Simulink.PNG}
+		\caption{Das System in Simulink}
+		\label{img-Simulink}
+	\end{figure}
+	
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=250pt,keepaspectratio]{assets/PID-Tuner.PNG}
+		\caption{PID-Tuner in Simulink}
+		\label{img-PID-Tuner}
+	\end{figure}
+
+	Die ermittelten Systemparameter wurden in Simulink in eingegeben. (Abbildung \ref{img-Simulink}) \\
+	Das System konnte so dann bei den weiteren Untersuchungen auch simuliert werden. \\ 
+	Mit dem PID-Tuner (Abbildung \ref{img-PID-Tuner}) wurden dann Werte für den PID Regler bestimmt. Die so ermittelten Werte betrugen dann: \\
+	\begin{gather*}
+		K_{PR} = 0.39088 \\
+		K_{IR} = 0.98867 \\
+		K_{DR} = 0.01398 \\
+		\text{für einen parallelen PID-Regler der Form}\\
+		y(t) = K_{PR} \cdot e(t) + K_{IR} \cdot \int_{0}^{t} e(t)dt + K_{DR} \cdot \frac{de(t)}{dt}
+	\end{gather*}
+	Die so bestimmten Werte wurden dann mit dem Auto probiert. Dabei wurde festgestellt, dass das Auto viel langsamer Beschleunigte als die Simulation in Simulink vermuten lies. Es wurde vermutet, dass das System eine höhere Dämpfung besitzt als zuerst angenommen. Um dies entgegen zu wirken wurde ein zusätzlicher Gain hinter den eigentlichen Regler geschaltet. Da die Werte in dem Regler mit hoher Genauigkeit verarbeitet werden (float64), kann die Ausgabe mit einem Gain versehen werden, ohne das die Reglung zu stark diskretisiert wird, was wieder zu neuen Problemen führen würde. Mit diesem lies sich nun die Geschwindigkeit des Reglers weiter anpassen. Durch probieren  hatte sich im Vorfeld herausgestellt, dass das Auto ab einem Ausgabewert von 8 Anfährt. Durch debug Ausgaben wurde festgestellt, dass der Regler mit Ausgaben etwa eine Potenz unter diesem Wert lag. So wurde als Übergangslösung ein Gain von 10 verwendet. Da dies immer noch etwas langsam war, wurde Gain auf 15 erhöht. \\
+		
+	\section{Probleme mit dem ADTF}
+	Die Arbeit mit den vor implementierten Filtern von ADTF stellte sich als schwierig heraus. \\
+	Es wurde versucht die Qualität der Filter zu ermitteln. Zuerst wurde der \texttt{AADC Wheel Speed Converter} untersucht. \\
+	Dazu wurde zuerst der Motor mit dem \texttt{AADC Car Controller} angesteuert und die Geschwindigkeitsausgabe des \texttt{AADC Wheel Speed Converter} in ein \texttt{Scope Display} geleitet. Dabei wurde festgestellt, das bei Augenscheinlich proportional wachsender Geschwindigkeit auf dem \texttt{Scope Display} die Werte exponentiell zunahmen. Dieses Verhalten überraschte sehr, so wurde danach die Zurückgelegte Strecke angezeigt. Auch hier wurde bei konstanter Geschwindigkeit ein exponentiell wachsender Wert beobachtet. Aufgrund dieses Verhaltens wurde das \texttt{Table Display} verwendet. Hier stellte sich heraus, das dieses jeweils 8 Bit der Eingabe in einem Feld darstellt, so konnte diese Ansicht auch nicht verwendet werden. Um die Werte beurteilen zu können musste also die Klasse \texttt{cConverterWheels} angepasst werden, sodass die berechneten Werte dann in die Konsole geschrieben wurden. \\
+	Danach wurde auch der \texttt{AADC Wheel Speed Controller} getestet. Dieser funktionierte bereits in einem zufriedenstellend Maße. Bei betrachten des Codes des Filters wurde jedoch sehr viel redundanter Code gefunden. So wurde für einen PID Regler, jede einfachere Variante einzeln implementiert, also für P, PI und PID. Diese Redundanz wurde zuerst entfernt um die Übersichtlichkeit zu verbessern. Zusätzlich wurden noch Debug Ausgaben hinzugefügt um die korrekte Arbeit des Reglers nachzuvollziehen. \\
 	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -440,7 +485,7 @@
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=250pt,keepaspectratio]{assets/bvaFlowchart.jpg}
-		% NOTE: Tippfehler in "Binarisierung" entfernen. --hoe
+		%DONE: Tippfehler in "Binarisierung" entfernen. --hoe
 		\caption{Übersicht der Bildverarbeitung}
 		\label{img-bvaFlowchart}
 	\end{figure}
@@ -565,6 +610,11 @@
 	\textit{Einführung in die Robotik},
 	Fachhochschule Wedel - Wintersemester 2017/18:\\
 	\url{http://www.fh-wedel.de/mitarbeiter/uh/lehrveranstaltungen/ws1718/einfuehrung-in-die-robotik/}
+	
+	\bibitem{Regelungstechnik}
+	Prof. Dr.-Ing. Carsten Burmeister,
+	\textit{Regelungstechnik},
+	Fachhochschule Wedel - Wintersemester 2017/18
 	
 	\bibitem{berry16}
 	Nick Berry,
