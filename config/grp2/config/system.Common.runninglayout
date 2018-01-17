@@ -9,7 +9,10 @@
   <folder name="components">
    <folder name="FilterTraceView" />
   </folder>
-  <folder name="windows" />
+  <folder name="windows">
+   <folder Height="340" Visible="true" Width="717" name="AADC_Sensor_Visualization" />
+   <folder Height="214" PosX="52" PosY="365" Visible="true" Width="312" name="AADC_Bool_Value_Generator" />
+  </folder>
  </folder>
  <folder name="Playback">
   <folder name="components">

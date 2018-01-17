@@ -211,6 +211,12 @@ tResult cWheelSpeedController::Shutdown(tInitStage eStage, __exception) {
 }
 
 void cWheelSpeedController::resetController() {
+    if (m_bShowDebug) {
+        if (m_bEmergencyStop) {
+            std::cout << "Emergergency Stop! \n";
+        }
+        std::cout << "Controller Reset" << '\n';
+    }
     m_f64LastOutput = 0;
     m_f64LastMeasuredError = 0;
     m_f64SetPoint = 0;
@@ -260,6 +266,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
             // read Value
             m_bEmergencyStop = readBoolValue(pMediaSample);
+
         }
     }
 
