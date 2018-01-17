@@ -3,7 +3,13 @@
 
 // Construction / Deconstruction
 
-cStdFilter::cStdFilter(const tChar* __info) : cFilter(__info) {}
+cStdFilter::cStdFilter(const tChar* __info) : cFilter(__info) {
+    m_InputFloatValueDescriptionIsInitialized = false;
+    m_InputBoolValueDescriptionIsInitialized = false;
+
+    m_OutputFloatValueDescriptionIsInitialized = false;
+    m_OutputBoolValueDescriptionIsInitialized = false;
+}
 cStdFilter::~cStdFilter() {}
 
 
@@ -31,7 +37,6 @@ tResult cStdFilter::registerFloatInputPin(cString name, cInputPin* inputPin, __e
 
     RETURN_NOERROR;
 }
-
 tResult cStdFilter::registerBoolInputPin(cString name, cInputPin* inputPin, __exception) {
 
     //get the media description manager for this filter
@@ -112,13 +117,6 @@ tFloat32 cStdFilter::readFloatValue(IMediaSample* pMediaSample) {
         // read data from the media sample with the coder of the descriptor
         __adtf_sample_read_lock_mediadescription(m_InputFloatValueDescription, pMediaSample, pCoder);
 
-        /*! indicates of bufferIDs were set */
-        static tBool m_InputFloatValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the radius input */
-        static tBufferID m_InputFloatValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the timestamp */
-        static tBufferID m_InputFloatValueTimestampID;
-
         if(!m_InputFloatValueDescriptionIsInitialized) {
 
             pCoder->GetID("f32Value", m_InputFloatValueDescriptionID);
@@ -142,13 +140,6 @@ tBool cStdFilter::readBoolValue(IMediaSample* pMediaSample) {
         // focus for sample read lock
         // read data from the media sample with the coder of the descriptor
         __adtf_sample_read_lock_mediadescription(m_InputBoolValueDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_InputBoolValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the radius input */
-        static tBufferID m_InputBoolValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the timestamp */
-        static tBufferID m_InputBoolValueTimestampID;
 
         if(!m_InputBoolValueDescriptionIsInitialized) {
 
@@ -193,13 +184,6 @@ tResult cStdFilter::transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
         // read data from the media sample with the coder of the descriptor
         __adtf_sample_write_lock_mediadescription(m_OutputFloatValueDescription, pMediaSample, pCoder);
 
-        /*! indicates of bufferIDs were set */
-        static tBool m_OutputFloatValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the set speed */
-        static tBufferID m_OutputFloatValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
-        static tBufferID m_OutputFloatValueTimestampID;
-
         if(!m_OutputFloatValueDescriptionIsInitialized) {
             pCoder->GetID("f32Value", m_OutputFloatValueDescriptionID);
             pCoder->GetID("ui32ArduinoTimestamp", m_OutputFloatValueTimestampID);
@@ -224,13 +208,6 @@ tResult cStdFilter::transmitBoolValue(tBool value, cOutputPin* outputPin) {
         // focus for sample write lock
         // read data from the media sample with the coder of the descriptor
         __adtf_sample_write_lock_mediadescription(m_OutputBoolValueDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_OutputBoolValueDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the set speed */
-        static tBufferID m_OutputBoolValueDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
-        static tBufferID m_OutputBoolValueTimestampID;
 
         if(!m_OutputBoolValueDescriptionIsInitialized) {
             pCoder->GetID("bValue", m_OutputBoolValueDescriptionID);
