@@ -121,7 +121,7 @@ private:
     tResult CreateUSSInputPin(ucom::IException** __exception_ptr = NULL);
 
 
-    tResult CreateFloatInputPins(__exception);
+    tResult CreateFloatInputPins(ucom::IException** __exception_ptr = NULL);
 
     /*! creates all the output Pins
     * \param __exception_ptr the exception pointer

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="280" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="273" zoomfactor="1,000000">
    <component height="98" name="Realsense_RGB_Proc_Display2" width="189" x="616" y="526">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -374,16 +374,16 @@
     <output_pin name="video_output" />
    </component>
    <component height="122" name="Felix_Ultrasonic_Obstacle_Detection" width="289" x="558" y="694">
-    <input_pin name="UltrasonicStruct" />
     <input_pin name="currentSteeringAngle" />
     <input_pin name="currentSpeed" />
+    <input_pin name="UltrasonicStruct" />
     <output_pin name="obstacleInFront" />
     <output_pin name="obstacleBehind" />
     <output_pin name="obstacleInDrivingDirection" />
    </component>
-   <component height="122" name="Franz_Wheel_Speed_Controller" width="238" x="967" y="585">
-    <input_pin name="set_WheelSpeed" />
+   <component height="122" name="Franz_Wheel_Speed_Controller" width="238" x="952" y="574">
     <input_pin name="measured_wheelSpeed" />
+    <input_pin name="set_WheelSpeed" />
     <input_pin name="emergencystop" />
     <output_pin name="actuator_output" />
    </component>
@@ -401,27 +401,55 @@
     <input_pin name="input" />
     <output_pin name="output" />
    </component>
-   <connection dest="Dbg_Canny_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="canny_video" x_p2="407" x_p3="407" x_p4="599" x_p5="599" y_p2="0" y_p3="427" y_p4="427" y_p5="0" />
-   <connection dest="Dbg_Binary_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="binary_video" x_p2="403" x_p3="403" x_p4="597" x_p5="597" y_p2="0" y_p3="288" y_p4="288" y_p5="0" />
-   <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="UltrasonicStruct" reldiff="0" shape_type="1" source="Main" source_pin="UltrasonicStruct" x_p2="1523" x_p3="1523" x_p4="534" x_p5="534" y_p2="377" y_p3="547" y_p4="547" y_p5="736" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="399" x_p3="399" x_p4="955" x_p5="955" y_p2="0" y_p3="627" y_p4="627" y_p5="0" />
-   <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1560" x_p3="1560" x_p4="456" x_p5="456" y_p2="341" y_p3="509" y_p4="509" y_p5="784" />
-   <connection dest="Main" dest_pin="SpeedController" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1217" x_p3="1217" x_p4="1264" x_p5="1264" y_p2="0" y_p3="341" y_p4="341" y_p5="0" />
+   <connection dest="Dbg_Canny_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="canny_video" x_p2="587" x_p3="587" x_p4="599" x_p5="599" y_p2="0" y_p3="427" y_p4="427" y_p5="0" />
+   <connection dest="Dbg_Binary_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="binary_video" x_p2="583" x_p3="583" x_p4="597" x_p5="597" y_p2="0" y_p3="288" y_p4="288" y_p5="0" />
+   <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="UltrasonicStruct" reldiff="0" shape_type="1" source="Main" source_pin="UltrasonicStruct" x_p2="1523" x_p3="1523" x_p4="534" x_p5="534" y_p2="377" y_p3="547" y_p4="547" y_p5="784" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="923" x_p3="923" x_p4="923" x_p5="923" y_p2="0" y_p3="640" y_p4="640" y_p5="0" />
+   <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1560" x_p3="1560" x_p4="456" x_p5="456" y_p2="341" y_p3="509" y_p4="509" y_p5="760" />
+   <connection dest="Main" dest_pin="SpeedController" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1248" x_p3="1248" x_p4="1263" x_p5="1263" y_p2="0" y_p3="341" y_p4="341" y_p5="0" />
    <connection dest="Main" dest_pin="SteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="504" x_p3="504" x_p4="898" x_p5="898" y_p2="0" y_p3="365" y_p4="365" y_p5="0" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1560" x_p3="1560" x_p4="754" x_p5="754" y_p2="341" y_p3="511" y_p4="511" y_p5="651" />
-   <connection dest="Felix_MedianFilter" dest_pin="input" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="steeringAngle" x_p2="251" x_p3="251" x_p4="308" x_p5="308" y_p2="0" y_p3="363" y_p4="363" y_p5="0" />
-   <connection dest="RGB_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="video_rgb" x_p2="247" x_p3="247" x_p4="310" x_p5="310" y_p2="0" y_p3="208" y_p4="208" y_p5="0" />
-   <connection dest="Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="video_lanes" x_p2="243" x_p3="243" x_p4="312" x_p5="312" y_p2="0" y_p3="71" y_p4="71" y_p5="0" />
-   <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="504" x_p3="504" x_p4="542" x_p5="542" y_p2="0" y_p3="760" y_p4="760" y_p5="0" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1560" x_p3="1560" x_p4="754" x_p5="754" y_p2="341" y_p3="511" y_p4="511" y_p5="616" />
+   <connection dest="Felix_MedianFilter" dest_pin="input" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="steeringAngle" x_p2="287" x_p3="287" x_p4="308" x_p5="308" y_p2="0" y_p3="363" y_p4="363" y_p5="0" />
+   <connection dest="RGB_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="video_rgb" x_p2="283" x_p3="283" x_p4="310" x_p5="310" y_p2="0" y_p3="208" y_p4="208" y_p5="0" />
+   <connection dest="Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="video_lanes" x_p2="279" x_p3="279" x_p4="312" x_p5="312" y_p2="0" y_p3="71" y_p4="71" y_p5="0" />
+   <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="504" x_p3="504" x_p4="542" x_p5="542" y_p2="0" y_p3="736" y_p4="736" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Wheel_Converter" show="false" tab_pos="5" vertical_scrollbar_value="1" zoomfactor="0,833333">
-   <component height="122" name="Felix_LinearFunction" width="172" x="408" y="298">
+  <configuration horizontal_scrollbar_value="1" name="Marker_Detection" show="false" tab_pos="5" vertical_scrollbar_value="1" zoomfactor="1,000000">
+   <component height="74" name="Float_Value_Generator2" width="172" x="255" y="143">
+    <input_pin name="WatchdogAlive" />
+    <output_pin name="floatValue" />
+   </component>
+   <component height="74" name="AADC_Watchdog_Trigger2" width="172" x="20" y="138">
+    <output_pin name="WatchdogAliveSignal" />
+   </component>
+   <component height="122" name="Franz_Wheel_Speed_Controller" width="238" x="468" y="32">
+    <input_pin name="set_WheelSpeed" />
+    <input_pin name="measured_wheelSpeed" />
+    <input_pin name="emergencystop" />
+    <output_pin name="actuator_output" />
+   </component>
+   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="32" y="32">
+    <output_pin name="WatchdogAliveSignal" />
+   </component>
+   <component height="74" name="Float_Value_Generator" width="172" x="248" y="32">
+    <input_pin name="WatchdogAlive" />
+    <output_pin name="floatValue" />
+   </component>
+   <component height="122" name="Felix_LinearFunction" width="172" x="459" y="228">
     <input_pin name="input" />
     <input_pin name="gain" />
     <input_pin name="offset" />
     <output_pin name="output" />
    </component>
-   <component height="122" name="Franz_Wheel_Speed_Controller" width="238" x="954" y="32">
+   <connection dest="Felix_LinearFunction" dest_pin="gain" reldiff="0" shape_type="3" source="Float_Value_Generator2" source_pin="floatValue" x_p2="439" x_p3="439" x_p4="443" x_p5="443" y_p2="0" y_p3="294" y_p4="294" y_p5="0" />
+   <connection dest="Float_Value_Generator2" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger2" source_pin="WatchdogAliveSignal" x_p2="204" x_p3="204" x_p4="205" x_p5="205" y_p2="0" y_p3="185" y_p4="185" y_p5="0" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="2" source="Felix_LinearFunction" source_pin="output" x_p2="643" x_p3="643" x_p4="452" x_p5="452" y_p2="270" y_p3="126" y_p4="126" y_p5="98" />
+   <connection dest="Felix_LinearFunction" dest_pin="input" reldiff="0" shape_type="1" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="718" x_p3="718" x_p4="228" x_p5="228" y_p2="74" y_p3="276" y_p4="276" y_p5="270" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Float_Value_Generator" source_pin="floatValue" x_p2="432" x_p3="432" x_p4="432" x_p5="432" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
+   <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="216" x_p3="216" x_p4="216" x_p5="216" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
+  </configuration>
+  <configuration horizontal_scrollbar_value="1" name="Wheel_Converter" show="true" tab_pos="6" vertical_scrollbar_value="1" zoomfactor="0,833333">
+   <component height="122" name="Franz_Wheel_Speed_Controller" width="238" x="999" y="40">
     <input_pin name="set_WheelSpeed" />
     <input_pin name="measured_wheelSpeed" />
     <input_pin name="emergencystop" />
@@ -447,7 +475,7 @@
     <output_pin name="distance_lastSample" />
     <output_pin name="distance_overall" />
    </component>
-   <component height="170" name="AADC_Sensor_Visualization" width="172" x="1360" y="158">
+   <component height="170" name="AADC_Sensor_Visualization" width="172" x="1372" y="378">
     <input_pin name="UltrasonicStruct" />
     <input_pin name="InerMeasUnitStruct" />
     <input_pin name="WheelLeftStruct" />
@@ -483,53 +511,18 @@
     <output_pin name="WheelRightStruct" />
     <output_pin name="VoltageStruct" />
    </component>
-   <connection dest="Felix_LinearFunction" dest_pin="input" reldiff="0" shape_type="1" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1208" x_p3="1208" x_p4="396" x_p5="396" y_p2="74" y_p3="200" y_p4="200" y_p5="340" />
-   <connection dest="AADC_Arduino_Communication" dest_pin="SpeedController" reldiff="0" shape_type="2" source="Felix_LinearFunction" source_pin="output" x_p2="1208" x_p3="1208" x_p4="236" x_p5="236" y_p2="340" y_p3="200" y_p4="200" y_p5="180" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="4" source="AADC_Converter_Wheels_Custom_" source_pin="car_speed" x_p2="938" x_p3="938" x_p4="940" x_p5="940" y_p2="0" y_p3="98" y_p4="98" y_p5="0" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Float_Value_Generator" source_pin="floatValue" x_p2="908" x_p3="908" x_p4="942" x_p5="942" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
+   <connection dest="AADC_Arduino_Communication" dest_pin="SpeedController" reldiff="0" shape_type="1" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1249" x_p3="1249" x_p4="236" x_p5="236" y_p2="82" y_p3="131" y_p4="131" y_p5="180" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="4" source="AADC_Converter_Wheels_Custom_" source_pin="car_speed" x_p2="938" x_p3="938" x_p4="939" x_p5="939" y_p2="0" y_p3="106" y_p4="106" y_p5="0" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Float_Value_Generator" source_pin="floatValue" x_p2="908" x_p3="908" x_p4="942" x_p5="942" y_p2="0" y_p3="82" y_p4="82" y_p5="0" />
    <connection dest="AADC_Arduino_Communication" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger3" source_pin="WatchdogAliveSignal" x_p2="216" x_p3="216" x_p4="216" x_p5="216" y_p2="0" y_p3="480" y_p4="480" y_p5="0" />
    <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="552" x_p3="552" x_p4="552" x_p5="552" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
    <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelRight_Struct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelRightStruct" x_p2="614" x_p3="614" x_p4="615" x_p5="615" y_p2="0" y_p3="247" y_p4="247" y_p5="0" />
    <connection dest="AADC_Converter_Wheels_Custom_" dest_pin="WheelLeft_Struct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelLeftStruct" x_p2="610" x_p3="610" x_p4="610" x_p5="610" y_p2="0" y_p3="207" y_p4="207" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="VoltageStruct" x_p2="927" x_p3="927" x_p4="927" x_p5="927" y_p2="0" y_p3="296" y_p4="296" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelRightStruct" x_p2="922" x_p3="922" x_p4="922" x_p5="922" y_p2="0" y_p3="272" y_p4="272" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="WheelLeftStruct" x_p2="1218" x_p3="1218" x_p4="1218" x_p5="1218" y_p2="0" y_p3="248" y_p4="248" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="InerMeasUnitStruct" x_p2="1213" x_p3="1213" x_p4="1213" x_p5="1213" y_p2="0" y_p3="224" y_p4="224" y_p5="0" />
-   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="4" source="AADC_Arduino_Communication" source_pin="UltrasonicStruct" x_p2="1208" x_p3="1208" x_p4="1208" x_p5="1208" y_p2="0" y_p3="200" y_p4="200" y_p5="0" />
-  </configuration>
-  <configuration horizontal_scrollbar_value="1" name="Marker_Detection" show="false" tab_pos="5" vertical_scrollbar_value="1" zoomfactor="1,000000">
-   <component height="74" name="Float_Value_Generator2" width="172" x="255" y="143">
-    <input_pin name="WatchdogAlive" />
-    <output_pin name="floatValue" />
-   </component>
-   <component height="74" name="AADC_Watchdog_Trigger2" width="172" x="20" y="138">
-    <output_pin name="WatchdogAliveSignal" />
-   </component>
-   <component height="122" name="Franz_Wheel_Speed_Controller" width="238" x="468" y="32">
-    <input_pin name="set_WheelSpeed" />
-    <input_pin name="measured_wheelSpeed" />
-    <input_pin name="emergencystop" />
-    <output_pin name="actuator_output" />
-   </component>
-   <component height="74" name="AADC_Watchdog_Trigger" width="172" x="32" y="32">
-    <output_pin name="WatchdogAliveSignal" />
-   </component>
-   <component height="74" name="Float_Value_Generator" width="172" x="248" y="32">
-    <input_pin name="WatchdogAlive" />
-    <output_pin name="floatValue" />
-   </component>
-   <component height="122" name="Felix_LinearFunction" width="172" x="459" y="228">
-    <input_pin name="input" />
-    <input_pin name="gain" />
-    <input_pin name="offset" />
-    <output_pin name="output" />
-   </component>
-   <connection dest="Felix_LinearFunction" dest_pin="gain" reldiff="0" shape_type="3" source="Float_Value_Generator2" source_pin="floatValue" x_p2="439" x_p3="439" x_p4="443" x_p5="443" y_p2="0" y_p3="294" y_p4="294" y_p5="0" />
-   <connection dest="Float_Value_Generator2" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger2" source_pin="WatchdogAliveSignal" x_p2="204" x_p3="204" x_p4="205" x_p5="205" y_p2="0" y_p3="185" y_p4="185" y_p5="0" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="2" source="Felix_LinearFunction" source_pin="output" x_p2="643" x_p3="643" x_p4="452" x_p5="452" y_p2="270" y_p3="126" y_p4="126" y_p5="98" />
-   <connection dest="Felix_LinearFunction" dest_pin="input" reldiff="0" shape_type="1" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="718" x_p3="718" x_p4="228" x_p5="228" y_p2="74" y_p3="276" y_p4="276" y_p5="270" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Float_Value_Generator" source_pin="floatValue" x_p2="432" x_p3="432" x_p4="432" x_p5="432" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
-   <connection dest="Float_Value_Generator" dest_pin="WatchdogAlive" reldiff="0" shape_type="3" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="216" x_p3="216" x_p4="216" x_p5="216" y_p2="0" y_p3="74" y_p4="74" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="VoltageStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="VoltageStruct" x_p2="927" x_p3="927" x_p4="927" x_p5="927" y_p2="0" y_p3="516" y_p4="516" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelRightStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="WheelRightStruct" x_p2="922" x_p3="922" x_p4="922" x_p5="922" y_p2="0" y_p3="492" y_p4="492" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="WheelLeftStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="WheelLeftStruct" x_p2="1218" x_p3="1218" x_p4="1218" x_p5="1218" y_p2="0" y_p3="468" y_p4="468" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="InerMeasUnitStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="InerMeasUnitStruct" x_p2="1213" x_p3="1213" x_p4="1213" x_p5="1213" y_p2="0" y_p3="444" y_p4="444" y_p5="0" />
+   <connection dest="AADC_Sensor_Visualization" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="AADC_Arduino_Communication" source_pin="UltrasonicStruct" x_p2="1208" x_p3="1208" x_p4="1208" x_p5="1208" y_p2="0" y_p3="420" y_p4="420" y_p5="0" />
   </configuration>
  </ce_layouts>
 </adtf:configuration>

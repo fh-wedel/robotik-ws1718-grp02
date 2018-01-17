@@ -130,30 +130,10 @@ tResult cWheelSpeedController::PropertyChanged(const tChar* strPropertyName) {
 
 
 tResult cWheelSpeedController::CreateInputPins(__exception) {
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
 
-    // get media tayp
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue,IMediaDescription::MDF_DDL_DEFAULT_VERSION);
-    tChar const * strDescBoolSignalValue = pDescManager->GetMediaDescription("tBoolSignalValue");
-  	cObjectPtr<IMediaType> pTypeBoolSignalValue = new cMediaType(0, 0, 0, "tBoolSignalValue", strDescBoolSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION);
-
-
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescMeasSpeed));
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescSetSpeed));
-    RETURN_IF_FAILED(pTypeBoolSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_pDescEmergStop));
-
-    // create pins
-    RETURN_IF_FAILED(m_oInputSetWheelSpeed.Create("set_WheelSpeed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_oInputSetWheelSpeed));
-    RETURN_IF_FAILED(m_oInputMeasWheelSpeed.Create("measured_wheelSpeed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_oInputMeasWheelSpeed));
-    RETURN_IF_FAILED(m_oInputEmergencyStop.Create("emergencystop", pTypeBoolSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_oInputEmergencyStop));
+    RETURN_IF_FAILED(registerFloatInputPin("set_WheelSpeed", &m_oInputSetWheelSpeed, __exception_ptr));
+    RETURN_IF_FAILED(registerFloatInputPin("measured_wheelSpeed", &m_oInputMeasWheelSpeed, __exception_ptr));
+    RETURN_IF_FAILED(registerBoolInputPin("emergencystop", &m_oInputEmergencyStop, __exception_ptr));
 
     RETURN_NOERROR;
 }
@@ -231,6 +211,12 @@ tResult cWheelSpeedController::Shutdown(tInitStage eStage, __exception) {
 }
 
 void cWheelSpeedController::resetController() {
+    if (m_bShowDebug) {
+        if (m_bEmergencyStop) {
+            std::cout << "Emergergency Stop! \n";
+        }
+        std::cout << "Controller Reset" << '\n';
+    }
     m_f64LastOutput = 0;
     m_f64LastMeasuredError = 0;
     m_f64SetPoint = 0;
@@ -249,32 +235,12 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
           // Receive new measured Speed
 
-            //write values with zero
-            tFloat32 f32Value = 0;
-            tUInt32 Ui32TimeStamp = 0;
-            {
-                // focus for sample write lock
-                //read data from the media sample with the coder of the descriptor
-                __adtf_sample_read_lock_mediadescription(m_pDescMeasSpeed,pMediaSample,pCoder);
-
-                if(!m_bInputMeasWheelSpeedGetID)
-                {
-                    pCoder->GetID("f32Value", m_buIDMeasSpeedF32Value);
-                    pCoder->GetID("ui32ArduinoTimestamp", m_buIDMeasSpeedArduinoTimestamp);
-                    m_bInputMeasWheelSpeedGetID = tTrue;
-                }
-                //get values from media sample
-                pCoder->Get(m_buIDMeasSpeedF32Value, (tVoid*)&f32Value);
-                pCoder->Get(m_buIDMeasSpeedArduinoTimestamp, (tVoid*)&Ui32TimeStamp);
-            }
-
-            // write to member variable
-
-            m_f64MeasuredVariable = f32Value;
+            m_f64MeasuredVariable = static_cast<tFloat64>(readFloatValue(pMediaSample));
 
             //calculation
             // if the desired output speed is 0 and we have stoped, immediately stop the motor
             // if the system just started, wait for the controller to start up
+            // if a emergency stop is requested, reset Controller to stop immediately
             if ((m_f64SetPoint == 0 && m_f64MeasuredVariable == 0) || m_startupTime > GetTime() || m_bEmergencyStop) {
 
                 resetController();
@@ -283,8 +249,7 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
                 m_f64LastOutput = getControllerValue(m_f64MeasuredVariable);
             }
 
-            // Apply gain and change the sign of the output to drive in the right direction
-            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput * m_f64Gain * -1);
+            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput);
 
             RETURN_IF_FAILED(transmitFloatValue(outputValue, &m_oOutputActuator));
 
@@ -292,46 +257,16 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
 
           // Receive new target Speed
 
-            //write values with zero
-            tFloat32 f32Value = 0;
-            tUInt32 ui32TimeStamp = 0;
+            // read Value
+            m_f64SetPoint = static_cast<tFloat64>(readFloatValue(pMediaSample));
 
-            // focus for sample write lock
-            __adtf_sample_read_lock_mediadescription(m_pDescSetSpeed, pMediaSample, pCoder);
-
-            if(!m_bInputSetWheelSpeedGetID)
-            {
-                pCoder->GetID("f32Value", m_buIDSetSpeedF32Value);
-                pCoder->GetID("ui32ArduinoTimestamp", m_buIDSetSpeedArduinoTimestamp);
-                m_bInputSetWheelSpeedGetID = tTrue;
-            }
-
-            // read data from the media sample with the coder of the descriptor
-            //get values from media sample
-            pCoder->Get(m_buIDSetSpeedF32Value, (tVoid*)&f32Value);
-            pCoder->Get(m_buIDSetSpeedArduinoTimestamp, (tVoid*)&ui32TimeStamp);
-
-            // write to member variable
-            m_f64SetPoint = static_cast<tFloat64>(f32Value);
         } else if (pSource == &m_oInputEmergencyStop) {
 
             // Receive emergency stop
 
-            //write values with zero
-            tBool bValue = false;
+            // read Value
+            m_bEmergencyStop = readBoolValue(pMediaSample);
 
-            // focus for sample write lock
-            __adtf_sample_read_lock_mediadescription(m_pDescEmergStop, pMediaSample, pCoder);
-
-            if (!m_bInputEmergStopGetID)
-            {
-                pCoder->GetID("bValue", m_buIDEmergStopBValue);
-                pCoder->GetID("ui32ArduinoTimestamp", m_buIDEmergStopArduinoTimestamp);
-                m_bInputEmergStopGetID = tTrue;
-            }
-
-            pCoder->Get(m_buIDEmergStopBValue, (tVoid*)&bValue);
-            m_bEmergencyStop = bValue;
         }
     }
 
@@ -376,16 +311,18 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
         std::cout << "Output Value before limit " << f64Result  << '\n';
     }
 
+    // Apply gain and change the sign of the output to drive in the right direction
+    f64Result *= m_f64Gain * -1;
+
     // checking for minimum and maximum limits
     //f64Result = min(m_f64PIDMaximumOutput, max(m_f64PIDMinimumOutput, f64Result));
     if(f64Result > m_f64PIDMaximumOutput) f64Result = m_f64PIDMaximumOutput;
     if(f64Result < m_f64PIDMinimumOutput) f64Result = m_f64PIDMinimumOutput;
 
     if (m_bShowDebug) {
-        std::cout << "Output Value after limit " << f64Result  << '\n';
+        std::cout << "Output Value after limit and Output gain applied" << f64Result  << '\n';
     }
 
-    m_f64LastOutput = f64Result;
     return f64Result;
 }
 
@@ -393,10 +330,3 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
 tTimeStamp cWheelSpeedController::GetTime() {
     return (_clock != NULL) ? _clock->GetTime () : cSystem::GetTime();
 }
-
-
-tUInt cWheelSpeedController::Ref() { return cFilter::Ref(); }
-
-tUInt cWheelSpeedController::Unref() { return cFilter::Unref(); }
-
-tVoid cWheelSpeedController::Destroy() { delete this; }
