@@ -34,6 +34,7 @@
 %DONE: Autor der jeweiligen Funktion - ✓
 %DONE: Sinnabschnitte - ✓
 %DONE: Literatur/Quellverzeichnis - ✓
+%DONE: Gruppenfoto (mit Auto) - ✓
 
 %TODO: Passiver Schreibstil
 %TODO: Bilder
@@ -59,14 +60,14 @@
 % Author: Thorger Dittmann
 
 	Begleitend zur Vorlesung ``Einführung in die Robotik'', gehalten von Prof. Dr. Ulrich Hoffmann, fand das Robotik-Praktikum statt. Ziel war es, die Inhalte der Vorlesung anhand eigener Erfahrungen zu vertiefen und zu lernen, Algorithmen für grundlegende Problemstellungen zu entwickeln. Speziell bestand die Aufgabe darin, für ein AADC 2017 Modellfahrzeug eine Programmierung auszuarbeiten. Die Idee bestand darin, dass dieses Modellfahrzeug autonom und ohne Kollisionen ein bestimmtes, nicht weiter definiertes Ziel erreicht. Im Verlauf des Praktikums sollte man sich daher auch mit den Eigenheiten des vorgegebenen Frameworks auseinandersetzen.
-	
+
 \section{Aufgabenstellung}
 	Aufgeteilt wurde die Programmierung in Teile mit und ohne Bildanalyse. Wir haben uns in der Bildanalyse hauptsächlich mit der Kamerabildauswertung, speziell der Linienerkennung beschäftigt. Das Modellfahrzeug sollte einer auf dem Boden abgeklebten ``Straße'' folgen können. Im Bereich ohne Bildanalyse wurde sich mit der Sensorik und Aktorik des Fahrzeugs beschäftigt.\\
-	
+
 \section{Umsetzung im Framework}
 	% Author: Felix Maaß
-	
-	Das uns zur Verfügung gestellte Framework \emph{Automotive Data and Time-Triggered Framework} (kurz: ADTF) der Firma Elektrobit Automotive GmbH\footnote{Weitere Informationen: \url{https://www.elektrobit.com/products/eb-assist/adtf/}} dient zur asynchronen Analyse, Interpretation und Visualisierung von Eingabedaten. 
+
+	Das uns zur Verfügung gestellte Framework \emph{Automotive Data and Time-Triggered Framework} (kurz: ADTF) der Firma Elektrobit Automotive GmbH\footnote{Weitere Informationen: \url{https://www.elektrobit.com/products/eb-assist/adtf/}} dient zur asynchronen Analyse, Interpretation und Visualisierung von Eingabedaten.
 	Daran anknüpfend folgt die Datenausgabe.
 	\\
 	In unserem Fall sieht dies wie folgt aus:
@@ -95,30 +96,30 @@
 			\end{enumerate}
 		}
 	\end{enumerate}
-	
+
 \subsection{Konzept der Filter}
 	% Author: Felix Maaß
-	
+
 	Zur Strukturierung und Modularisierung setzt das ADTF auf sogenannte Filter.
 	Dies sind kleine Module, welche aus Inputs, Logik und Outputs bestehen.
 	Sie werden in ADTF anschaulich als Blöcke visualisiert (siehe \autoref{img_LaneDetectionConfig}).
-	
+
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LaneDetectionConfig}
 		\caption{Visualisierung im Konfigurationseditor}
 		\label{img_LaneDetectionConfig}
 	\end{figure}
-	
+
 	Jedes Modul ist dabei eine \texttt{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Outputpins übernimmt.
 	Das Modul benachrichtigt, wenn neue Daten an einem Pin anliegen, also zur Verarbeitung zur Verfügung stehen.
 	Sodann wird die Logik auf die eingelesenen Daten angewandt und die Ergebnisse über die Outputs wieder nach ``draußen'' gegeben.
-	
+
 	%TODO: Erklärung der FilterProperties?
-	
+
 \subsection{Konzept der Konfigurationen}
 	% Author: Felix Maaß
-	
+
 	Um Filter zu verwenden, müssen diese in Konfigurationen integriert werden.
 	Hier können mehrere Filter gleichzeitig platziert werden.
 	Eine erste Konfiguration ist bereits in \autoref{img_LaneDetectionConfig} gezeigt.
@@ -132,17 +133,17 @@
 		\item Motorregler erhält ``Hindernis erkannt''-Signal und leitet Nothalt ein.
 		\item Arduino stoppt die Motoren.
 	\end{enumerate}
-	
+
 	Um Filter miteinander verbinden zu können, muss die Typkompatibilität gewährleistet sein.
 	So ist es zum Beispiel nicht möglich, einen Wahrheitswert an einen Eingang weiterzugeben, der eine Fließkommazahl erwartet.
-	
+
 \subsubsection{Verschachtelung}
 % Author: Felix Maaß
-	
+
 	Ebenso ist es möglich, Konfigurationen in Anderen einzubetten, sie also zu verschachteln.
 	In unserer ``Live''-Konfiguration (siehe \autoref{img_LiveConfig}) wurde die Fahrbahnerkennung, die zur Übersichtlichkeit eine eigene Konfiguration besitzt, eingebettet.
 	Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständig sind, in die ``Main''-Konfiguration ausgelagert.
-	
+
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LiveConfig}
@@ -160,7 +161,7 @@
 	Sie bot uns Standard-Implementationen sowie Hilfsroutinen und vermied somit Redundanzen über die ganze Code-Basis.
 	Dadurch ließen sich im Durchschnitt etwa 170 Zeilen Code pro Filter sparen.
 	Der jedoch größte Gewinn bestand darin, dass Korrekturen und Implementationen weiterer Hilfsfunktionen so nur einmal an einer zentralen Stelle durchzuführen waren und dadurch eine höhere Übersichtlichkeit gewährleistet wurde.
-	
+
 \section{Lineare Funktion}
 % Author: Felix Maaß
 
@@ -293,7 +294,7 @@
 		\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration1.CSV};
 		\end{axis}
 		\end{tikzpicture}
-		
+
 		\caption{Beschleunigung vor HS5}
 		\label{img-accelleration1}
 	\end{figure}
@@ -306,11 +307,11 @@
 		\addplot+ table [x=Time, y=Speed, col sep=semicolon, mark=none] {../Speed Controller/speedValue_Acceleration2.CSV};
 		\end{axis}
 		\end{tikzpicture}
-		
+
 		\caption{Beschleunigung vor RN-Labor}
 		\label{img-accelleration2}
 	\end{figure}
-	
+
 	\paragraph{Auswertung}
 	Als Höchstgeschwindigkeit wurde ein Mittel der höchsten Geschwindigkeitswerte genommen. Dazu wurden die Werte betrachtet und mithilfe von verschieden breiten Medianen die Werte gefiltert. Nun wurden die Differenzen betrachtet. Durch die Messungenauigkeiten kam es immer wieder zu negativen Differenzen. Daher wurden alle Werte, wonach die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß, als erreichte Höchstgeschwindigkeit interpretiert. \\
 	Die erste Beschleunigung diente nur als Test, um ein Gefühl für das Fahrverhalten des Autos bei höheren Geschwindigkeiten zu bekommen, bevor der eigentliche Test im deutlich engeren Flur durchgeführt wurde. So wurden auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.\\
@@ -321,10 +322,10 @@
 		\caption{Sprungantwort eines PT1 Gliedes}
 		\label{img-PT1-Sprungantwort}
 	\end{figure}\\
-	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort} verglichen, liegt es nahe, dass sich das Auto wie ein PT1-Glied verhält. Daher wurde von einem $PT_1$-Glied ausgegangen. \\ 
+	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort} verglichen, liegt es nahe, dass sich das Auto wie ein PT1-Glied verhält. Daher wurde von einem $PT_1$-Glied ausgegangen. \\
 	Wie in der Grafik \ref{img-PT1-Sprungantwort} ließen sich dann die Werte des Gliedes bestimmen.\\
 	So wurde bei unserem Auto $K_p$ mit 5,75 \meter\per\second\usk und $T_1$ mit 0,5\second\usk ermittelt.\\
-	
+
 	\paragraph{Bestimmen der Regelparameter}
 	\begin{figure}[ht]
 		\centering
@@ -332,7 +333,7 @@
 		\caption{Das System in Simulink}
 		\label{img-Simulink}
 	\end{figure}
-	
+
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=250pt,keepaspectratio]{assets/PID-Tuner.PNG}
@@ -341,7 +342,7 @@
 	\end{figure}
 
 	Die ermittelten Systemparameter wurden in Simulink in eingegeben. (Abbildung \ref{img-Simulink}) \\
-	Das System konnte so dann bei den weiteren Untersuchungen auch simuliert werden. \\ 
+	Das System konnte so dann bei den weiteren Untersuchungen auch simuliert werden. \\
 	Mit dem PID-Tuner (Abbildung \ref{img-PID-Tuner}) wurden dann Werte für den PID Regler bestimmt. Die so ermittelten Werte betrugen dann: \\
 	\begin{gather*}
 		K_{PR} = 0.39088 \\
@@ -351,16 +352,16 @@
 		y(t) = K_{PR} \cdot e(t) + K_{IR} \cdot \int_{0}^{t} e(t)dt + K_{DR} \cdot \frac{de(t)}{dt}
 	\end{gather*}
 	Die so bestimmten Werte wurden dann mit dem Auto probiert. Dabei wurde festgestellt, dass das Auto viel langsamer Beschleunigte als die Simulation in Simulink vermuten lies. Es wurde vermutet, dass das System eine höhere Dämpfung besitzt als zuerst angenommen. Um dies entgegen zu wirken wurde ein zusätzlicher Gain hinter den eigentlichen Regler geschaltet. Da die Werte in dem Regler mit hoher Genauigkeit verarbeitet werden (float64), kann die Ausgabe mit einem Gain versehen werden, ohne das die Reglung zu stark diskretisiert wird, was wieder zu neuen Problemen führen würde. Mit diesem lies sich nun die Geschwindigkeit des Reglers weiter anpassen. Durch probieren  hatte sich im Vorfeld herausgestellt, dass das Auto ab einem Ausgabewert von 8 Anfährt. Durch debug Ausgaben wurde festgestellt, dass der Regler mit Ausgaben etwa eine Potenz unter diesem Wert lag. So wurde als Übergangslösung ein Gain von 10 verwendet. Da dies immer noch etwas langsam war, wurde Gain auf 15 erhöht. \\
-	
+
 	\section{Bremslichter}
 	Es sollten bei Bremsmanövern die Bremsleuchten eingeschaltet werden. Ein erster Ansatz ist es im Stand und bei stärkerer Verzögerung die Bremsleuchten einzuschalten. Der erste Teil konnte einfach umgesetzt werden, so wurden bei zurücksetzen des Reglers die Bremsleuchten Eingeschaltet. Das beschleunigungs-abhängige einschalten war schwieriger, da durch Messungenauigkeiten und Schwingungen im Regler der Ausgabewert bei normaler Fahrt stärker schwankt als beim Bremsen. Es wurden Schwankungen im Output bei normaler Fahrt von etwa $1$ beobachtet, während beim Bremsen der Output sehr kontrolliert verringert wird, etwa $0.1$ pro Berechnung.
-		
+
 	\section{Probleme mit dem ADTF}
 	Die Arbeit mit den vor implementierten Filtern von ADTF stellte sich als schwierig heraus. \\
 	Es wurde versucht die Qualität der Filter zu ermitteln. Zuerst wurde der \texttt{AADC Wheel Speed Converter} untersucht. \\
 	Dazu wurde zuerst der Motor mit dem \texttt{AADC Car Controller} angesteuert und die Geschwindigkeitsausgabe des \texttt{AADC Wheel Speed Converter} in ein \texttt{Scope Display} geleitet. Dabei wurde festgestellt, das bei Augenscheinlich proportional wachsender Geschwindigkeit auf dem \texttt{Scope Display} die Werte exponentiell zunahmen. Dieses Verhalten überraschte sehr, so wurde danach die Zurückgelegte Strecke angezeigt. Auch hier wurde bei konstanter Geschwindigkeit ein exponentiell wachsender Wert beobachtet. Aufgrund dieses Verhaltens wurde das \texttt{Table Display} verwendet. Hier stellte sich heraus, das dieses jeweils 8 Bit der Eingabe in einem Feld darstellt, so konnte diese Ansicht auch nicht verwendet werden. Um die Werte beurteilen zu können musste also die Klasse \texttt{cConverterWheels} angepasst werden, sodass die berechneten Werte dann in die Konsole geschrieben wurden. \\
 	Danach wurde auch der \texttt{AADC Wheel Speed Controller} getestet. Dieser funktionierte bereits in einem zufriedenstellend Maße. Bei betrachten des Codes des Filters wurde jedoch sehr viel redundanter Code gefunden. So wurde für einen PID Regler, jede einfachere Variante einzeln implementiert, also für P, PI und PID. Diese Redundanz wurde zuerst entfernt um die Übersichtlichkeit zu verbessern. Zusätzlich wurden noch Debug Ausgaben hinzugefügt um die korrekte Arbeit des Reglers nachzuvollziehen. \\
-	
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionsvermeidung}
@@ -396,8 +397,7 @@
 \section{Hinderniserkennung}
 \label{section_ObstacleDetection}
 
-	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
-	\footnote{Dieses Feature befindet sich noch in Entwicklung.} % TODO: Whitespace vor Fußnoten entfernen. --hoe
+	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 
 \subsection{Theoretische Überlegungen}
 
@@ -409,7 +409,7 @@
 	\begin{align*}
 		y=\frac{2}{\sqrt{b}} - e^{-3b \cdot \left( x-a \right)^2}
 		&&||\quad b=
-		\begin{cases} 
+		\begin{cases}
 			1,					& \text{wenn } v \leq v_{std} \\
 			\frac{16}{9},		& \text{wenn } v \geq \frac{16}{9} \cdot v_{std} \\
 			\frac{v}{v_{std}}, 	& \text{andernfalls}
@@ -454,7 +454,7 @@
 			var x : interval [-45:45] samples 30;
 			func y = 2 - e^(-3 * (\value x / 180 * pi - 25 * pi/180)^2);
 		}
-	
+
 		data [set=funcSpeed] {
 			var x : interval [-45:45] samples 30;
 			func y = 2 / sqrt(16/9) - e^(-3 * (16/9) * (\value x / 180 * pi)^2);
@@ -482,9 +482,6 @@
 \chapter{Fahrbahnerkennung}
 % Author: Frauke Jörgens und Jan Ottmüller
 
-
-% TODO: Perspektivische Verzerrung erwähnen
-
 \section{CPU vs. GPU}
 % Author: Frauke Jörgens
 	Im Zusammenhang mit der Nutzung der OpenCV-Bibliothek sahen wir uns mit dem Problem, ob wir für die Bildverarbeitung die CPU oder die GPU verwenden, konfrontiert, da beides in OpenCV angeboten wird.
@@ -498,7 +495,6 @@
 	Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
 
 % NOTE: Erfahrungen a la "Blöd, zwischen GPU/CPU zu switchen?" -- "Doch ziemlich leichte Handhabung" -- "Wenig Codebeispiele" ?
-
 
 \pagebreak
 
@@ -519,9 +515,17 @@
 % Author: Frauke Jörgens
 	Die von einer Kamera (Realsense oder Basler) aufgenommene RGB-Bilder werden zunächst in das HSV-Farbmodell übertragen, um eine genauere Segmentierung anhand von Farben im Bild zu ermöglichen.
 	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt. Die zugehörigen Parameter ($hue$, $saturation$ und $value$), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
-	Die für uns Idealen Parameter für das Blaue Klebeband sind:
-	%TODO formatiertung? tabelle?
-	Hue High: 120, Hue Low: 90, Saturation: 100, Value: 80.
+	Die für uns idealen Parameter für das Blaue Klebeband sind in \autoref{table-hsv-values} aufgeführt.
+	\begin{table}
+		\centering
+		\begin{tabular}{l|l}
+			Hue / Farbton & 90 - 120\\\hline
+			Saturation / Sättigung & 100 - 255\\\hline
+			Value / Helligkeitswert & 80 - 255
+		\end{tabular}
+		\label{table-hsv-values}
+		\caption{Gut funktionierende Parameter für die blaue Fahrbahnmarkierung. In ADTF werden \texttt{HueLow}, \texttt{HueHigh} und die unteren Grenzen für Sättigung (\texttt{Saturation}) und Helligkeitswert (\texttt{Value}) gesetzt.}
+	\end{table}
 	Das Ergebnis dieser Operation ist ein Binärbild es unterteilt die Pixel des HSV-Bilds in Pixel, die Teil des Unterraums sind (weiß) und solche, die nicht Teil des Unterraums sind (schwarz). Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \texttt{cv::inRange} genutzt.
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
 
@@ -533,6 +537,8 @@
 	Angewandt auf das binarisierte Bild der Straße hat der Canny-Algorithmus folgenden Effekt:
 
 	% TODO Bilder!
+
+	% TODO perspektivische Verzerrung erwähnen
 
 \section{Hough Line Transformation}
 % Author: Jan Ottmüller
@@ -557,15 +563,34 @@
 		\label{img-Winkelnormalisierung}
 	\end{figure}
 
-	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden. Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt. Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden. Der Vergleich erfolgt anhand des Winkels des Normalenvektors der Linie und die Länge dieses Normalenvektors. Nach der Clusterung gibt es eine Zuordnung jeder Linie in eine Klasse. Alle Linien einer Klasse werden anschließend zu einer Linie zusammengefasst, indem Winkel und Abstand der Klasse zugehörigen Linien gemittelt werden.
+	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden. Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt. Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden. Der Vergleich erfolgt anhand des Winkels des Normalenvektors der Linie und die Länge dieses Normalenvektors. Nach der Clusterung gibt es eine Zuordnung jeder Linie in eine Klasse. Alle Linien einer Klasse werden anschließend zu einer Linie zusammengefasst, indem Winkel und Abstand der Klasse zugehörigen Linien gemittelt werden. Zusätzlich wird für jede zusammengefasste Linie gespeichert, aus wie vielen Linien sie zusammengefasst wurde, um anhand dessen eine Gewichtung zu ermöglichen.
 
 \section{Klassifizierung}
-%TODO machen
+% Author: Frauke Jörgens
+	Nachdem die Linien aufgrund des Ähnlichkeitskriteriums gebündelt wurden, werden sie in Kategorien unterteilt, um das Straßenbild sinngemäß zusammenzufassen. Wir haben uns für eine Unterteilung in folgende Kategorien entschieden:
+	\begin{table}
+		\begin{tabular}{p{.125\textwidth}|p{.35\textwidth}|p{.35\textwidth}|p{.05\textwidth}}
+			Art der Linie & Beschreibung & Bedingung & Farbe\\\hline
+			Linke Linie &  Die linke erkannte Linie. Aufgrund des Kamerablickwinkels entspricht diese Linie also eigentlich der mittleren gestrichelten Linie der Straße & Die Linie ist vertikal (ihr Winkel zur y-Achse ist kleiner als $20\degree$) und sie befindet sich auf der linken Seite des Bildes & grün\\\hline
+			Rechte Linie & Die rechte erkannte Linie (= die rechte Fahrbahnmarkierung) & Die Linie ist vertikal (s.o.) und sie befindet sich auf der rechten Seite des Bildes & blau\\\hline
+			Haltelinie & Eine Haltelinie, wie sie an einer Kreuzung üblich ist & Die Linie ist horizontal (ihr Winkel zur y-Achse ist größer als $75 \degree$) & rot\\\hline
+			Unklassifi-zierte Linie & Eine Linie, die keiner der obigen Kategorien entspricht & Eine Linie wird keiner der Kategorien zugeordnet  & gelb\\
+		\end{tabular}
+		\label{table-lineClassification}
+		\caption{Beschreibung der verschiedenen Klassen von erkannten und nicht erkannten Linien. In \autoref{img-lines} werden die Linien in ihrer erkannten Farbe (Klasse) und entsprechend der Anzahl der erkannten Linien dicker oder dünner gezeichnet.}
+	\end{table}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=.5\textwidth]{assets/line-classification}
+		\label{img-lines}
+		\caption{Canny-Bild mit erkannten Linien. Oben links wird der berechnete Lenkwinkel angezeigt.}
+	\end{figure}
 
 \subsection{Haltelinien}
 % Author: Jan Ottmüller
-	
-	Wird eine Wagerechte Linie erkannt, so wird sie als Stopplinie klassifiziert. Je näher sich das Fahrzeug dieser Linie nähert, desdo langsamer wird es. Dieser Anhaltealgorithmus ist jedoch nur aktiv, wenn Genügend Stopplinien erkannt wurde. So vermeiden wir, dass das Auto schon anhält, wenn es nur eine sehr schwache Stopplinie erkannt hat, was durch Rauschen ausgelöst werden kann. Dieser Threshold kann mit dem ADTF Parameter 'Stop Threshold' angepasst werden. Für uns hat der Wert 0,4 gut funktioniert. Es müssen dann also mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält. 
+
+	Wird eine Wagerechte Linie erkannt, so wird sie als Stopplinie klassifiziert. Je näher sich das Fahrzeug dieser Linie nähert, desdo langsamer wird es. Dieser Anhaltealgorithmus ist jedoch nur aktiv, wenn Genügend Stopplinien erkannt wurde. So vermeiden wir, dass das Auto schon anhält, wenn es nur eine sehr schwache Stopplinie erkannt hat, was durch Rauschen ausgelöst werden kann. Dieser Threshold kann mit dem ADTF Parameter 'Stop Threshold' angepasst werden. Für uns hat der Wert 0,4 gut funktioniert. Es müssen dann also mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält.
 
 \section{Zentrierung in der Fahrspur}
 % Author: Felix Maaß
@@ -623,15 +648,19 @@
 		\label{img-spurzentrierung-function}
 	\end{figure}
 
+	% TODO Besonderheiten in der Kurve erwähnen
+
 \section{Weitere Überlegungen}
 % Author: Jan Ottmüller
 
 	An dieser Stelle möchten wir noch einige Überlegungen und Erkentnisse festhalten,
 	die es nicht in die fertige Software geschafft haben.
-	
+
 \subsection{Alternative Fahrstreifenrepräsentation}
 
 	In den Anfängen der Implementierung entschieden wir uns dafür, die Fahrstreifen durch Geraden zu repräsentieren und aus diesen den Lenkwinkel zu berechen. Hierdurch können gerade Fahrstreifen sehr präzise dargestellt werden, jedoch zeigt das Verfahren Schwächen bei der Repräsentation von Kurven. Eine andere Form der Darstellung wäre eine Polynomfunktion zweiten Grades. Hierbei kann die Polynomfunktion genau an die Kurve angepasst werden. Da unser Ansatz jedoch schon recht gut funktionierte und wir keine geeignete Funktion für das Anpassen der Polynomfunktion fanden, haben wir uns auf unseren schon implementierten Ansatz weiter konzentriert.
+
+	% TODO evtl. Jury-Modul mit abbiegen usw. nach Haltelinie erwähnen
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modifikationen am Fahrzeug}
@@ -641,26 +670,26 @@
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
 \begin{thebibliography}{9}
-	
+
 	\bibitem{hoffmann_ws17}
 	Prof. Dr. Ulrich Hoffmann,
 	\textit{Einführung in die Robotik},
 	Fachhochschule Wedel - Wintersemester 2017/18:\\
 	\url{http://www.fh-wedel.de/mitarbeiter/uh/lehrveranstaltungen/ws1718/einfuehrung-in-die-robotik/}
-	
+
 	\bibitem{Regelungstechnik}
 	Prof. Dr.-Ing. Carsten Burmeister,
 	\textit{Regelungstechnik},
 	Fachhochschule Wedel - Wintersemester 2017/18
-	
+
 	\bibitem{berry16}
 	Nick Berry,
 	\textit{Ackerman Steering},
 	December 2016:\\
 	\url{http://datagenetics.com/blog/december12016/index.html}
-	
-	
-	
+
+
+
 \end{thebibliography}
 
 \end{document}
