@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="253" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="249" zoomfactor="1,000000">
    <component height="98" name="Realsense_RGB_Proc_Display2" width="189" x="616" y="526">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -407,10 +407,10 @@
    </component>
    <connection dest="Main" dest_pin="BrakeLights" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="brake_lights" x_p2="1206" x_p3="1206" x_p4="1276" x_p5="1276" y_p2="0" y_p3="413" y_p4="413" y_p5="0" />
    <connection dest="Franz_Wheel_Speed_Controller" dest_pin="emergencystop" reldiff="0" shape_type="4" source="Felix_Ultrasonic_Obstacle_Detection" source_pin="obstacleInDrivingDirection" x_p2="867" x_p3="867" x_p4="932" x_p5="932" y_p2="0" y_p3="664" y_p4="664" y_p5="0" />
-   <connection dest="Dbg_Canny_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="canny_video" x_p2="587" x_p3="587" x_p4="599" x_p5="599" y_p2="0" y_p3="427" y_p4="427" y_p5="0" />
-   <connection dest="Dbg_Binary_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="binary_video" x_p2="583" x_p3="583" x_p4="597" x_p5="597" y_p2="0" y_p3="288" y_p4="288" y_p5="0" />
+   <connection dest="Dbg_Canny_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="canny_video" x_p2="371" x_p3="371" x_p4="599" x_p5="599" y_p2="0" y_p3="427" y_p4="427" y_p5="0" />
+   <connection dest="Dbg_Binary_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="binary_video" x_p2="367" x_p3="367" x_p4="597" x_p5="597" y_p2="0" y_p3="288" y_p4="288" y_p5="0" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="UltrasonicStruct" reldiff="0" shape_type="1" source="Main" source_pin="UltrasonicStruct" x_p2="1523" x_p3="1523" x_p4="534" x_p5="534" y_p2="389" y_p3="559" y_p4="559" y_p5="784" />
-   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="579" x_p3="579" x_p4="936" x_p5="936" y_p2="0" y_p3="640" y_p4="640" y_p5="0" />
+   <connection dest="Franz_Wheel_Speed_Controller" dest_pin="set_WheelSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="723" x_p3="723" x_p4="936" x_p5="936" y_p2="0" y_p3="640" y_p4="640" y_p5="0" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1560" x_p3="1560" x_p4="456" x_p5="456" y_p2="341" y_p3="509" y_p4="509" y_p5="760" />
    <connection dest="Main" dest_pin="SpeedController" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1248" x_p3="1248" x_p4="1263" x_p5="1263" y_p2="0" y_p3="341" y_p4="341" y_p5="0" />
    <connection dest="Main" dest_pin="SteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="504" x_p3="504" x_p4="898" x_p5="898" y_p2="0" y_p3="365" y_p4="365" y_p5="0" />
