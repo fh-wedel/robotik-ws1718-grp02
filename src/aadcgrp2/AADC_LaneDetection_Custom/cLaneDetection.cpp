@@ -158,8 +158,7 @@ tResult cLaneDetection::CreateOutputPins(__exception) {
 	RETURN_IF_FAILED(m_oDebugCannyVideoOutputPin.Create("Canny_Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
 	RETURN_IF_FAILED(RegisterPin(&m_oDebugCannyVideoOutputPin));
 
-	RETURN_IF_FAILED(m_oDebugPerspWarpVideoOutputPin.Create("Perpsective_Warp_Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
-	RETURN_IF_FAILED(RegisterPin(&m_oDebugPerspWarpVideoOutputPin));
+	// TODO perspective transform
 
 	m_oGCLOutputPin.Create("GCL", new adtf::cMediaType(MEDIA_TYPE_COMMAND, MEDIA_SUBTYPE_COMMAND_GCL), static_cast<IPinEventSink*>(this));
 	RegisterPin(&m_oGCLOutputPin);
@@ -317,36 +316,6 @@ tResult cLaneDetection::getDetectionLines(vector<tInt>& detectionLines)
     RETURN_NOERROR;
 }
 
-tResult cLaneDetection::transmitImage(cv::Mat &image, cVideoPin &outputVideoPin, tBitmapFormat &format)
-{
-	if (!image.empty() && outputVideoPin.IsConnected()) {
-
-		UpdateOutputImageFormat(image, outputVideoPin, format);
-
-		//create a cImage from CV Matrix (not necessary, just for demonstration)
-		cImage newImage;
-		newImage.Create(
-			format.nWidth,
-			format.nHeight,
-			format.nBitsPerPixel,
-			format.nBytesPerLine,
-			image.data
-		);
-
-		//create the new media sample
-		cObjectPtr<IMediaSample> pMediaSample;
-		RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
-		//updating media sample
-		RETURN_IF_FAILED(pMediaSample->Update(_clock->GetStreamTime(), newImage.GetBitmap(), newImage.GetSize(), IMediaSample::MSF_None));
-		//transmitting
-		RETURN_IF_FAILED(outputVideoPin.Transmit(pMediaSample));
-
-		image.release();
-	}
-
-	RETURN_NOERROR;
-}
-
 tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 {
 
@@ -403,12 +372,79 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 	}
 
 	if (m_bDebugModeEnabled) {
-		transmitImage(binary, m_oDebugBinaryVideoOutputPin, m_sOutputFormatDebugBinary);
-		transmitImage(dbgCanny, m_oDebugCannyVideoOutputPin, m_sOutputFormatDebugCanny);
-		transmitImage(dbgPersp, m_oDebugPerspWarpVideoOutputPin, m_sOutputFormatDebugPerspWarp);
+		if (!binary.empty() && m_oDebugBinaryVideoOutputPin.IsConnected()) {
+
+			//create a cImage from CV Matrix (not necessary, just for demonstration)
+			cImage newImage;
+			newImage.Create(
+				m_sOutputFormat.nWidth,
+				m_sOutputFormat.nHeight,
+				m_sOutputFormat.nBitsPerPixel,
+				m_sOutputFormat.nBytesPerLine,
+				binary.data
+			);
+
+			//create the new media sample
+			cObjectPtr<IMediaSample> pMediaSample;
+			RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
+			//updating media sample
+			RETURN_IF_FAILED(pMediaSample->Update(_clock->GetStreamTime(), newImage.GetBitmap(), newImage.GetSize(), IMediaSample::MSF_None));
+			//transmitting
+			RETURN_IF_FAILED(m_oDebugBinaryVideoOutputPin.Transmit(pMediaSample));
+
+			binary.release();
+		}
+
+		if (!canny.empty() && m_oDebugCannyVideoOutputPin.IsConnected()) {
+
+			//create a cImage from CV Matrix (not necessary, just for demonstration)
+			cImage newImage;
+			newImage.Create(
+				m_sOutputFormat.nWidth,
+				m_sOutputFormat.nHeight,
+				m_sOutputFormat.nBitsPerPixel,
+				m_sOutputFormat.nBytesPerLine,
+				canny.data
+			);
+
+			//create the new media sample
+			cObjectPtr<IMediaSample> pMediaSample;
+			RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
+			//updating media sample
+			RETURN_IF_FAILED(pMediaSample->Update(_clock->GetStreamTime(), newImage.GetBitmap(), newImage.GetSize(), IMediaSample::MSF_None));
+			//transmitting
+			RETURN_IF_FAILED(m_oDebugCannyVideoOutputPin.Transmit(pMediaSample));
+
+			canny.release();
+		}
+
+		// TODO perspective transform image
 	}
 
-	transmitImage(outputImage, m_oVideoOutputPin, m_sOutputFormat);
+	if (!outputImage.empty() && m_oVideoOutputPin.IsConnected())
+	{
+		UpdateOutputImageFormat(outputImage);
+
+		//create a cImage from CV Matrix (not necessary, just for demonstration)
+		cImage newImage;
+		newImage.Create(
+			m_sOutputFormat.nWidth,
+			m_sOutputFormat.nHeight,
+			m_sOutputFormat.nBitsPerPixel,
+			m_sOutputFormat.nBytesPerLine,
+			outputImage.data
+		);
+
+		//create the new media sample
+		cObjectPtr<IMediaSample> pMediaSample;
+		RETURN_IF_FAILED(AllocMediaSample((tVoid**)&pMediaSample));
+		//updating media sample
+		RETURN_IF_FAILED(pMediaSample->Update(_clock->GetStreamTime(), newImage.GetBitmap(), newImage.GetSize(), IMediaSample::MSF_None));
+		//transmitting
+		RETURN_IF_FAILED(m_oVideoOutputPin.Transmit(pMediaSample));
+
+		outputImage.release();
+	}
 
 	if (m_oGCLOutputPin.IsConnected()) {
 		transmitGCL(detectionLines, detectedLinePoints);
@@ -562,16 +598,16 @@ tResult cLaneDetection::transmitGCL(const vector<tInt>& detectionLines, const ve
 	RETURN_NOERROR;
 }
 
-tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage, cVideoPin &outputVideoPin, tBitmapFormat &format)
+tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage)
 {
 	//check if pixelformat or size has changed
-	if (tInt32(outputImage.total() * outputImage.elemSize()) != format.nSize)
+	if (tInt32(outputImage.total() * outputImage.elemSize()) != m_sOutputFormat.nSize)
 	{
-		Mat2BmpFormat(outputImage, format);
+		Mat2BmpFormat(outputImage, m_sOutputFormat);
 
-		if (m_bDebugModeEnabled) { LOG_INFO(adtf_util::cString::Format("Output: Size %d x %d ; BPL %d ; Size %d , PixelFormat; %d", format.nWidth, format.nHeight, format.nBytesPerLine, format.nSize, format.nPixelFormat)); }
+		if (m_bDebugModeEnabled) { LOG_INFO(adtf_util::cString::Format("Output: Size %d x %d ; BPL %d ; Size %d , PixelFormat; %d", m_sOutputFormat.nWidth, m_sOutputFormat.nHeight, m_sOutputFormat.nBytesPerLine, m_sOutputFormat.nSize, m_sOutputFormat.nPixelFormat)); }
 		//set output format for output pin
-		outputVideoPin.SetFormat(&format, NULL);
+		m_oVideoOutputPin.SetFormat(&m_sOutputFormat, NULL);
 	}
 	RETURN_NOERROR;
 }
