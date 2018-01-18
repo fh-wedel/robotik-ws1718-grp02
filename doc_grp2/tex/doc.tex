@@ -35,8 +35,6 @@
 %DONE: Sinnabschnitte - ✓
 %DONE: Literatur/Quellverzeichnis - ✓
 
-%TODO: In Vergangenheit schreiben
-%TODO: Gruppenfoto (mit Auto)
 %TODO: Passiver Schreibstil
 %TODO: Bilder
 %TODO: Allgemeine Beschreibungen der Kapitel
@@ -123,7 +121,7 @@
 	
 	Um Filter zu verwenden, müssen diese in Konfigurationen integriert werden.
 	Hier können mehrere Filter gleichzeitig platziert werden.
-	Eine erste Konfiguration wurde bereits in \autoref{img_LaneDetectionConfig} gezeigt.
+	Eine erste Konfiguration ist bereits in \autoref{img_LaneDetectionConfig} gezeigt.
 	Hier können die durch Filter repräsentierten Logikabschnitte miteinander verbunden werden.
 	Die Outputs des einen Filters können dabei also die Inputs des Nächsten darstellen.
 	\\
@@ -157,9 +155,9 @@
 \section{Standard-Filter}
 % Author: Felix Maaß
 
-	Um einen ADTF-Filter zu implementieren, musste viel Code geschrieben werden, bevor man überhaupt mit der wirklichen Logik anfangen konnte.
+	Um einen ADTF-Filter zu implementieren, muss viel Code geschrieben werden, bevor man überhaupt mit der wirklichen Logik anfangen kann.
 	Um uns diesen Schritt zu vereinfachen, wurde eine abstrakte Klasse \texttt{cStdFilter} erstellt, die von der vorgegebenen Klasse \texttt{cFilter} erbte.
-	Sie bietete uns Standard-Implementationen sowie Hilfsroutinen und vermied somit Redundanzen über die ganze Code-Basis.
+	Sie bot uns Standard-Implementationen sowie Hilfsroutinen und vermied somit Redundanzen über die ganze Code-Basis.
 	Dadurch ließen sich im Durchschnitt etwa 170 Zeilen Code pro Filter sparen.
 	Der jedoch größte Gewinn bestand darin, dass Korrekturen und Implementationen weiterer Hilfsfunktionen so nur einmal an einer zentralen Stelle durchzuführen waren und dadurch eine höhere Übersichtlichkeit gewährleistet wurde.
 	
@@ -210,7 +208,7 @@
 \label{Steering-Angle-To-Servo}
 
 	Die erste Abstraktionsebene stellt das Mapping von Lenkwinkel zu Servostellung dar.
-	Hierfür ist es nötig zu wissen, welchen Wert der physikalisch bedingte maximale Lenkwinkel hat.
+	Hierfür ist es nötig zu wissen, welchen Wert der physikalisch bedingte, maximale Lenkwinkel hat.
 
 	Wir stellten fest, dass die Auslenkung der Vorderräder unterschiedlich stark erfolgt.
 	Dies liegt daran, dass die Räder unterschiedlichen Radien folgen müssen, um einen gemeinsamen Kurvenmittelpunkt zu besitzen.
@@ -273,14 +271,14 @@
 
 %TODO: Passivieren!! :)
 
-	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden, da die Arduinos nur Werte zwischen -100 und 100 annehmen musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden, um bei verschiedenen Fahrtzuständen immer die soll Geschwindigkeit zu erreichen. \\
-	Über Wheel Encoder wird die zurückgelegte Strecke, und durch Ableiten nach der Zeit die Geschwindigkeit ermittelt. \\
+	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden. Da die Arduinos nur Werte zwischen -100 und 100 annehmen, musste dies umgerechnet werden. Zusätzlich sollte die Geschwindigkeit geregelt werden, um bei verschiedenen Fahrtzuständen immer die Sollgeschwindigkeit zu erreichen. \\
+	Über Wheel Encoder wird die zurückgelegte Strecke, durch Ableiten nach der Zeit die Geschwindigkeit ermittelt. \\
 	Im ADTF sind bereits zwei nutzbare Filter vorhanden:
 	\begin{enumerate}[label=]
 		\item Converter Wheels, der die Werte der Wheel Encoder in eine Geschwindigkeit umrechnet. \\
-		\item Wheel Speed Controller, der verschiedene Regelalgorithemen darstellt. \\
+		\item Wheel Speed Controller, welcher verschiedene Regelalgorithemen darstellt. \\
 	\end{enumerate}
-	Die fertigen Filter baten bereits einen guten Ausgangspunkt und wurden zuerst übernommen. Um einen guten Regler zu erhalten, sollte zuerst das System des Autos bestimmt werden. Dazu sollte eine Sprungfunktion aufgenommen werden. Dies erwies sich als schwieriger als erwartet, da das Auto eine recht hohe Endgeschwindigkeit besaß und der Boden in der Robotik und in dem Flur davor sich als sehr rutschig herausstellte. \\
+	Die fertigen Filter boten bereits einen guten Ausgangspunkt und wurden zunächst übernommen. Um einen guten Regler zu erhalten, sollte zuerst das System des Autos bestimmt werden. Dazu sollte eine Sprungfunktion aufgenommen werden. Dies erwies sich als schwieriger als erwartet, da das Auto eine recht hohe Endgeschwindigkeit besaß und der Boden in der Robotik und in dem Flur davor sich als sehr rutschig herausstellte. \\
 	Nach einigen Überlegungen fiel die Wahl der Teststrecke auf den Flur vor dem Rechnernetzelabor. Dieser war sehr lang, eben und bietete direkt vor der Tür des Labors eine Fussmatte, die eine hohe Beschleunigung erlaubte. \\
 
 	\section{Aufnahme der Sprungfunktion}
@@ -314,8 +312,8 @@
 	\end{figure}
 	
 	\paragraph{Auswertung}
-	Als Höchstgeschwindigkeit wurde ein mittel der höchsten Geschwindigkeitswerte genommen. Dazu wurden die Werte betrachtet und mithilfe von verschieden breiten Medianen die Werte gefiltert. Nun wurden die Differenzen betrachtet. Da es durch die Messungenauigkeiten immer wieder zu negativen Differenzen kam, wurden alle Werte nachdem die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß als erreichte Höchstgeschwindigkeit interpretiert. \\
-	Die erste Beschleunigung diente nur als Test um ein Gefühl für das Fahrverhalten des Autos bei höheren Geschwindigkeiten zu bekommen, bevor der eigentliche Test im deutlich engeren Flur durchgeführt wurde. So wurde auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.\\
+	Als Höchstgeschwindigkeit wurde ein Mittel der höchsten Geschwindigkeitswerte genommen. Dazu wurden die Werte betrachtet und mithilfe von verschieden breiten Medianen die Werte gefiltert. Nun wurden die Differenzen betrachtet. Durch die Messungenauigkeiten kam es immer wieder zu negativen Differenzen. Daher wurden alle Werte, wonach die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß, als erreichte Höchstgeschwindigkeit interpretiert. \\
+	Die erste Beschleunigung diente nur als Test, um ein Gefühl für das Fahrverhalten des Autos bei höheren Geschwindigkeiten zu bekommen, bevor der eigentliche Test im deutlich engeren Flur durchgeführt wurde. So wurden auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.\\
 	Aus der zweiten Beschleunigung ermittelten wir eine Höchstgeschwindigkeit von 4,75 \meter\per\second.\\
 	\begin{figure}[ht]
 		\centering
@@ -323,7 +321,7 @@
 		\caption{Sprungantwort eines PT1 Gliedes}
 		\label{img-PT1-Sprungantwort}
 	\end{figure}\\
-	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort} verglichen, liegt es nahe, dass sich das Auto wie ein PT1 Glied verhält. Daher wurde von einem $PT_1$-Glied ausgegangen. \\ 
+	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort} verglichen, liegt es nahe, dass sich das Auto wie ein PT1-Glied verhält. Daher wurde von einem $PT_1$-Glied ausgegangen. \\ 
 	Wie in der Grafik \ref{img-PT1-Sprungantwort} ließen sich dann die Werte des Gliedes bestimmen.\\
 	So wurde bei unserem Auto $K_p$ mit 5,75 \meter\per\second\usk und $T_1$ mit 0,5\second\usk ermittelt.\\
 	
@@ -352,7 +350,7 @@
 		\text{für einen parallelen PID-Regler der Form}\\
 		y(t) = K_{PR} \cdot e(t) + K_{IR} \cdot \int_{0}^{t} e(t)dt + K_{DR} \cdot \frac{de(t)}{dt}
 	\end{gather*}
-	Die so bestimmten Werte wurden dann mit dem Auto probiert. Dabei wurde festgestellt, dass das Auto viel langsamer Beschleunigte als die Simulation in Simulink vermuten lies. Es wurde vermutet, dass das System eine höhere Dämpfung besitzt als zuerst angenommen. Um dies entgegen zu wirken wurde ein zusätzlicher Gain hinter den eigentlichen Regler geschaltet. Da die Werte in dem Regler mit hoher Genauigkeit verarbeitet werden (float64), kann die Ausgabe mit einem Gain versehen werden, ohne das die Reglung zu stark diskretisiert wird, was wieder zu neuen Problemen führen würde. Mit diesem lies sich nun die Geschwindigkeit des Reglers weiter anpassen. Durch probieren  hatte sich im Vorfeld herausgestellt, dass das Auto ab einem Ausgabewert von 8 Anfährt. Durch debug Ausgaben wurde festgestellt, dass der Regler mit Ausgaben etwa eine Potenz unter diesem Wert lag. So wurde als Übergangslösung ein Gain von 10 verwendet. Da dies immer noch etwas langsam war, wurde Gain auf 15 erhöht. \\
+	Die so bestimmten Werte wurden dann mit dem Auto getestet. Dabei wurde festgestellt, dass das Auto viel langsamer beschleunigte, als die Simulation in Simulink vermuten lies. Es wurde vermutet, dass das System eine höhere Dämpfung besitzt als zuerst angenommen. Um dem entgegen zu wirken, wurde ein zusätzlicher Gain hinter den eigentlichen Regler geschaltet. Da die Werte in dem Regler mit hoher Genauigkeit verarbeitet werden (float64), kann die Ausgabe mit einem Gain versehen werden, ohne dass die Reglung zu stark diskretisiert wird, was wieder zu neuen Problemen führen würde. Mit diesem lies sich nun die Geschwindigkeit des Reglers weiter anpassen. Durch Probieren  hatte sich im Vorfeld herausgestellt, dass das Auto ab einem Ausgabewert von 8 anfährt. Durch Debug-Ausgaben wurde festgestellt, dass der Regler mit Ausgaben etwa eine Potenz unter diesem Wert lag. So wurde als Übergangslösung ein Gain von 10 verwendet. Da dies immer noch etwas langsam war, wurde Gain auf 15 erhöht. \\
 		
 	\section{Probleme mit dem ADTF}
 	Die Arbeit mit den vor implementierten Filtern von ADTF stellte sich als schwierig heraus. \\
