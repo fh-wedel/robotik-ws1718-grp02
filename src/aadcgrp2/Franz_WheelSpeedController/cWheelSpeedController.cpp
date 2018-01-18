@@ -28,50 +28,39 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define WSC_PROP_PID_KD "PID::Kd_value"
 #define WSC_PROP_PID_SAMPLE_TIME "PID::Sample_Interval_[msec]"
 
-// id and name definitions for signal registry (increase the id for new signals)
-#define WSC_SIGREG_ID_WHEELSPEED_SETVALUE 0
-#define WSC_SIGREG_NAME_WHEELSPEED_SETVALUE "wheel speed set value"
-#define WSC_SIGREG_UNIT_WHEELSPEED_SETVALUE "m/sec2"
-
-#define WSC_SIGREG_ID_WHEELSPEED_MEASVALUE 1
-#define WSC_SIGREG_NAME_WHEELSPEED_MEASVALUE "wheel speed measured value"
-#define WSC_SIGREG_UNIT_WHEELSPEED_MEASVALUE "m/sec2"
-
-#define WSC_SIGREG_ID_WHEELSPEED_OUTPUTVALUE 2
-#define WSC_SIGREG_NAME_WHEELSPEED_OUTPUTVALUE "wheel speed output value"
-#define WSC_SIGREG_UNIT_WHEELSPEED_OUTPUTVALUE "m/sec2"
 
 #define WSC_PROP_PID_MAXOUTPUT "PID::Maximum output"
 #define WSC_PROP_PID_MINOUTPUT "PID::Minimum output"
 #define WSC_PROP_DEBUG_MODE "Debug Mode"
 #define WSC_PROP_WAIT_TIME "Wait Time"
+#define WSC_PROP_BRAKE_MARGIN "Brake Margin"
 
 
 ADTF_FILTER_PLUGIN("Franz Wheel Speed Controller", OID_ADTF_WHEELSPEEDCONTROLLER, cWheelSpeedController)
 
 cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cStdFilter(__info) {
 
-    SetPropertyFloat(WSC_PROP_GAIN, 1);
+    SetPropertyFloat(WSC_PROP_GAIN, 10);
     SetPropertyBool(WSC_PROP_GAIN NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_GAIN NSSUBPROP_DESCRIPTION, "Gain to apply after the controller");
 
-    SetPropertyFloat(WSC_PROP_PID_KP, 1.1);
+    SetPropertyFloat(WSC_PROP_PID_KP, 0.39088);
     SetPropertyBool(WSC_PROP_PID_KP NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_KP NSSUBPROP_DESCRIPTION, "The proportional factor Kp for the PID Controller");
 
-    SetPropertyFloat(WSC_PROP_PID_KI, 0.001);
+    SetPropertyFloat(WSC_PROP_PID_KI, 0.98867);
     SetPropertyBool(WSC_PROP_PID_KI NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_KI NSSUBPROP_DESCRIPTION, "The integral factor Ki for the PID Controller");
 
-    SetPropertyFloat(WSC_PROP_PID_KD, 1);
+    SetPropertyFloat(WSC_PROP_PID_KD, 0.01398);
     SetPropertyBool(WSC_PROP_PID_KD NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_KD NSSUBPROP_DESCRIPTION, "The differential factor Kd for the PID Controller");
 
-    SetPropertyFloat(WSC_PROP_PID_MAXOUTPUT, 10);
+    SetPropertyFloat(WSC_PROP_PID_MAXOUTPUT, 20);
     SetPropertyBool(WSC_PROP_PID_MAXOUTPUT NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_MAXOUTPUT NSSUBPROP_DESCRIPTION, "The maximum allowed output for the wheel speed controller (speed in m/sec^2)");
 
-    SetPropertyFloat(WSC_PROP_PID_MINOUTPUT, -10);
+    SetPropertyFloat(WSC_PROP_PID_MINOUTPUT, -20);
     SetPropertyBool(WSC_PROP_PID_MINOUTPUT NSSUBPROP_ISCHANGEABLE, tTrue);
     SetPropertyStr(WSC_PROP_PID_MINOUTPUT NSSUBPROP_DESCRIPTION, "The minimum allowed output for the wheel speed controller (speed in m/sec^2)");
 
@@ -82,7 +71,12 @@ cWheelSpeedController::cWheelSpeedController(const tChar* __info) : cStdFilter(_
     SetPropertyFloat(WSC_PROP_WAIT_TIME, 5);
     SetPropertyStr(WSC_PROP_WAIT_TIME NSSUBPROP_DESCRIPTION, "Time in seconds to send 0's to the arduino before starting the controller");
 
-    //m_pISignalRegistry = NULL;
+    SetPropertyFloat(WSC_PROP_BRAKE_MARGIN, 0.05);
+    SetPropertyBool(WSC_PROP_BRAKE_MARGIN NSSUBPROP_ISCHANGEABLE, tTrue);
+    SetPropertyStr(WSC_PROP_BRAKE_MARGIN NSSUBPROP_DESCRIPTION, "Output Margin before brake lights will turn on when decellerating");
+
+    medianIsUpToDate = false;
+    windowSize = 5;
 
     resetController();
 }
@@ -120,6 +114,8 @@ tResult cWheelSpeedController::PropertyChanged(const tChar* strPropertyName) {
         } else if (cString::IsEqual(strPropertyName, WSC_PROP_WAIT_TIME)) {
             m_waitTime = GetPropertyFloat(WSC_PROP_WAIT_TIME);
 
+        } else if (cString::IsEqual(strPropertyName, WSC_PROP_BRAKE_MARGIN)) {
+            m_f64BrakeMargin = GetPropertyFloat(WSC_PROP_BRAKE_MARGIN);
 
         }
 
@@ -141,6 +137,7 @@ tResult cWheelSpeedController::CreateInputPins(__exception) {
 tResult cWheelSpeedController::CreateOutputPins(__exception) {
 
     RETURN_IF_FAILED(registerFloatOutputPin("actuator_output", &m_oOutputActuator, __exception_ptr));
+    RETURN_IF_FAILED(registerBoolOutputPin("brake_lights", &m_oOutputBrakeLights, __exception_ptr));
 
     RETURN_NOERROR;
 }
@@ -173,6 +170,7 @@ tResult cWheelSpeedController::Init(tInitStage eStage, __exception) {
         m_bInputActuatorGetID = tFalse;
 
         m_bEmergencyStop = tFalse;
+        m_bBrakeLights = tTrue;
         m_f64LastOutput = 0.0f;
 
         if (m_bShowDebug) {
@@ -223,6 +221,7 @@ void cWheelSpeedController::resetController() {
     m_lastSampleTime = GetTime();
     m_f64LastSpeedValue = 0;
     m_f64accumulatedVariable = 0;
+    m_bBrakeLights = tTrue;
 }
 
 tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample) {
@@ -246,16 +245,29 @@ tResult cWheelSpeedController::OnPinEvent(    IPin* pSource, tInt nEventCode, tI
                 resetController();
 
             } else {
-                m_f64LastOutput = getControllerValue(m_f64MeasuredVariable);
+                tFloat64 currentOutput = getControllerValue(m_f64MeasuredVariable);
+
+                m_bBrakeLights = currentOutput + m_f64BrakeMargin < m_f64LastOutput;
+
+                if (m_bShowDebug) {
+                    std::cout << "Current Output: " << currentOutput << '\n';
+                    std::cout << "Last Output: " << m_f64LastOutput << '\n';
+                    std::cout << "Brake Lights" << m_bBrakeLights << '\n';
+                }
+
+                m_f64LastOutput = currentOutput;
+
             }
 
-            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput);
+            // change the sign of the output to drive in the right direction
+            tFloat32 outputValue = static_cast<tFloat32>(m_f64LastOutput) * -1;
 
             RETURN_IF_FAILED(transmitFloatValue(outputValue, &m_oOutputActuator));
+            RETURN_IF_FAILED(transmitBoolValue(m_bBrakeLights, &m_oOutputBrakeLights));
 
         } else if (pSource == &m_oInputSetWheelSpeed) {
 
-          // Receive new target Speed
+            // Receive new target Speed
 
             // read Value
             m_f64SetPoint = static_cast<tFloat64>(readFloatValue(pMediaSample));
@@ -311,8 +323,8 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
         std::cout << "Output Value before limit " << f64Result  << '\n';
     }
 
-    // Apply gain and change the sign of the output to drive in the right direction
-    f64Result *= m_f64Gain * -1;
+    // Apply gain
+    f64Result *= m_f64Gain;
 
     // checking for minimum and maximum limits
     //f64Result = min(m_f64PIDMaximumOutput, max(m_f64PIDMinimumOutput, f64Result));
@@ -329,4 +341,41 @@ tFloat64 cWheelSpeedController::getControllerValue(tFloat64 i_f64MeasuredValue) 
 /*! Yields the current time in microseconds */
 tTimeStamp cWheelSpeedController::GetTime() {
     return (_clock != NULL) ? _clock->GetTime () : cSystem::GetTime();
+}
+
+void cWheelSpeedController::pushValue(tBool newValue) {
+    // erase oldest values if window size has been reached
+    int amountOfOverflownElements = storedValues.size() - windowSize;
+    if (amountOfOverflownElements > 0) {
+        storedValues.erase(
+            storedValues.begin(),
+            storedValues.begin() + amountOfOverflownElements
+        );
+    }
+
+    // append new value
+    storedValues.push_back(newValue);
+    medianIsUpToDate = false;
+}
+
+bool cWheelSpeedController::calculateMedian() {
+
+    if (!medianIsUpToDate) {
+        std::vector<bool> values = storedValues;
+
+        // sort values ascending
+        std::sort(values.begin(), values.end());
+
+        // 0 / 2 = 0    -> 0
+        // 1 / 2 = 0.5  -> 0
+        // 2 / 2 = 1    -> 1
+        // 3 / 2 = 1.5  -> 1
+        // 4 / 2 = 2    -> 2
+        // 5 / 2 = 2.5  -> 2
+        int medianIndex = values.size() / 2;
+
+        calculatedMedian = values[medianIndex];
+    }
+
+    return calculatedMedian;
 }

@@ -47,6 +47,8 @@
     </filter>
     <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="SteeringAngle" />
     <connection connection_priority="50" dest="Base_Config.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
+    <inport alias="BrakeLights" />
+    <connection connection_priority="50" dest="Base_Config.brakeLightEnabled" interface="" source="BrakeLights" />
    </graph>
   </configuration>
   <configuration description="" name="Playback">
@@ -265,19 +267,19 @@
     <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="4">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
-      <property name="PID::Ki_value" type="Float" value="0,98867.0" />
-      <property name="PID::Kp_value" type="Float" value="0,39088.0" />
-      <property name="PID::Kd_value" type="Float" value="0,01398.0" />
       <property name="PID::Minimum output" type="Float" value="-100.0" />
       <property name="PID::Maximum output" type="Float" value="100.0" />
-      <property name="Gain" type="Float" value="15.0" />
+      <property name="Brake Margin" type="Float" value="1.0" />
      </settings>
     </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Float_Value_Generator.floatValue" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="AADC_Converter_Wheels_Custom_.car_speed" />
     <connection connection_priority="50" dest="AADC_Arduino_Communication.SpeedController" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
-    <filter alias="AADC_Bool_Value_Generator" idref="adtf.aadc.boolValueGenerator" priority="5" />
+    <filter alias="AADC_Bool_Value_Generator" idref="adtf.aadc.boolValueGenerator" priority="5">
+     <settings />
+    </filter>
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.emergencystop" interface="" source="AADC_Bool_Value_Generator.BoolValue" />
+    <connection connection_priority="50" dest="AADC_Arduino_Communication.brakeLightEnabled" interface="" source="Franz_Wheel_Speed_Controller.brake_lights" />
    </graph>
   </configuration>
   <configuration description="" name="Live">
@@ -294,11 +296,6 @@
     <filter alias="Video_Display" idref="adtf.visual.video_display" priority="1" />
     <filter alias="Franz_Wheel_Speed_Controller" idref="adtf.aadc.franz.wheelSpeedController" priority="1">
      <settings>
-      <property name="PID::Kd_value" type="Float" value="0,01398.0" />
-      <property name="PID::Ki_value" type="Float" value="0,98867.0" />
-      <property name="PID::Kp_value" type="Float" value="0,39088.0" />
-      <property name="PID::Maximum output" type="Float" value="20.0" />
-      <property name="PID::Minimum output" type="Float" value="-20.0" />
       <property name="Gain" type="Float" value="15.0" />
      </settings>
     </filter>
@@ -322,6 +319,7 @@
     <connection connection_priority="50" dest="Dbg_Binary_Video_Display.input" interface="" source="Lane_Detection.binary_video" />
     <connection connection_priority="50" dest="Dbg_Canny_Video_Display.input" interface="" source="Lane_Detection.canny_video" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.emergencystop" interface="" source="Felix_Ultrasonic_Obstacle_Detection.obstacleInDrivingDirection" />
+    <connection connection_priority="50" dest="Main.BrakeLights" interface="" source="Franz_Wheel_Speed_Controller.brake_lights" />
    </graph>
   </configuration>
  </configurations>
