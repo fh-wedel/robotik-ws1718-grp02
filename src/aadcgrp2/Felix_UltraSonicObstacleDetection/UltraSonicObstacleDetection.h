@@ -113,6 +113,9 @@ protected: // overwrites cFilter
     cMedian rearCenterFilter;
     cMedian rearLeftFilter;
 
+    cMedian sideRightFilter;
+    cMedian sideLeftFilter;
+
 private:
     /*! creates all the input Pins
     * \param __exception_ptr the exception pointer
@@ -147,6 +150,7 @@ private:
 // Own Helper Functions
 
     tFloat32 getAmplificationForMountingAngle(tFloat32 mountingAngle);
+    tFloat32 getThreshholdForMountingAngle(tFloat32 mountingAngle);
 
     tResult OnValueChanged(tUltrasonicStruct* pSampleData);
 
