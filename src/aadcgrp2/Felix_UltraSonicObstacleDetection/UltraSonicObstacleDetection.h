@@ -97,7 +97,9 @@ protected: // overwrites cFilter
         tFloat32 rearDetectionThreshhold;
 
         tFloat32 dynamicSteeringAndSpeedThreshhold;
-        tFloat32 terminalThreshhold;
+
+        tFloat32 upperTerminalThreshhold;
+        tFloat32 lowerTerminalThreshhold;
 
     } m_filterProperties;
 

@@ -20,6 +20,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #include "stdafx.h"
 #include "UltraSonicObstacleDetection.h"
 
+#define fbound(low, x, up) (fmin(up, fmax(x, low)))
 
 #define SC_PROP_DEBUG_MODE "Debug Mode"
 
@@ -57,9 +58,13 @@ m_bDebugModeEnabled(tFalse) {
     SetPropertyStr("ObstacleDetection::DynamicSteeringAndSpeedThreshhold" NSSUBPROP_DESCRIPTION, "when a value should be considered as an obstacle");
     SetPropertyBool("ObstacleDetection::DynamicSteeringAndSpeedThreshhold" NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    SetPropertyFloat("ObstacleDetection::TerminalThreshhold", 7.0f);
-    SetPropertyStr("ObstacleDetection::TerminalThreshhold" NSSUBPROP_DESCRIPTION, "when a value should be considered as an obstacle");
-    SetPropertyBool("ObstacleDetection::TerminalThreshhold" NSSUBPROP_ISCHANGEABLE, tTrue);
+    SetPropertyFloat("ObstacleDetection::UpperTerminalThreshhold", 150.0f);
+    SetPropertyStr("ObstacleDetection::UppperTerminalThreshhold" NSSUBPROP_DESCRIPTION, "maximum detection distance");
+    SetPropertyBool("ObstacleDetection::UpperTerminalThreshhold" NSSUBPROP_ISCHANGEABLE, tTrue);
+
+    SetPropertyFloat("ObstacleDetection::LowerTerminalThreshhold", 7.0f);
+    SetPropertyStr("ObstacleDetection::LowerTerminalThreshhold" NSSUBPROP_DESCRIPTION, "when a distance value should at least be considered as an obstacle");
+    SetPropertyBool("ObstacleDetection::LowerTerminalThreshhold" NSSUBPROP_ISCHANGEABLE, tTrue);
 
     SetPropertyInt("MedianFilter::WindowSize", 10);
     SetPropertyStr("MedianFilter::WindowSize" NSSUBPROP_DESCRIPTION, "the number of values to consider.");
@@ -143,8 +148,11 @@ tResult cUltraSonicObstacleDetection::PropertyChanged(const tChar* strName) {
     } else if (cString::IsEqual(strName, "ObstacleDetection::DynamicSteeringAndSpeedThreshhold")) {
         m_filterProperties.dynamicSteeringAndSpeedThreshhold = GetPropertyFloat("ObstacleDetection::DynamicSteeringAndSpeedThreshhold");
 
-    } else if (cString::IsEqual(strName, "ObstacleDetection::TerminalThreshhold")) {
-        m_filterProperties.terminalThreshhold = GetPropertyFloat("ObstacleDetection::TerminalThreshhold");
+    } else if (cString::IsEqual(strName, "ObstacleDetection::UpperTerminalThreshhold")) {
+        m_filterProperties.upperTerminalThreshhold = GetPropertyFloat("ObstacleDetection::UpperTerminalThreshhold");
+
+    } else if (cString::IsEqual(strName, "ObstacleDetection::LowerTerminalThreshhold")) {
+        m_filterProperties.lowerTerminalThreshhold = GetPropertyFloat("ObstacleDetection::LowerTerminalThreshhold");
 
     } else if (cString::IsEqual(strName, "MedianFilter::WindowSize")) {
 
@@ -331,20 +339,25 @@ tFloat32 cUltraSonicObstacleDetection::getAmplificationForMountingAngle(tFloat32
 
     // NOTE: React more strictly if velocity is high.
     #define DEFAULT_SPEED (0.25)
-    #define fbound(low, x, up) (fmin(up, fmax(x, low)))
     float speedFactor = fbound(1.0f, m_currentSpeed / DEFAULT_SPEED, 2.0f);
     amplification *= speedFactor;
-
-    // cap it so if way too close it still reacts.
-    amplification = fmax(m_filterProperties.terminalThreshhold, amplification);
-
-    if (m_bDebugModeEnabled) {
-        printf("\nSteeringAngle: %4.2f \t\t| MountingAngle: %4.2f \t\t| Amplification: %4.2f\n", m_currentSteeringAngle, mountingAngle, amplification);
-    }
 
     return amplification;
 }
 
 tFloat32 cUltraSonicObstacleDetection::getThreshholdForMountingAngle(tFloat32 mountingAngle) {
-    return m_filterProperties.dynamicSteeringAndSpeedThreshhold * getAmplificationForMountingAngle(mountingAngle);
+
+    float dynamicThreshhold = m_filterProperties.dynamicSteeringAndSpeedThreshhold * getAmplificationForMountingAngle(mountingAngle);
+
+    //NOTE: We cap it so if way too close it still reacts.
+    float boundedThreshhold = fbound(m_filterProperties.lowerTerminalThreshhold, dynamicThreshhold, m_filterProperties.upperTerminalThreshhold);
+
+    if (m_bDebugModeEnabled) {
+        printf(
+            "\nSteeringAngle: %4.2f \t\t| MountingAngle: %4.2f \t\t| dynamicThreshhold: %4.2f \t\t| boundedThreshhold: %4.2f\n",
+            m_currentSteeringAngle, mountingAngle, dynamicThreshhold, boundedThreshhold
+        );
+    }
+
+    return boundedThreshhold;
 }
