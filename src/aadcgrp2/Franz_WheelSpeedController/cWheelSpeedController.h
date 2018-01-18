@@ -22,6 +22,9 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS “AS IS” AND ANY EXPRES
 
 #include "stdafx.h"
 #include "../includes/StdFilter.h"
+#include <math.h>
+#include <vector>
+#include <algorithm>
 
 #define OID_ADTF_WHEELSPEEDCONTROLLER "adtf.aadc.franz.wheelSpeedController"
 /*! @defgroup WheelSpeedController Wheel Speed Controller
@@ -97,6 +100,9 @@ class cWheelSpeedController : public cStdFilter
 
     /*! the output pin for the manipulated value */
     cOutputPin m_oOutputActuator;
+
+    /*! the output pin for the brake lights */
+    cOutputPin m_oOutputBrakeLights;
 
 public:
     /*! constructor for  class
@@ -293,6 +299,27 @@ private:
     /*! holds the last speed value */
     tFloat64    m_f64LastSpeedValue;
 
+    /*! holds the current state of the brake lights */
+    tBool       m_bBrakeLights;
+
+    /*! margin of Output difference to turn on Brake lights */
+    tFloat64    m_f64BrakeMargin;
+
+    // Calculate Median for Brake Light outputs
+    void pushValue(tBool newValue);
+    bool calculateMedian();
+
+    /*! the number of values to consider */
+    int windowSize;
+
+    /*! Flag indicating whether the median has been calculated for the current input set. */
+    bool medianIsUpToDate;
+
+    /*! The most recent median value. */
+    bool calculatedMedian;
+
+    /*! the most up to date values */
+    std::vector<bool> storedValues;
 
 
 public: // implements IObject
