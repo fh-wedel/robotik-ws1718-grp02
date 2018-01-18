@@ -207,11 +207,11 @@ tResult cCollisionDetection::OnValueChanged(
 
     bool collisionDetected = true;
 
-    //TODO: achsen richtig gewählt?
     tFloat32 a_x = accelXFilter.calculateMedian(); 
     tFloat32 a_y = accelYFilter.calculateMedian();
+    tFloat32 a_z = accelYFilter.calculateMedian();
     
-    tFloat32 a = sqrt(a_x*a_x + a_y*a_y);
+    tFloat32 a = sqrt(a_x*a_x + a_y*a_y + a_z*a_z);
 
     //TODO: werte ermitteln
     if (m_currentSpeed > 0.1 || a > 0.1) {
@@ -219,7 +219,7 @@ tResult cCollisionDetection::OnValueChanged(
     }
 
     if (m_bDebugModeEnabled) {
-	printf("\n\t\t<%4.2f | %4.2f | %4.2f>\n", a_x, a_y, m_currentSpeed);
+	printf("\n\t\t<%4.2f | %4.2f | %4.2f | %4.2f>\n", a_x, a_y, a_z, m_currentSpeed);
 	printf("Collision Detected: %s.\n",(collisionDetected) ? "yes" : " no");
     }
 
