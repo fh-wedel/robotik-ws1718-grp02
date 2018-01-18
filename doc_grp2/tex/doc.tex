@@ -365,6 +365,7 @@
 		&&||\quad b=
 		\begin{cases} 
 			1,					& \text{wenn } v \leq v_{std} \\
+			\frac{16}{9},		& \text{wenn } v \geq \frac{16}{9} \cdot v_{std} \\
 			\frac{v}{v_{std}}, 	& \text{andernfalls}
 		\end{cases}
 	\end{align*}
@@ -394,7 +395,7 @@
 		visualize as smooth line/.list={func0, func25, funcSpeed},
 		func0={label in legend={text=Standard}},
 		func25={label in legend={text=Lenkwinkel $+25\degree$}},
-		funcSpeed={label in legend={text=Geschwindigkeit 2x}},
+		funcSpeed={label in legend={text=Geschwindigkeit $v \geq \frac{16}{9} \cdot v_{std}$}},
 		data/format=function
 		]
 
@@ -410,7 +411,7 @@
 	
 		data [set=funcSpeed] {
 			var x : interval [-45:45] samples 30;
-			func y = 2 / sqrt(0.5 / 0.25) - e^(-3 * (0.5 / 0.25) * (\value x / 180 * pi)^2);
+			func y = 2 / sqrt(16/9) - e^(-3 * (16/9) * (\value x / 180 * pi)^2);
 		};
 		\end{tikzpicture}
 
