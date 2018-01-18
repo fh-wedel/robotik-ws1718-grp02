@@ -207,28 +207,20 @@ tResult cCollisionDetection::OnValueChanged(
 
     bool collisionDetected = true;
 
-    //##################
+    //TODO: achsen richtig gewählt?
+    tFloat32 a_x = accelXFilter.calculateMedian(); 
+    tFloat32 a_y = accelYFilter.calculateMedian();
+    
+    tFloat32 a = sqrt(a_x*a_x + a_y*a_y);
 
-    //LOGIC GOES HERE :)
-/*
-    m_currentSteeringAngle;
-    m_currentSpeed;
-
-    accelXFilter.calculateMedian();
-    accelYFilter.calculateMedian();
-    accelZFilter.calculateMedian();
-*/
-
-
-    //##################
+    //TODO: werte ermitteln
+    if (m_currentSpeed > 0.1 || a > 0.1) {
+    	collisionDetected = false;
+    }
 
     if (m_bDebugModeEnabled) {
-        printf("\n\t\t<%4.2f | %4.2f | %4.2f>\n",
-            accelXFilter.calculateMedian(),
-            accelYFilter.calculateMedian(),
-            accelZFilter.calculateMedian()
-        );
-        printf("Collision Detected: %s.\n", (collisionDetected) ? "yes" : " no");
+	printf("\n\t\t<%4.2f | %4.2f | %4.2f | %4.2f>\n", a_x, a_y, a_z, m_currentSpeed);
+	printf("Collision Detected: %s.\n",(collisionDetected) ? "yes" : " no");
     }
 
     // Transmit Results
