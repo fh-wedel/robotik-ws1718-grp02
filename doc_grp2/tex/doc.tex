@@ -34,9 +34,9 @@
 %DONE: Autor der jeweiligen Funktion - ✓
 %DONE: Sinnabschnitte - ✓
 %DONE: Literatur/Quellverzeichnis - ✓
+%DONE: Gruppenfoto (mit Auto) - ✓
 
 %TODO: In Vergangenheit schreiben
-%TODO: Gruppenfoto (mit Auto)
 %TODO: Passiver Schreibstil
 %TODO: Bilder
 %TODO: Allgemeine Beschreibungen der Kapitel
@@ -395,8 +395,7 @@
 \section{Hinderniserkennung}
 \label{section_ObstacleDetection}
 
-	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.
-	\footnote{Dieses Feature befindet sich noch in Entwicklung.} % TODO: Whitespace vor Fußnoten entfernen. --hoe
+	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 
 \subsection{Theoretische Überlegungen}
 
@@ -480,9 +479,6 @@
 \chapter{Fahrbahnerkennung}
 % Author: Frauke Jörgens und Jan Ottmüller
 
-
-% TODO: Perspektivische Verzerrung erwähnen
-
 \section{CPU vs. GPU}
 % Author: Frauke Jörgens
 	Im Zusammenhang mit der Nutzung der OpenCV-Bibliothek sahen wir uns mit dem Problem, ob wir für die Bildverarbeitung die CPU oder die GPU verwenden, konfrontiert, da beides in OpenCV angeboten wird.
@@ -496,7 +492,6 @@
 	Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
 
 % NOTE: Erfahrungen a la "Blöd, zwischen GPU/CPU zu switchen?" -- "Doch ziemlich leichte Handhabung" -- "Wenig Codebeispiele" ?
-
 
 \pagebreak
 
@@ -517,9 +512,17 @@
 % Author: Frauke Jörgens
 	Die von einer Kamera (Realsense oder Basler) aufgenommene RGB-Bilder werden zunächst in das HSV-Farbmodell übertragen, um eine genauere Segmentierung anhand von Farben im Bild zu ermöglichen.
 	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt. Die zugehörigen Parameter ($hue$, $saturation$ und $value$), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
-	Die für uns Idealen Parameter für das Blaue Klebeband sind:
-	%TODO formatiertung? tabelle?
-	Hue High: 120, Hue Low: 90, Saturation: 100, Value: 80.
+	Die für uns idealen Parameter für das Blaue Klebeband sind in \autoref{table-hsv-values} aufgeführt.
+	\begin{table}
+		\centering
+		\begin{tabular}{l|l}
+			Hue / Farbton & 90 - 120\\\hline
+			Saturation / Sättigung & 100 - 255\\\hline
+			Value / Helligkeitswert & 80 - 255
+		\end{tabular}
+		\label{table-hsv-values}
+		\caption{Gut funktionierende Parameter für die blaue Fahrbahnmarkierung. In ADTF werden \texttt{HueLow}, \texttt{HueHigh} und die unteren Grenzen für Sättigung (\texttt{Saturation}) und Helligkeitswert (\texttt{Value}) gesetzt.}
+	\end{table}
 	Das Ergebnis dieser Operation ist ein Binärbild es unterteilt die Pixel des HSV-Bilds in Pixel, die Teil des Unterraums sind (weiß) und solche, die nicht Teil des Unterraums sind (schwarz). Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \texttt{cv::inRange} genutzt.
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
 
@@ -531,6 +534,8 @@
 	Angewandt auf das binarisierte Bild der Straße hat der Canny-Algorithmus folgenden Effekt:
 
 	% TODO Bilder!
+	
+	% TODO perspektivische Verzerrung erwähnen
 
 \section{Hough Line Transformation}
 % Author: Jan Ottmüller
@@ -555,10 +560,29 @@
 		\label{img-Winkelnormalisierung}
 	\end{figure}
 
-	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden. Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt. Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden. Der Vergleich erfolgt anhand des Winkels des Normalenvektors der Linie und die Länge dieses Normalenvektors. Nach der Clusterung gibt es eine Zuordnung jeder Linie in eine Klasse. Alle Linien einer Klasse werden anschließend zu einer Linie zusammengefasst, indem Winkel und Abstand der Klasse zugehörigen Linien gemittelt werden.
+	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden. Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt. Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden. Der Vergleich erfolgt anhand des Winkels des Normalenvektors der Linie und die Länge dieses Normalenvektors. Nach der Clusterung gibt es eine Zuordnung jeder Linie in eine Klasse. Alle Linien einer Klasse werden anschließend zu einer Linie zusammengefasst, indem Winkel und Abstand der Klasse zugehörigen Linien gemittelt werden. Zusätzlich wird für jede zusammengefasste Linie gespeichert, aus wie vielen Linien sie zusammengefasst wurde, um anhand dessen eine Gewichtung zu ermöglichen.
 
 \section{Klassifizierung}
-%TODO machen
+% Author: Frauke Jörgens
+	Nachdem die Linien aufgrund des Ähnlichkeitskriteriums gebündelt wurden, werden sie in Kategorien unterteilt, um das Straßenbild sinngemäß zusammenzufassen. Wir haben uns für eine Unterteilung in folgende Kategorien entschieden:
+	\begin{table}
+		\begin{tabular}{p{.125\textwidth}|p{.35\textwidth}|p{.35\textwidth}|p{.05\textwidth}}
+			Art der Linie & Beschreibung & Bedingung & Farbe\\\hline
+			Linke Linie &  Die linke erkannte Linie. Aufgrund des Kamerablickwinkels entspricht diese Linie also eigentlich der mittleren gestrichelten Linie der Straße & Die Linie ist vertikal (ihr Winkel zur y-Achse ist kleiner als $20\degree$) und sie befindet sich auf der linken Seite des Bildes & grün\\\hline
+			Rechte Linie & Die rechte erkannte Linie (= die rechte Fahrbahnmarkierung) & Die Linie ist vertikal (s.o.) und sie befindet sich auf der rechten Seite des Bildes & blau\\\hline
+			Haltelinie & Eine Haltelinie, wie sie an einer Kreuzung üblich ist & Die Linie ist horizontal (ihr Winkel zur y-Achse ist größer als $75 \degree$) & rot\\\hline
+			Unklassifi-zierte Linie & Eine Linie, die keiner der obigen Kategorien entspricht & Eine Linie wird keiner der Kategorien zugeordnet  & gelb\\
+		\end{tabular}
+		\label{table-lineClassification}
+		\caption{Beschreibung der verschiedenen Klassen von erkannten und nicht erkannten Linien. In \autoref{img-lines} werden die Linien in ihrer erkannten Farbe (Klasse) und entsprechend der Anzahl der erkannten Linien dicker oder dünner gezeichnet.}
+	\end{table}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=.5\textwidth]{assets/line-classification}
+		\label{img-lines}
+		\caption{Canny-Bild mit erkannten Linien. Oben links wird der berechnete Lenkwinkel angezeigt.}
+	\end{figure}
 
 \subsection{Haltelinien}
 % Author: Jan Ottmüller
@@ -621,6 +645,8 @@
 		\label{img-spurzentrierung-function}
 	\end{figure}
 
+	% TODO Besonderheiten in der Kurve erwähnen
+
 \section{Weitere Überlegungen}
 % Author: Jan Ottmüller
 
@@ -630,6 +656,8 @@
 \subsection{Alternative Fahrstreifenrepräsentation}
 
 	In den Anfängen der Implementierung entschieden wir uns dafür, die Fahrstreifen durch Geraden zu repräsentieren und aus diesen den Lenkwinkel zu berechen. Hierdurch können gerade Fahrstreifen sehr präzise dargestellt werden, jedoch zeigt das Verfahren Schwächen bei der Repräsentation von Kurven. Eine andere Form der Darstellung wäre eine Polynomfunktion zweiten Grades. Hierbei kann die Polynomfunktion genau an die Kurve angepasst werden. Da unser Ansatz jedoch schon recht gut funktionierte und wir keine geeignete Funktion für das Anpassen der Polynomfunktion fanden, haben wir uns auf unseren schon implementierten Ansatz weiter konzentriert.
+	
+	% TODO evtl. Jury-Modul mit abbiegen usw. nach Haltelinie erwähnen
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modifikationen am Fahrzeug}
