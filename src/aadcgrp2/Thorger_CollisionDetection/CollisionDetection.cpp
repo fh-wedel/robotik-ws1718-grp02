@@ -219,7 +219,7 @@ tResult cCollisionDetection::OnValueChanged(
     }
 
     if (m_bDebugModeEnabled) {
-	printf("\n\t\t<%4.2f | %4.2f | %4.2f | %4.2f>\n", a_x, a_y, a_z, m_currentSpeed);
+	printf("\n\t\t<%4.2f | %4.2f | %4.2f>\n", a_x, a_y, m_currentSpeed);
 	printf("Collision Detected: %s.\n",(collisionDetected) ? "yes" : " no");
     }
 
