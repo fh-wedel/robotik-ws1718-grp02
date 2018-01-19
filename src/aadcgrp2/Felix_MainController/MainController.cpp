@@ -26,7 +26,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cMainController)
 
-cMainController::cMainController(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
+cMainController::cMainController(const tChar* __info) : cStdFilter(__info), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
     SetPropertyBool(SC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
@@ -34,8 +34,6 @@ cMainController::cMainController(const tChar* __info) : cFilter(__info), m_bDebu
     SetPropertyBool("Properties::ResetCollisionDetected", false);
     SetPropertyStr("Properties::ResetCollisionDetected" NSSUBPROP_DESCRIPTION, "Reset the collision detected flag and continue operation.");
     SetPropertyBool("Properties::ResetCollisionDetected" NSSUBPROP_ISCHANGEABLE, tTrue);
-
-    m_mostRecentValue = 0;
 }
 
 cMainController::~cMainController() {}
@@ -126,19 +124,19 @@ tResult cMainController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1
         RETURN_IF_POINTER_NULL(pMediaSample);
 
         if (pSource == &m_InputSteeringAngle) {
-            m_targetSteeringAngle = readInputFloatValue(pMediaSample);
+            m_targetSteeringAngle = readFloatValue(pMediaSample);
         } else if (pSource == &m_InputSpeed) {
-            m_targetSpeed = readInputFloatValue(pMediaSample);
+            m_targetSpeed = readFloatValue(pMediaSample);
         } else if (pSource == &m_InputObstacleDetected) {
-            m_obstacleDetected = readInputBoolValue(pMediaSample);
+            m_obstacleDetected = readBoolValue(pMediaSample);
         } else if (pSource == &m_InputCollisionDetected) {
-            m_collisionDetected |= readInputBoolValue(pMediaSample);
+            m_collisionDetected |= readBoolValue(pMediaSample);
         } else if (pSource == &m_InputCrossingHasLeft) {
-            m_crossingHasLeft = readInputBoolValue(pMediaSample);
+            m_crossingHasLeft = readBoolValue(pMediaSample);
         } else if (pSource == &m_InputCrossingHasRight) {
-            m_crossingHasRight = readInputBoolValue(pMediaSample);
+            m_crossingHasRight = readBoolValue(pMediaSample);
         } else if (pSource == &m_InputCrossingHasStraight) {
-            m_crossingHasStraight = readInputBoolValue(pMediaSample);
+            m_crossingHasStraight = readBoolValue(pMediaSample);
         }
 
         return OnValueChanged();
@@ -197,10 +195,12 @@ tResult cMainController::OnValueChanged() {
         blinkerRightOn = false;
     }
 
-    transmitFloatValue(m_targetSteeringAngle, m_OutputSteeringAngle);
+    //TODO: Return if failed..
+
+    transmitFloatValue(steeringAngle, &m_OutputSteeringAngle);
     m_previousWrittenSteeringAngle = steeringAngle;
 
-    transmitFloatValue(m_targetSpeed, m_OutputSpeed);
+    transmitFloatValue(speed, &m_OutputSpeed);
 
     transmitBoolValue(headLightsOn, &m_OutputHeadLights);
     transmitBoolValue(brakeLightsOn, &m_OutputBrakeLights);

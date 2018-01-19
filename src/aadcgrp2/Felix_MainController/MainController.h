@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define FILTER_NAME "Felix MainController"
 
 /*! this is the main class for the steering controller filter */
-class cMainController : public adtf::cFilter {
+class cMainController : public cStdFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -114,14 +114,15 @@ private:
     * \param __exception_ptr the exception pointer
     * \return standard adtf error code
     */
-    tResult CreateInputPins(ucom::IException** __exception_ptr = NULL);
+    tResult CreateBoolInputPins(ucom::IException** __exception_ptr = NULL);
+    tResult CreateFloatInputPins(ucom::IException** __exception_ptr = NULL);
 
     /*! creates all the output Pins
     * \param __exception_ptr the exception pointer
     * \return standard adtf error code
     */
-    tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
-
+    tResult CreateBoolOutputPins(ucom::IException** __exception_ptr = NULL);
+    tResult CreateFloatOutputPins(ucom::IException** __exception_ptr = NULL);
 // Debug
 
     /*! if the debug mode is enabled */
