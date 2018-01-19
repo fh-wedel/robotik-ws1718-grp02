@@ -205,21 +205,22 @@ tResult cCollisionDetection::OnValueChanged(
     accelYFilter.pushValue(accelY);
     accelZFilter.pushValue(accelZ);
 
-    bool collisionDetected = true;
-
     tFloat32 a_x = accelXFilter.calculateMedian(); 
     tFloat32 a_y = accelYFilter.calculateMedian();
     tFloat32 a_z = accelYFilter.calculateMedian();
     
+    //Berechnung der Beschleunigung über Pythagoras in drei Dimensionen
     tFloat32 a = sqrt(a_x*a_x + a_y*a_y + a_z*a_z);
 
+    bool collisionDetected = true;
+    
     //TODO: werte ermitteln
-    if (m_currentSpeed > 0.1 || a > 0.1) {
+    if (a > 0.1) {
     	collisionDetected = false;
     }
 
     if (m_bDebugModeEnabled) {
-	printf("\n\t\t<%4.2f | %4.2f | %4.2f | %4.2f>\n", a_x, a_y, a_z, m_currentSpeed);
+	printf("\n\t\t<%4.2f | %4.2f | %4.2f>\n", a_x, a_y, a_z);
 	printf("Collision Detected: %s.\n",(collisionDetected) ? "yes" : " no");
     }
 
