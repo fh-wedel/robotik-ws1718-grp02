@@ -47,10 +47,20 @@
     </filter>
     <connection connection_priority="50" dest="Felix_AngleToServo_Converter.angle" interface="" source="SteeringAngle" />
     <connection connection_priority="50" dest="Base_Config.SteeringController" interface="" source="Felix_AngleToServo_Converter.servoValue" />
-    <inport alias="BrakeLights" />
-    <connection connection_priority="50" dest="Base_Config.brakeLightEnabled" interface="" source="BrakeLights" />
     <outport alias="InerMeasUnitStruct" />
     <connection connection_priority="50" dest="InerMeasUnitStruct" interface="" source="Base_Config.InerMeasUnitStruct" />
+    <inport alias="HeadLightsEnabled" />
+    <inport alias="HazardLightsEnabled" />
+    <inport alias="BrakeLightsEnabled" />
+    <inport alias="TurnSignalLeftEnabled" />
+    <inport alias="TurnSignalRightEnabled" />
+    <inport alias="ReverseLightEnabled" />
+    <connection connection_priority="50" dest="Base_Config.brakeLightEnabled" interface="" source="BrakeLightsEnabled" />
+    <connection connection_priority="50" dest="Base_Config.headLightEnabled" interface="" source="HeadLightsEnabled" />
+    <connection connection_priority="50" dest="Base_Config.hazzardLightEnabled" interface="" source="HazardLightsEnabled" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalRightEnabled" interface="" source="TurnSignalRightEnabled" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalLeftEnabled" interface="" source="TurnSignalLeftEnabled" />
+    <connection connection_priority="50" dest="Base_Config.reverseLightEnabled" interface="" source="ReverseLightEnabled" />
    </graph>
   </configuration>
   <configuration description="" name="Playback">
@@ -306,20 +316,16 @@
     <filter alias="Felix_Ultrasonic_Obstacle_Detection" idref="adtf.aadc.felix.UltraSonicObstacleDetection" priority="2">
      <settings />
     </filter>
-    <connection connection_priority="50" dest="Felix_Ultrasonic_Obstacle_Detection.currentSteeringAngle" interface="" source="Felix_MedianFilter" />
     <subgraph alias="Lane_Detection" idref="Lane_Detection" priority="3" />
     <connection connection_priority="50" dest="RGB_Display.input" interface="" source="Lane_Detection.video_rgb" />
     <connection connection_priority="50" dest="Felix_MedianFilter.input" interface="" source="Lane_Detection.steeringAngle" />
     <subgraph alias="Main" idref="Main" priority="4" />
     <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.measured_wheelSpeed" interface="" source="Main.measured_speed" />
-    <connection connection_priority="50" dest="Main.SteeringAngle" interface="" source="Felix_MedianFilter.output" />
     <connection connection_priority="50" dest="Main.SpeedController" interface="" source="Franz_Wheel_Speed_Controller.actuator_output" />
     <connection connection_priority="50" dest="Felix_Ultrasonic_Obstacle_Detection.currentSpeed" interface="" source="Main.measured_speed" />
-    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Lane_Detection.speed" />
     <connection connection_priority="50" dest="Felix_Ultrasonic_Obstacle_Detection.UltrasonicStruct" interface="" source="Main.UltrasonicStruct" />
     <filter alias="Dbg_Binary_Video_Display" idref="adtf.visual.video_display" priority="5" />
     <filter alias="Dbg_Canny_Video_Display" idref="adtf.visual.video_display" priority="6" />
-    <connection connection_priority="50" dest="Main.BrakeLights" interface="" source="Franz_Wheel_Speed_Controller.brake_lights" />
     <filter alias="Dbg_Perps_Transform_Video_Display" idref="adtf.visual.video_display" priority="6" />
     <connection connection_priority="50" dest="Dbg_Perps_Transform_Video_Display.input" interface="" source="Lane_Detection.persp_transform_video" />
     <connection connection_priority="50" dest="Video_Display.input" interface="" source="Lane_Detection.video_lanes" />
@@ -333,7 +339,20 @@
      </settings>
     </filter>
     <connection connection_priority="50" dest="Thorger_Collision_Detection.InerMeasUnit_Struct" interface="" source="Main.InerMeasUnitStruct" />
-    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.emergencystop" interface="" source="Thorger_Collision_Detection.Collision Detected" />
+    <filter alias="Felix_MainController" idref="adtf.aadc.felix.MainController" priority="8" />
+    <connection connection_priority="50" dest="Felix_MainController.collisionDetected" interface="" source="Thorger_Collision_Detection.Collision Detected" />
+    <connection connection_priority="50" dest="Felix_MainController.obstacleDetected" interface="" source="Felix_Ultrasonic_Obstacle_Detection.obstacleInDrivingDirection" />
+    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.set_WheelSpeed" interface="" source="Felix_MainController.speed" />
+    <connection connection_priority="50" dest="Felix_MainController.targetSteeringAngle" interface="" source="Felix_MedianFilter" />
+    <connection connection_priority="50" dest="Felix_Ultrasonic_Obstacle_Detection.currentSteeringAngle" interface="" source="Felix_MainController.steeringAngle" />
+    <connection connection_priority="50" dest="Main.SteeringAngle" interface="" source="Felix_MainController.steeringAngle" />
+    <connection connection_priority="50" dest="Felix_MainController.targetSpeed" interface="" source="Lane_Detection.speed" />
+    <connection connection_priority="50" dest="Franz_Wheel_Speed_Controller.emergencystop" interface="" source="Felix_MainController.EmergencyStop" />
+    <connection connection_priority="50" dest="Main.HeadLightsEnabled" interface="" source="Felix_MainController.HeadLights" />
+    <connection connection_priority="50" dest="Main.BrakeLightsEnabled" interface="" source="Felix_MainController.BrakeLights" />
+    <connection connection_priority="50" dest="Main.TurnSignalRightEnabled" interface="" source="Felix_MainController.BlinkerRight" />
+    <connection connection_priority="50" dest="Main.TurnSignalLeftEnabled" interface="" source="Felix_MainController.BlinkerLeft" />
+    <connection connection_priority="50" dest="Main.HazardLightsEnabled" interface="" source="Felix_MainController.HazardLights" />
    </graph>
   </configuration>
  </configurations>

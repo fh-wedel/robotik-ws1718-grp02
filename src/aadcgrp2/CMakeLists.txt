@@ -59,7 +59,7 @@ add_subdirectory(Felix_AngleToServoValue)
 add_subdirectory(Felix_LinearFunction)
 add_subdirectory(Felix_MedianFilter)
 add_subdirectory(Felix_UltraSonicObstacleDetection)
-#add_subdirectory(Felix_MainController)
+add_subdirectory(Felix_MainController)
 
 
 #--- Thorger ---

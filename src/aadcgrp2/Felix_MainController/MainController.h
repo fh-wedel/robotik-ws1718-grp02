@@ -53,6 +53,8 @@ class cMainController : public cStdFilter {
     cOutputPin m_OutputSpeed;
     cOutputPin m_OutputSteeringAngle;
 
+    cOutputPin m_OutputEmergencyStop;
+
     /* auxiliary outputs */
     cOutputPin m_OutputHeadLights;
     cOutputPin m_OutputBrakeLights;

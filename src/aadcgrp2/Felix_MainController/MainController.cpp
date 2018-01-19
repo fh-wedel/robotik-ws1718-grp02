@@ -42,8 +42,8 @@ cMainController::~cMainController() {}
 
 tResult cMainController::CreateFloatInputPins(__exception) {
     /* inputs for movement */
-    RETURN_IF_FAILED(registerFloatInputPin("steeringAngle", &m_InputSteeringAngle, __exception_ptr));
-    RETURN_IF_FAILED(registerFloatInputPin("speed",         &m_InputSpeed, __exception_ptr));
+    RETURN_IF_FAILED(registerFloatInputPin("targetSteeringAngle", &m_InputSteeringAngle, __exception_ptr));
+    RETURN_IF_FAILED(registerFloatInputPin("targetSpeed",         &m_InputSpeed, __exception_ptr));
 
     RETURN_NOERROR;
 }
@@ -83,6 +83,8 @@ tResult cMainController::CreateBoolOutputPins(__exception) {
     RETURN_IF_FAILED(registerBoolOutputPin("BlinkerRight",   &m_OutputBlinkerRight, __exception_ptr));
     RETURN_IF_FAILED(registerBoolOutputPin("HazardLights",   &m_OutputHazardLights, __exception_ptr));
 
+    RETURN_IF_FAILED(registerBoolOutputPin("EmergencyStop",   &m_OutputEmergencyStop, __exception_ptr));
+
     RETURN_NOERROR;
 
 }
@@ -110,9 +112,8 @@ tResult cMainController::PropertyChanged(const tChar* strName) {
     RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
     //associate the properties to the member
     if (cString::IsEqual(strName, "Properties::ResetCollisionDetected")
-        && GetPropertyBool("Properties::ResetCollisionDetected")) {
-
-        SetPropertyBool("Properties::ResetCollisionDetected", false);
+    //    && GetPropertyBool("Properties::ResetCollisionDetected")
+    ) {
         m_collisionDetected = false;
     }
 
@@ -149,7 +150,7 @@ tResult cMainController::OnValueChanged() {
 
     bool headLightsOn = false;
     bool brakeLightsOn = false;
-    bool hazardLightsOn = false;
+    bool emergencyStop = false;
 
     bool blinkerLeftOn = false;
     bool blinkerRightOn = false;
@@ -170,7 +171,7 @@ tResult cMainController::OnValueChanged() {
         // Be a Christmas Tree :-)
         headLightsOn = true;
         brakeLightsOn = true;
-        hazardLightsOn = m_collisionDetected;
+        emergencyStop = true;
 
 
     } else {
@@ -184,7 +185,7 @@ tResult cMainController::OnValueChanged() {
         brakeLightsOn =  false;
 
         /* No collision */
-        hazardLightsOn = false;
+        emergencyStop = false;
 
         /*TODO: Where do we want to go? */
         turnLeft = m_crossingHasLeft;
@@ -205,7 +206,7 @@ tResult cMainController::OnValueChanged() {
     transmitBoolValue(headLightsOn, &m_OutputHeadLights);
     transmitBoolValue(brakeLightsOn, &m_OutputBrakeLights);
 
-    transmitBoolValue(hazardLightsOn, &m_OutputHazardLights);
+    transmitBoolValue(emergencyStop, &m_OutputHazardLights);
 
     /* indicate turn direction */
     transmitBoolValue(blinkerLeftOn, &m_OutputBlinkerLeft);
@@ -215,6 +216,8 @@ tResult cMainController::OnValueChanged() {
     transmitBoolValue(turnLeft, &m_OutputCrossingTurnLeft);
     transmitBoolValue(turnRight, &m_OutputCrossingTurnRight);
     transmitBoolValue(keepStraight, &m_OutputCrossingGoStraight);
+
+    transmitBoolValue(emergencyStop, &m_OutputEmergencyStop);
 
     RETURN_NOERROR;
 }

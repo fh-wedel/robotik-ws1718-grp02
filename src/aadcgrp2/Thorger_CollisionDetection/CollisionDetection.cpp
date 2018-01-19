@@ -213,13 +213,10 @@ tResult cCollisionDetection::OnValueChanged(
     //Berechnung der Beschleunigung über Pythagoras in drei Dimensionen
     tFloat32 a = sqrt(a_x*a_x + a_y*a_y + a_z*a_z);
 
-    //collisionDetected = false;
 
-    //TODO: werte ermitteln
+    collisionDetected = false;
     if (a > m_filterProperties.detectionThreshhold) {
-    	collisionDetected |= true;
-
-
+    	collisionDetected = true;
     }
 
     if (collisionDetected && m_bDebugModeEnabled) {
