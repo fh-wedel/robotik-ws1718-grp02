@@ -33,6 +33,7 @@ accelZFilter(1),
 m_bDebugModeEnabled(tFalse) {
     m_currentSteeringAngle = 0;
     m_currentSpeed = 0;
+    collisionDetected = false;
 
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
@@ -195,7 +196,7 @@ tResult cCollisionDetection::OnValueChanged(
 ) {
 
     if (m_bDebugModeEnabled) {
-        printf("\n\t\t<%4.2f | %4.2f | %4.2f>\n",
+        printf("<%4.2f | %4.2f | %4.2f>\n",
             accelX, accelY, accelZ
         );
     }
@@ -205,23 +206,28 @@ tResult cCollisionDetection::OnValueChanged(
     accelYFilter.pushValue(accelY);
     accelZFilter.pushValue(accelZ);
 
-    tFloat32 a_x = accelXFilter.calculateMedian(); 
+    tFloat32 a_x = accelXFilter.calculateMedian();
     tFloat32 a_y = accelYFilter.calculateMedian();
-    tFloat32 a_z = accelYFilter.calculateMedian();
-    
+    tFloat32 a_z = accelZFilter.calculateMedian();
+
     //Berechnung der Beschleunigung über Pythagoras in drei Dimensionen
     tFloat32 a = sqrt(a_x*a_x + a_y*a_y + a_z*a_z);
 
-    bool collisionDetected = true;
-    
+    //collisionDetected = false;
+
     //TODO: werte ermitteln
-    if (a > 0.1) {
-    	collisionDetected = false;
+    if (a > m_filterProperties.detectionThreshhold) {
+    	collisionDetected |= true;
+
+
+    }
+
+    if (collisionDetected && m_bDebugModeEnabled) {
+       printf("\t\t\t\tCollision Detected\n");
     }
 
     if (m_bDebugModeEnabled) {
-	printf("\n\t\t<%4.2f | %4.2f | %4.2f>\n", a_x, a_y, a_z);
-	printf("Collision Detected: %s.\n",(collisionDetected) ? "yes" : " no");
+        printf("<%4.2f | %4.2f | %4.2f>\n", a_x, a_y, a_z);
     }
 
     // Transmit Results
