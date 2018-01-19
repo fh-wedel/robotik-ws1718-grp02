@@ -29,22 +29,11 @@ ADTF_FILTER_PLUGIN(FILTER_NAME, UNIQUE_FILTER_ID, cMainController)
 cMainController::cMainController(const tChar* __info) : cFilter(__info), m_bDebugModeEnabled(tFalse) {
     SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
     SetPropertyStr(SC_PROP_DEBUG_MODE NSSUBPROP_DESCRIPTION, "If true debug infos are plotted to console");
+    SetPropertyBool(SC_PROP_DEBUG_MODE NSSUBPROP_ISCHANGEABLE, tTrue);
 
-    SetPropertyFloat("Gain::Gain", 1);
-    SetPropertyStr("Gain::Gain" NSSUBPROP_DESCRIPTION, "gain");
-    SetPropertyBool("Gain::Gain" NSSUBPROP_ISCHANGEABLE, tTrue);
-
-    SetPropertyBool("Gain::OverwritePin", false);
-    SetPropertyStr("Gain::OverwritePin" NSSUBPROP_DESCRIPTION, "Ignore gain input pin.");
-    SetPropertyBool("Gain::OverwritePin" NSSUBPROP_ISCHANGEABLE, tTrue);
-
-    SetPropertyFloat("Offset::Offset", 0);
-    SetPropertyStr("Offset::Offset" NSSUBPROP_DESCRIPTION, "offset");
-    SetPropertyBool("Offset::Offset" NSSUBPROP_ISCHANGEABLE, tTrue);
-
-    SetPropertyBool("Offset::OverwritePin", false);
-    SetPropertyStr("Offset::OverwritePin" NSSUBPROP_DESCRIPTION, "Ignore offset input pin.");
-    SetPropertyBool("Offset::OverwritePin" NSSUBPROP_ISCHANGEABLE, tTrue);
+    SetPropertyBool("Properties::ResetCollisionDetected", false);
+    SetPropertyStr("Properties::ResetCollisionDetected" NSSUBPROP_DESCRIPTION, "Reset the collision detected flag and continue operation.");
+    SetPropertyBool("Properties::ResetCollisionDetected" NSSUBPROP_ISCHANGEABLE, tTrue);
 
     m_mostRecentValue = 0;
 }
@@ -122,20 +111,12 @@ tResult cMainController::Init(tInitStage eStage, __exception) {
 tResult cMainController::PropertyChanged(const tChar* strName) {
     RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
     //associate the properties to the member
-    if (cString::IsEqual(strName, "Gain::Gain")) {
-        m_filterProperties.gain = GetPropertyFloat("Gain::Gain");
+    if (cString::IsEqual(strName, "Properties::ResetCollisionDetected")
+        && GetPropertyBool("Properties::ResetCollisionDetected")) {
 
-    } else if (cString::IsEqual(strName, "Gain::OverwritePin")) {
-        m_filterProperties.overwriteGain = GetPropertyBool("Gain::OverwritePin");
-
-    } else if (cString::IsEqual(strName, "Offset::Offset")) {
-        m_filterProperties.offset = GetPropertyFloat("Offset::Offset");
-
-    } else if (cString::IsEqual(strName, "Offset::OverwritePin")) {
-        m_filterProperties.overwriteOffset = GetPropertyBool("Offset::OverwritePin");
+        SetPropertyBool("Properties::ResetCollisionDetected", false);
+        m_collisionDetected = false;
     }
-
-
 
 	RETURN_NOERROR;
 }
@@ -144,22 +125,20 @@ tResult cMainController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1
     if (nEventCode == IPinEventSink::PE_MediaSampleReceived && pMediaSample != NULL) {
         RETURN_IF_POINTER_NULL(pMediaSample);
 
-        // TODO: Store read values.
-
         if (pSource == &m_InputSteeringAngle) {
-            readInputFloatValue(pMediaSample);
+            m_targetSteeringAngle = readInputFloatValue(pMediaSample);
         } else if (pSource == &m_InputSpeed) {
-            readInputFloatValue(pMediaSample);
+            m_targetSpeed = readInputFloatValue(pMediaSample);
         } else if (pSource == &m_InputObstacleDetected) {
-            readInputBoolValue(pMediaSample);
+            m_obstacleDetected = readInputBoolValue(pMediaSample);
         } else if (pSource == &m_InputCollisionDetected) {
-            readInputBoolValue(pMediaSample);
+            m_collisionDetected |= readInputBoolValue(pMediaSample);
         } else if (pSource == &m_InputCrossingHasLeft) {
-            readInputBoolValue(pMediaSample);
+            m_crossingHasLeft = readInputBoolValue(pMediaSample);
         } else if (pSource == &m_InputCrossingHasRight) {
-            readInputBoolValue(pMediaSample);
+            m_crossingHasRight = readInputBoolValue(pMediaSample);
         } else if (pSource == &m_InputCrossingHasStraight) {
-            readInputBoolValue(pMediaSample);
+            m_crossingHasStraight = readInputBoolValue(pMediaSample);
         }
 
         return OnValueChanged();
@@ -170,21 +149,72 @@ tResult cMainController::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1
 
 tResult cMainController::OnValueChanged() {
 
-    /* outputs for movement*/
-    transmitFloatValue(0.0f, m_OutputSpeed);
-    transmitFloatValue(0.0f, m_OutputSteeringAngle);
+    bool headLightsOn = false;
+    bool brakeLightsOn = false;
+    bool hazardLightsOn = false;
+
+    bool blinkerLeftOn = false;
+    bool blinkerRightOn = false;
+
+    bool turnRight = false;
+    bool turnLeft = false;
+    bool keepStraight = false;
+
+    float steeringAngle = 0.0f;
+    float speed = 0.0f;
+
+    if (m_collisionDetected || m_obstacleDetected) {
+
+        /* Stop and keep wheels in same direction. */
+        speed = 0.0f;
+        steeringAngle = m_previousWrittenSteeringAngle;
+
+        // Be a Christmas Tree :-)
+        headLightsOn = true;
+        brakeLightsOn = true;
+        hazardLightsOn = m_collisionDetected;
+
+
+    } else {
+
+        steeringAngle = m_targetSteeringAngle;
+        speed = m_targetSpeed;
+
+        headLightsOn = true;
+
+        // TODO: BrakeLights could be on as well...
+        brakeLightsOn =  false;
+
+        /* No collision */
+        hazardLightsOn = false;
+
+        /*TODO: Where do we want to go? */
+        turnLeft = m_crossingHasLeft;
+        turnRight = m_crossingHasRight && !turnLeft;
+        keepStraight = m_crossingHasStraight && !turnLeft && !turnRight;
+
+        blinkerLeftOn = false;
+        blinkerRightOn = false;
+    }
+
+    transmitFloatValue(m_targetSteeringAngle, m_OutputSteeringAngle);
+    m_previousWrittenSteeringAngle = steeringAngle;
+
+    transmitFloatValue(m_targetSpeed, m_OutputSpeed);
+
+    transmitBoolValue(headLightsOn, &m_OutputHeadLights);
+    transmitBoolValue(brakeLightsOn, &m_OutputBrakeLights);
+
+    transmitBoolValue(hazardLightsOn, &m_OutputHazardLights);
+
+    /* indicate turn direction */
+    transmitBoolValue(blinkerLeftOn, &m_OutputBlinkerLeft);
+    transmitBoolValue(blinkerRightOn, &m_OutputBlinkerRight);
 
     /* outputs for behaviour */
-    transmitBoolValue(true, &m_OutputCrossingTurnLeft);
-    transmitBoolValue(true, &m_OutputCrossingTurnRight);
-    transmitBoolValue(true, &m_OutputCrossingGoStraight);
-
-    /* auxiliary outputs */
-    transmitBoolValue(true, &m_OutputHeadLights);
-    transmitBoolValue(false, &m_OutputHeadLights);
-    transmitBoolValue(false, &m_OutputBlinkerLeft);
-    transmitBoolValue(false, &m_OutputBlinkerRight);
-    transmitBoolValue(false, &m_OutputHazardLights);
+    transmitBoolValue(turnLeft, &m_OutputCrossingTurnLeft);
+    transmitBoolValue(turnRight, &m_OutputCrossingTurnRight);
+    transmitBoolValue(keepStraight, &m_OutputCrossingGoStraight);
 
     RETURN_NOERROR;
 }

@@ -127,6 +127,24 @@ private:
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
 
+// Current State
+
+    /* stored state for movement */
+    tFloat32 m_targetSteeringAngle;
+    tFloat32 m_previousWrittenSteeringAngle;
+    tFloat32 m_targetSpeed;
+    tFloat32 m_previousWrittenSpeed;
+
+    /* stored state for collision detection */
+    tBool m_obstacleDetected;
+    tBool m_collisionDetected;
+
+    /* stored state for having a sense of surroundings */
+    tBool m_crossingHasLeft;
+    tBool m_crossingHasRight;
+    tBool m_crossingHasStraight;
+
+
 // Own Helper Functions
 
     tResult OnValueChanged();
