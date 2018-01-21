@@ -285,11 +285,11 @@
 
 	\section{Aufnahme der Sprungfunktion}
 	Durch den HardDisk Recorder von ADTF konnten die Sensorwerte auf einfache Weise aufgenommen werden.
-	Die Aufgabe bestand so dann darin, dass Auto sprungfunktionsartig zu Beschleunigen. 
-	
+	Die Aufgabe bestand so dann darin, dass Auto sprungfunktionsartig zu Beschleunigen.
+
 	Auf dem Weg zur Teststrecke wurde der geräumigen Flur vor Hörsaal 5 genutzt, um einen Test durchzuführen und auch diesen aufzuzeichnen. Zur Auswertung der Messdaten wurde der Wheel Speed Converter angepasst, um die Messwerte in eine CSV Datei zu schreiben.
 	Diese CSV Datei wurde dann in einer Tabellenkalkulation bearbeitet.
-	
+
 	Zuerst wurde bestimmt wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist. Alle Werte vor und nach diesem Zeitraum wurden entfernt. Da die Zeitstempel die ganze Zeit mitlaufen, mussten die Zeiten auf den Anfang der Beschleunigung verschoben werden. Durch diese Anpassungen erhielten wir die Graphen \ref{img-accelleration1} und \ref{img-accelleration2}.
 	\begin{figure}[ht]
 		\centering
@@ -320,12 +320,12 @@
 	Als Höchstgeschwindigkeit wurde ein Mittel der höchsten Geschwindigkeitswerte genommen.
 	Dazu wurden die Werte betrachtet und mithilfe von verschieden breiten Medianen die Werte gefiltert. Nun wurden die Differenzen betrachtet. Durch die Messungenauigkeiten kam es immer wieder zu negativen Differenzen.
 	Daher wurden alle Werte, wonach die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß, als erreichte Höchstgeschwindigkeit interpretiert.
-	
+
 	Die erste Beschleunigung diente nur als Test, um ein Gefühl für das Fahrverhalten des Autos bei höheren Geschwindigkeiten zu bekommen, bevor der eigentliche Test im deutlich engeren Flur durchgeführt wurde.
 	So wurden auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.
-	
+
 	Aus der zweiten Beschleunigung ermittelten wir eine Höchstgeschwindigkeit von 4,75 \meter\per\second.
-	
+
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=250pt,keepaspectratio]{assets/PT1-Sprungantwort.PNG}
@@ -374,10 +374,16 @@
 	Da dies immer noch etwas langsam war, wurde Gain auf 15 erhöht. \\
 
 	\section{Bremslichter}
-	Es sollten bei Bremsmanövern die Bremsleuchten eingeschaltet werden. Ein erster Ansatz ist es im Stand und bei stärkerer Verzögerung die Bremsleuchten einzuschalten.
-	Der erste Teil konnte einfach umgesetzt werden, so wurden bei zurücksetzen des Reglers die Bremsleuchten Eingeschaltet
-	Das beschleunigungsabhängige Einschalten war schwieriger, da durch Messungenauigkeiten und Schwingungen im Regler der Ausgabewert bei normaler Fahrt stärker schwankt als beim Bremsen.
-	Es wurden Schwankungen im Output bei normaler Fahrt von etwa $1$ beobachtet, während beim Bremsen der Output sehr kontrolliert verringert wird, etwa $0.1$ pro Berechnung.
+	Es sollten bei Bremsmanövern die Bremsleuchten eingeschaltet werden. Ein erster Ansatz war es dies im Stand und bei stärkerer Verzögerung zu tun. Der erste Teil konnte einfach umgesetzt werden, so wurden bei zurücksetzen des Reglers die Bremsleuchten Eingeschaltet. Das beschleunigungs-abhängige einschalten war schwieriger, da durch Messungenauigkeiten und Schwingungen im Regler der Ausgabewert bei normaler Fahrt stärker schwankt als beim Bremsen. Es wurden Schwankungen im Output bei normaler Fahrt von etwa $1$ beobachtet, während beim Bremsen der Output sehr kontrolliert verringert wird, etwa $0.1$ pro Berechnung. Es wurden verschiedene breite Toleranzen probiert, jedoch kam es so zu keinem guter Ausgabe. Die Bremsleuchten flackerten bei normaler Fahrt, beim Bremsen blieben sie jedoch aus. Um das Flackern einzuschränken wurde ein Median Filter zwischengeschaltet. Jedoch half dieser nicht, da die Fehler zu systematisch auftreten.
+
+	\paragraph{Mögliche Lösung}
+	Es kam zwischenzeitlich die Idee auf, einen Filter zu bauen der die Fahrzustände Verwaltet und dann Befehle an die anderen Filter sendet. Dieser Filter wüsste dann, ob abgebremst oder beschleunigt wird. Dann kann in dem entsprechenden Zustand reagiert werden. Denkbar wäre folgender Ablauf:
+	\begin{enumerate}[label=$\Rightarrow$]
+		\item Bilderkennung erkennt Haltelinie, meldet dies dem Hauptfilter
+		\item Der Hauptfilter entscheidet, dass gebremst werden muss; schaltet Bremsleuchten ein und gibt Signal an den Motor Regler
+		\item Der Motorregler bremst ab
+	\end{enumerate}
+
 
 	\section{Probleme mit dem ADTF}
 	Die Arbeit mit den vor implementierten Filtern von ADTF stellte sich als schwierig heraus.
@@ -388,8 +394,8 @@
 	Auch hier wurde bei konstanter Geschwindigkeit ein exponentiell wachsender Wert beobachtet.
 	Aufgrund dieses Verhaltens wurde das \texttt{Table Display} verwendet.
 	Hier stellte sich heraus, das dieses jeweils 8 Bit der Eingabe in einem Feld darstellt, so konnte diese Ansicht auch nicht verwendet werden.
-	Um die Werte beurteilen zu können musste also die Klasse \texttt{cConverterWheels} angepasst werden, sodass die berechneten Werte dann in die Konsole geschrieben wurden. 
-	
+	Um die Werte beurteilen zu können musste also die Klasse \texttt{cConverterWheels} angepasst werden, sodass die berechneten Werte dann in die Konsole geschrieben wurden.
+
 	Danach wurde auch der \texttt{AADC Wheel Speed Controller} getestet. Dieser funktionierte bereits in einem zufriedenstellend Maße. Bei betrachten des Codes des Filters wurde jedoch sehr viel redundanter Code gefunden. So wurde für einen PID Regler, jede einfachere Variante einzeln implementiert, also für P, PI und PID. Diese Redundanz wurde zuerst entfernt um die Übersichtlichkeit zu verbessern. Zusätzlich wurden noch Debug Ausgaben hinzugefügt um die korrekte Arbeit des Reglers nachzuvollziehen. \\
 
 
@@ -522,7 +528,7 @@
 
 	Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs ohne nVidia-Grafikkarte ausführen lassen konnte, da die OpenCV-GPU-Implementierung auf der CUDA-Bibliothek basiert, die nur für nVidia-Grafikkarten nutzbar ist.
 	Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
-	
+
 	\paragraph{Erfahrungen.}
 	Trotz der wenigen und zum Teil nicht aktuellen Codebeispiele lässt sich die GPU-Schnittstelle nach einer kurzen Einfindungsphase leicht handhaben. Allerdings sind nicht alle Funktionen von OpenCV als GPU-Variante verfügbar, weshalb wir manchmal auf die CPU-Variante umsteigen mussten. Entsprechende Stellen sind im Quelltext beschrieben. Des Weiteren ist der Wechsel zwischen Ausführung auf der CPU im Gegensatz zur Ausführung auf der GPU ziemlich aufwendig, da sämtliche Funktionsaufrufe geändert werden müssen. Anhand der Funktion \hyperlink{https://docs.opencv.org/trunk/d8/d40/group\_\_cudacore\_\_init.html\#gaaa93892f9189163e5d53790b4b1e88db}{\texttt{cv::cuda::getCudaEnabled\-DeviceCount()}} kann zur Laufzeit festgestellt werden, ob mindestens eine CUDA-fähige GPU verwendet wird. Anhand dieser Feststellung kann dann der Code auf der CPU oder auf der GPU ausgeführt werden. Dazu müsste im Quelltext allerdings eine CPU- und eine GPU-Variante existieren, was zu ordentlicher Redundanz führen würde. Wir haben uns daher vorerst auf die reine GPU-Implementierung (mit Nutzung der CPU bei Nichtvorhandensein der GPU-Variante) konzentriert.
 
@@ -550,7 +556,7 @@
 	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt\footnote{Da es sich bei dem Bild um ein 8-Bit-Bild handelt, werden die Werte für den Farbwinkel (\textit{hue}) in den Bereich von 0\degree\ bis 180\degree\ skaliert, da Werte über 255 nicht über 8 Bit repräsentiert werden können. Siehe auch \url{https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html\#cvtcolor} unter RGB $\longleftrightarrow$ HSV.}.
 	Die zugehörigen Parameter ($hue$, $saturation$ und $value$), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
 	Die für uns idealen Parameter für das blaue Klebeband sind in \autoref{table-hsv-values} aufgeführt.
-	
+
 	\begin{table}
 		\centering
 		\begin{tabular}{l|l}
@@ -566,7 +572,7 @@
 	Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \texttt{cv::inRange} genutzt.
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
 	\autoref{img-applying-cvtColor} verdeutlicht die Anwendung dieser Bearbeitungsschritte.
-	
+
 	\begin{figure}
 		\centering
 		\begin{subfigure}[c]{0.45\textwidth}
@@ -588,7 +594,7 @@
 	Ist die Kantenstärke eines Pixels größer als der obere Schwellenwert, wird der Pixel als Kante akzeptiert.
 	Ist die Kantenstärke eines Pixels niedriger als der untere Schwellenwert, wird dieser Pixel als Kandidat verworfen.
 	Über eine Hysterese werden die Pixel gefiltert, die zwischen beiden Schwellenwerten liegen, sodass "`Ausreißer"' vermieden werden.
-	
+
 	Dementsprechend nimmt die Funktion \texttt{cv::Canny}, bzw. das GPU-Pendant \texttt{cv::cuda::createCannyEdgeDetector} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators.
 	Für das Verhältnis der Schwellenwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
 	\autoref{img-appling-canny} zeigt das Ergebnis des Canny-Algorithmus' nach der Anwendung auf das Binärbild.
@@ -612,10 +618,10 @@
 	Daraus ergibt sich eine perspektivische Verzerrung, die im Kamerabild deutlich wird.
 	Für die Bildverarbeitung wäre allerdings ein orthografisch projiziertes Bild (ähnlich der Vogelperspektive) ideal, um Probleme, die aufgrund der Perspektive auftreten, zu vermeiden.
 	Beispielsweise erhofften wir uns von diesem Ansatz, Kurven besser erkennen zu können.
-	
+
 	Anhand eines Schachbrettmusters wurde das Kamerabild so kalibriert, dass die Quadrate des Musters auch im Kamerabild quadratisch sind.
 	Zur Transformation werden 4 Punkte benutzt, die ein Viereck aufspannen und die Eckpunkte der Straße angeben. Anhand der OpenCV-Funktion \texttt{cv::get\-PerspectiveTransform} wird die zugehörige Transformationsmatrix berechnet, welche mit der OpenCV-Funktion \texttt{cv::cuda::warpPerspective} angewandt wird. \autoref{img-applying-persp-warp} zeigt das Bild der Straße vor und nach Anwendung der perspektivischen Verzerrung.
-	
+
 	\begin{figure}[h]
 		\centering
 		\begin{subfigure}[c]{0.45\textwidth}
@@ -651,9 +657,9 @@
 % Author: Frauke Jörgens
 	Bevor die Linien zusammengefasst werden, werden sie einer Normalisierung unterzogen.
 	In OpenCV haben die Normalenvektoren, die sich nach der Hough Line Transformation ergeben, einen Winkel von 0 bis $180\degree$ zu der x-Achse.
-	Bei einem theoretisch größeren Winkel wird die Gerade durch eine negative Distanz dargestellt. 
+	Bei einem theoretisch größeren Winkel wird die Gerade durch eine negative Distanz dargestellt.
 	a vertikale Linien einen horizontalen Normalenvektor haben, schwanken die Winkel oft zwischen 0 und $180\degree$ bei vertikaler Ausrichtung.
-	
+
 	In dem Straßenbild sind oft vertikale Linien vorhanden.
 	Um die Erkennung dieser einfacher zu machen, werden die Winkel der gefundenen Linien so verändert, dass sie in einem Bereich von -90 bis +90 $\degree$ liegen.
 	Vertikale Linien haben folglich einen Winkel von ca. $0 \degree$.
@@ -792,7 +798,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modifikationen am Fahrzeug}
 
-%TODO: Rückinstallation der Baslerkamera (3 Unterlegscheiben) für die Realsense-Kamera für Hermann als Text
+Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne mit einer 3D gedruckten halterung befästigt.\\
+Um die Kamera wieder an ihrer ursprünglichen Position zu befästigen, muss sie oben mit dem Magneten und mit einer Schraube mit 3 Unterlegscheiben gesichert werden.
+\begin{figure}
+	\centering
+	\includegraphics[width=250pt,keepaspectratio]{assets/Kamerahalterung.PNG}
+	\caption{CAD Modell der Halterung}
+	\label{img-Kamerahalterung}
+\end{figure}
 
 
 \chapter{Fazit}
@@ -818,7 +831,7 @@
 	\textit{Ackerman Steering},
 	December 2016:\\
 	\url{http://datagenetics.com/blog/december12016/index.html}
-	
+
 	\bibitem{HSV-Wiki}
 	Wikipedia,
 	\textit{HSV-Farbraum}.\\
