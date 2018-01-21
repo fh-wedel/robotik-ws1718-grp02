@@ -377,10 +377,13 @@
 	Es sollten bei Bremsmanövern die Bremsleuchten eingeschaltet werden. Ein erster Ansatz war es dies im Stand und bei stärkerer Verzögerung zu tun. Der erste Teil konnte einfach umgesetzt werden, so wurden bei zurücksetzen des Reglers die Bremsleuchten Eingeschaltet. Das beschleunigungs-abhängige einschalten war schwieriger, da durch Messungenauigkeiten und Schwingungen im Regler der Ausgabewert bei normaler Fahrt stärker schwankt als beim Bremsen. Es wurden Schwankungen im Output bei normaler Fahrt von etwa $1$ beobachtet, während beim Bremsen der Output sehr kontrolliert verringert wird, etwa $0.1$ pro Berechnung. Es wurden verschiedene breite Toleranzen probiert, jedoch kam es so zu keinem guter Ausgabe. Die Bremsleuchten flackerten bei normaler Fahrt, beim Bremsen blieben sie jedoch aus. Um das Flackern einzuschränken wurde ein Median Filter zwischengeschaltet. Jedoch half dieser nicht, da die Fehler zu systematisch auftreten.
 
 	\paragraph{Mögliche Lösung}
-	Es kam zwischenzeitlich die Idee auf, einen Filter zu bauen der die Fahrzustände Verwaltet und dann Befehle an die anderen Filter sendet. Dieser Filter wüsste dann, ob abgebremst oder beschleunigt wird. Dann kann in dem entsprechenden Zustand reagiert werden. Denkbar wäre folgender Ablauf:
+	Es kam zwischenzeitlich die Idee auf, einen Filter zu bauen, der die Fahrzustände verwaltet und dann Befehle an die anderen Filter sendet.
+	Dieser Filter wüsste dann, ob abgebremst oder beschleunigt wird.
+	Dann kann in dem entsprechenden Zustand reagiert werden.
+	Denkbar wäre folgender Ablauf:
 	\begin{enumerate}[label=$\Rightarrow$]
 		\item Bilderkennung erkennt Haltelinie, meldet dies dem Hauptfilter
-		\item Der Hauptfilter entscheidet, dass gebremst werden muss; schaltet Bremsleuchten ein und gibt Signal an den Motor Regler
+		\item Der Hauptfilter entscheidet, dass gebremst werden muss, schaltet Bremsleuchten ein und gibt Signal an den Motorregler
 		\item Der Motorregler bremst ab
 	\end{enumerate}
 
@@ -798,13 +801,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modifikationen am Fahrzeug}
 
-Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne mit einer 3D gedruckten halterung befästigt.\\
-Um die Kamera wieder an ihrer ursprünglichen Position zu befästigen, muss sie oben mit dem Magneten und mit einer Schraube mit 3 Unterlegscheiben gesichert werden.
+Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne am Modellauto mit einer 3D-gedruckten Halterung befestigt. Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie oben mit dem Magneten und mit einer Schraube mit 3 Unterlegscheiben gesichert werden.
 \begin{figure}
 	\centering
-	\includegraphics[width=250pt,keepaspectratio]{assets/Kamerahalterung.PNG}
-	\caption{CAD Modell der Halterung}
-	\label{img-Kamerahalterung}
+	\begin{subfigure}[c]{.45\textwidth}
+		\includegraphics[width=\textwidth]{assets/Kamerahalterung.PNG}
+	\end{subfigure}
+	\begin{subfigure}[c]{.45\textwidth}
+		\includegraphics[width=\textwidth]{assets/Kamera-Anbringung.jpg}
+	\end{subfigure}
+	\caption{CAD-Modell der Halterung (links) und Anbringung des 3D-Modells (gelb) und der Kamera am Modellfahrzeug (rechts).}
+	\label{img-camera}
 \end{figure}
 
 
