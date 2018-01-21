@@ -60,7 +60,7 @@
 \chapter{Einführung}
 % Author: Thorger Dittmann
 
-	Begleitend zur Vorlesung ``Einführung in die Robotik'', gehalten von Prof. Dr. Ulrich Hoffmann, fand das Robotik-Praktikum statt.
+	Begleitend zur Vorlesung ``Einführung in die Robotik'', gehalten von Prof. Dr. Ulrich Hoffmann \cite{hoffmann_ws17}, fand das Robotik-Praktikum statt.
 	Ziel war es, die Inhalte der Vorlesung anhand eigener Erfahrungen zu vertiefen und zu lernen, Algorithmen für grundlegende Problemstellungen zu entwickeln.
 	Speziell bestand die Aufgabe darin, für ein AADC 2017 Modellfahrzeug eine Programmierung auszuarbeiten.
 	Die Idee bestand darin, dass dieses Modellfahrzeug autonom und ohne Kollisionen ein bestimmtes, nicht weiter definiertes Ziel erreicht.
@@ -524,11 +524,11 @@
 		\label{img-uss-function}
 	\end{figure}
 
-\subsubsection{Parabelfunktion und Schwellwerte}
+\subsubsection{Parabelfunktion und Schwellenwerte}
 
 	Da sich die eben beschriebene Glockenkurve mit den gewählten Parametern in der Praxis als nicht durchsetzungsfähig erwies, fiel die zweite Wahl daher auf ein mehrteiliges Verfahren.
 
-	Zuerst wird dabei eine parabelförmige Gewichtung auf den Schwellwert $s_{std}$ zur Erkennung angewendet.
+	Zuerst wird dabei eine parabelförmige Gewichtung auf den Schwellenwert $s_{std}$ zur Erkennung angewendet.
 	Dies geschieht erneut auf Basis des aktuellen Lenkwinkels $\alpha$ und der Geschwindigkeit $v$.
 
 	\begin{align*}
@@ -543,7 +543,7 @@
 		\Rightarrow s_{dyn} &= m_{pre} \cdot s_{std}
 	\end{align*}
 
-	Der somit dynamisch gewichtete Schwellwert $s_{dyn}$ wird nun wiederum durch einen oberen und unteren Schwellwert begrenzt ($s_{min}$ und $s_{max}$).
+	Der somit dynamisch gewichtete Schwellenwert $s_{dyn}$ wird nun wiederum durch einen oberen und unteren Schwellenwert begrenzt ($s_{min}$ und $s_{max}$).
 
 	\begin{align*}
 		s_{bounded} &=
@@ -556,7 +556,7 @@
 		&= max(s_{min}, min(s_{dyn}, s_{max}))
 	\end{align*}
 
-	Letztendlich erhält man so den finalen Schwellwert $s_{bounded}$.
+	Letztendlich erhält man so den finalen Schwellenwert $s_{bounded}$.
 	Liegt der gemessene Sensorwert unterhalb dieser Schwelle, so wird dies als Hindernis gewertet.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -596,7 +596,6 @@
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=.6\textwidth,keepaspectratio]{assets/bvaFlowchart.jpg}
-		%DONE: Tippfehler in "Binarisierung" entfernen. --hoe
 		\caption{Übersicht der Bildverarbeitung}
 		\label{img-bvaFlowchart}
 	\end{figure}
@@ -615,10 +614,10 @@
 
 	\begin{table}
 		\centering
-		\begin{tabular}{l|l}
-			Hue / Farbton & 90 - 120\\\hline
-			Saturation / Sättigung & 100 - 255\\\hline
-			Value / Helligkeitswert & 80 - 255
+		\begin{tabular}{r@{\,/\,}l|r@{$-$}l}
+			Hue & Farbton & 90 & 120\\\hline
+			Saturation & Sättigung & 100 & 255\\\hline
+			Value & Helligkeitswert & 80 & 255
 		\end{tabular}
 		\caption{Gut funktionierende Parameter für die blaue Fahrbahnmarkierung. In ADTF werden \texttt{HueLow}, \texttt{HueHigh} und die unteren Grenzen für Sättigung (\texttt{Saturation}) und Helligkeitswert (\texttt{Value}) gesetzt.}
 		\label{table-hsv-values}
@@ -653,7 +652,7 @@
 
 	Dementsprechend nimmt die Funktion \texttt{cv::Canny}, bzw. das GPU-Pendant \texttt{cv::cuda::createCannyEdgeDetector} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators.
 	Für das Verhältnis der Schwellenwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
-	\autoref{img-appling-canny} zeigt das Ergebnis des Canny-Algorithmus' nach der Anwendung auf das Binärbild.
+	\autoref{img-applying-canny} zeigt das Ergebnis des Canny-Algorithmus' nach der Anwendung auf das Binärbild.
 	% NOTE: Das ist okay, aber ihr dürft davon ausgehen, dass der Leser weiß, wie der Canny Filter arbeitet. Ihr müsst die Parameter nicht erklären, es sei denn das war euch bei der Parameterwertsuche besonders wichtig. Konzentriert euch lieber auf die Beschreibung von dem, was ihr gemacht habt. :) --hoe
 
 	\begin{figure}
@@ -711,23 +710,21 @@
 	Hierbei befindet sich der Ursprung oben links im Bild.
 	Von diesem Punkt aus wird die Gerade mit einem orthogonalen Stützvektor mit dem Winkel $\theta$ und der Länge $r$ beschrieben (siehe auch \autoref{img-Winkelnormalisierung}).
 
-
-\section{Line-Clustering}
+\section{Winkelnormalisierung}
 % Author: Frauke Jörgens
 
-	%NOTE: Vielleicht in eigene Section auslagern? --felix
 	Bevor die Linien zusammengefasst werden, werden sie einer Normalisierung unterzogen.
 	In OpenCV haben die Normalenvektoren, die sich nach der Hough Line Transformation ergeben, einen Winkel von $0$ bis $180\degree$ zu der x-Achse.
 	Bei einem theoretisch größeren Winkel wird die Gerade durch eine negative Distanz dargestellt.
 	Da vertikale Linien einen horizontalen Normalenvektor haben, schwanken die Winkel oft zwischen $\sim0$ und $\sim180\degree$ bei vertikaler Ausrichtung.
-
+	
 	In dem Straßenbild sind oft vertikale Linien vorhanden.
 	Um die Erkennung dieser einfacher zu machen, werden die Winkel der gefundenen Linien so verändert, dass sie in einem Bereich von -90 bis +90 $\degree$ liegen.
 	Vertikale Linien haben folglich einen Winkel von ca. $0 \degree$.
 	Winkel außerhalb dieses Bereichs werden anhand einer negativen Distanz dargestellt.
-	Aufgrund der Tatsache, dass das Bild so verzerrt wurde, dass wir die Straße aus einer senkrechten Obersicht betrachten, Entsprechen die Winkel der gefunden Geraden nun dem relativen Winkel der Fahrbahn zu unserem Model. %NOTE: Das widerspricht sich mit der nächsten Sektion. Genauer erläutern, was mit relativem Winkel gemeint ist. Z.B. Winkel liegt bereits richtig skaliert vor. --felix
+	Aufgrund der Tatsache, dass das Bild so verzerrt wurde, dass wir die Straße aus einer senkrechten Obersicht betrachten, entsprechen die Winkel der gefunden Geraden nun dem relativen Winkel der Fahrbahn zur Fahrtrichtung.
 	\autoref{img-Winkelnormalisierung} verdeutlich diese Überlegung.
-
+	
 	\begin{figure}
 		\centering
 		\includegraphics[height=0.5\textheight]{assets/Winkelnormalisierung.pdf}
@@ -735,11 +732,13 @@
 		\label{img-Winkelnormalisierung}
 	\end{figure}
 
+\section{Line-Clustering}
+% Author: Frauke Jörgens
 	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden.
 	Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt.
 	Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden (im Quellcode \texttt{isEquivalent} genannt).
 	Der Vergleich erfolgt anhand des Winkels und der Länge des Normalenvektors der Linie.
-	Nach dem Clustering gibt es eine Zuordnung jeder Linie in eine Klasse. %NOTE: Der satz klingt seltsam :O --felix
+	Nach dem Clustering ist jede Linie einer Klasse zugeordnet.
 	Alle Linien einer Klasse werden anschließend zu einer Linie zusammengefasst, indem Winkel und Abstand der Klasse zugehörigen Linien gemittelt werden.
 	Zusätzlich wird für jede zusammengefasste Linie gespeichert, aus wie vielen Linien sie zusammengefasst wurde, um anhand dessen eine Gewichtung zu ermöglichen.
 
@@ -777,7 +776,7 @@
 	Je näher sich das Fahrzeug dieser Linie nähert, desto langsamer wird es.
 	Dieser Anhaltealgorithmus ist jedoch nur aktiv, wenn genügend Haltelinien bzw. eine stark gewichtete Haltelinie erkannt wurden.
 	So vermeiden wir, dass das Auto schon anhält, wenn es nur eine sehr schwache Stopplinie erkannt hat, was durch Rauschen ausgelöst werden kann.
-	Dieser Schwellwert kann mit dem ADTF-Parameter 'Stop Threshold' angepasst werden.
+	Dieser Schwellenwert kann mit dem ADTF-Parameter 'Stop Threshold' angepasst werden.
 	Für uns hat der Wert 0,4 gut funktioniert.
 	Es müssen dann also mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält. %NOTE: Ist das wirklich so? -- felix
 
@@ -839,7 +838,9 @@
 	\end{figure}
 
 \section{Besonderheiten in der Kurve}
+% Author: Frauke Jörgens
 % TODO (macht Frauke)
+	
 
 \section{Weitere Überlegungen}
 % Author: Jan Ottmüller
@@ -854,8 +855,6 @@
 	Eine andere Form der Darstellung wäre eine Polynomfunktion zweiten Grades.
 	Hierbei kann die Polynomfunktion genau an die Kurve angepasst werden.
 	Da unser erster Ansatz jedoch schon recht gut funktionierte und wir keine geeignete Funktion für das Anpassen der Polynomfunktion fanden, haben wir uns auf unseren schon implementierten Ansatz weiter konzentriert.
-
-	% TODO evtl. Jury-Modul mit abbiegen usw. nach Haltelinie erwähnen
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Aggregation und Interpretation von Erkenntnissen}
@@ -901,7 +900,7 @@
 \chapter{Modifikationen am Fahrzeug}
 
 Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne am Modellauto mit einer 3D-gedruckten Halterung befestigt. Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie oben mit dem Magneten und mit einer Schraube mit 3 Unterlegscheiben gesichert werden.
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\begin{subfigure}[c]{.45\textwidth}
 		\includegraphics[width=\textwidth]{assets/Kamerahalterung.PNG}
@@ -915,7 +914,18 @@ Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie 
 
 
 \chapter{Fazit}
+%- lange noch nicht fertig
+%- viele interessante theoretische Ansätze, die noch nicht umgesetzt wurden
+%- Einarbeitung in ADTF unterschätzt
+%- ADTF generell "schickes" Konzept/Design -> Umsetzung eher zu Lasten der Usability + manchmal fragwürdige Entscheidungen der Entwickler (void * statt Generics, viele Fehler in dem Code von Audi)
+%- Dokumentation im Code teilweise falsch (noch schlimmer als keine)
+%- vllt Abstürze erwähnen
+%- Vllt wäre in der BVA der Ansatz mit den Polynomfunktionen besser gewesen
+%- Zu Lenkng \& Motorregelung: Theorie != Praxis, Schlupf der Räder, Rauschen in Messwerten erschwerten den Umgang (ließen theoretische Überlegungen vollkommen von der Praxis abweichen)
+%- Bei Beschleunigungssensor schwer zu unterscheiden, ob absichtliches Bremsen oder gegen weiches Objekt fahren, oder Erschütterungen im Boden
 % TODO Fazit hier!
+
+\listoftables
 
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
