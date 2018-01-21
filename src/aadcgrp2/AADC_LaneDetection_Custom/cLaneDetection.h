@@ -249,8 +249,9 @@ private: // private methods
      *   \param outputImage the new format for the input pin
      *   \return Standard Result Code.
      */
-    tResult UpdateOutputImageFormat(const cv::Mat& outputImage);
+    tResult UpdateOutputImageFormat(const cv::Mat& outputImage, cVideoPin &outputVideoPin, tBitmapFormat &format);
 
+    tResult transmitImage(cv::Mat &image, cVideoPin &outputVideoPin, tBitmapFormat &format);
 
     /*! function to process the mediasample
      *   \param pSample the new media sample
@@ -263,6 +264,15 @@ private: // private methods
 
     /*! bitmap format of output pin */
     tBitmapFormat m_sOutputFormat;
+
+    /*! bitmap format of output pin of binary image */
+    tBitmapFormat m_sOutputFormatDebugBinary;
+
+    /*! bitmap format of output pin of canny image */
+    tBitmapFormat m_sOutputFormatDebugCanny;
+
+    /*! bitmap format of output pin of perspective warp image */
+    tBitmapFormat m_sOutputFormatDebugPerspWarp;
 
     /*! tha last received input image*/
     cv::Mat m_inputImage;

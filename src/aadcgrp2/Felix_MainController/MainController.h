@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 #define FILTER_NAME "Felix MainController"
 
 /*! this is the main class for the steering controller filter */
-class cMainController : public adtf::cFilter {
+class cMainController : public cStdFilter {
 
 
     /*! This macro does all the plugin setup stuff
@@ -52,6 +52,8 @@ class cMainController : public adtf::cFilter {
     /* outputs for movement*/
     cOutputPin m_OutputSpeed;
     cOutputPin m_OutputSteeringAngle;
+
+    cOutputPin m_OutputEmergencyStop;
 
     /* auxiliary outputs */
     cOutputPin m_OutputHeadLights;
@@ -114,18 +116,37 @@ private:
     * \param __exception_ptr the exception pointer
     * \return standard adtf error code
     */
-    tResult CreateInputPins(ucom::IException** __exception_ptr = NULL);
+    tResult CreateBoolInputPins(ucom::IException** __exception_ptr = NULL);
+    tResult CreateFloatInputPins(ucom::IException** __exception_ptr = NULL);
 
     /*! creates all the output Pins
     * \param __exception_ptr the exception pointer
     * \return standard adtf error code
     */
-    tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
-
+    tResult CreateBoolOutputPins(ucom::IException** __exception_ptr = NULL);
+    tResult CreateFloatOutputPins(ucom::IException** __exception_ptr = NULL);
 // Debug
 
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
+
+// Current State
+
+    /* stored state for movement */
+    tFloat32 m_targetSteeringAngle;
+    tFloat32 m_previousWrittenSteeringAngle;
+    tFloat32 m_targetSpeed;
+    tFloat32 m_previousWrittenSpeed;
+
+    /* stored state for collision detection */
+    tBool m_obstacleDetected;
+    tBool m_collisionDetected;
+
+    /* stored state for having a sense of surroundings */
+    tBool m_crossingHasLeft;
+    tBool m_crossingHasRight;
+    tBool m_crossingHasStraight;
+
 
 // Own Helper Functions
 

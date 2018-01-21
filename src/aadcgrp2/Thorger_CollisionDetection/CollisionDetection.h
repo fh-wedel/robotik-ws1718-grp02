@@ -99,6 +99,8 @@ protected: // overwrites cFilter
     cMedian accelYFilter;
     cMedian accelZFilter;
 
+    tBool collisionDetected;
+
 private:
     /*! creates all the input Pins
     * \param __exception_ptr the exception pointer

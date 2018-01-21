@@ -261,9 +261,9 @@ void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
 
 	//closing
 	int kernelSize = 6;
-	cv::Mat kernel = cv::getStructuringElement(0, cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1), cv::Point(kernelSize, kernelSize));
-	int operation = 3;
-	cv::morphologyEx(out, out, operation, kernel);
+	cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
+										cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1));
+	cv::morphologyEx(out, out, cv::MORPH_CLOSE, kernel);
 
 	// Gaussian filter for flattening edges after closing
 	cv::GaussianBlur(out, out, cv::Size(5, 5), 0, 0);

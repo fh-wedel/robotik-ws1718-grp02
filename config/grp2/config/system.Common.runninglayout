@@ -31,11 +31,12 @@
    <folder name="FilterTraceView" />
   </folder>
   <folder name="windows">
-   <folder Height="548" Minimized="true" PosX="64" PosY="248" Visible="true" Width="784" name="Dbg_Canny_Video_Display" />
-   <folder Height="122" PosX="232" PosY="113" Visible="false" Width="136" name="Dbg_Binary_Video_Display" />
-   <folder Height="702" Maximized="false" PosX="-28" PosY="486" Visible="true" Width="725" name="Main-AADC_Sensor_Visualization" />
-   <folder Height="548" PosX="-198" PosY="138" Visible="false" Width="784" name="Video_Display" />
-   <folder Height="122" PosX="42" PosY="35" Visible="true" Width="136" name="RGB_Display" />
+   <folder Floating="true" Height="432" Minimized="false" PosX="0" PosY="0" Visible="false" Width="960" name="Dbg_Canny_Video_Display" />
+   <folder Floating="true" Height="432" Minimized="false" PosX="0" PosY="0" Visible="false" Width="960" name="Dbg_Binary_Video_Display" />
+   <folder Height="366" Maximized="false" PosX="30" PosY="397" Visible="false" Width="725" name="Main-AADC_Sensor_Visualization" />
+   <folder Floating="true" Height="432" PosX="0" PosY="0" Visible="false" Width="960" name="Video_Display" />
+   <folder Floating="true" Height="544" PosX="359" PosY="535" Visible="true" Width="686" name="RGB_Display" />
+   <folder Floating="true" Height="432" PosX="0" PosY="0" Visible="false" Width="960" name="Dbg_Perps_Transform_Video_Display" />
   </folder>
  </folder>
  <folder name="Main">
