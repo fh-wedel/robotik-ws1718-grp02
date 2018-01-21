@@ -7,6 +7,7 @@
 \usepackage{csvsimple} % for tables
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{subcaption} % Figures mit mehr als einem Bild
 \usepackage{enumitem} % um aufzählungen zu machen
 \usepackage[
 	colorlinks,
@@ -35,9 +36,9 @@
 %DONE: Sinnabschnitte - ✓
 %DONE: Literatur/Quellverzeichnis - ✓
 %DONE: Gruppenfoto (mit Auto) - ✓
+%DONE: Bilder - ✓
 
 %TODO: Passiver Schreibstil
-%TODO: Bilder
 %TODO: Allgemeine Beschreibungen der Kapitel
 %TODO: Fazit
 %TODO: Zwischenfazit für jedes Kapitel?
@@ -111,16 +112,16 @@
 
 	Zur Strukturierung und Modularisierung setzt das ADTF auf sogenannte Filter.
 	Dies sind kleine Module, welche aus Inputs, Logik und Outputs bestehen.
-	Sie werden in ADTF anschaulich als Blöcke visualisiert (siehe \autoref{img_LaneDetectionConfig}).
+	Sie werden in ADTF anschaulich als Blöcke visualisiert (siehe \autoref{img-LaneDetectionConfig}).
 
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LaneDetectionConfig}
 		\caption{Visualisierung im Konfigurationseditor}
-		\label{img_LaneDetectionConfig}
+		\label{img-LaneDetectionConfig}
 	\end{figure}
 
-	Jedes Modul ist dabei eine \texttt{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Outputpins übernimmt.
+	Jedes Modul ist dabei eine \texttt{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Output-Pins übernimmt.
 	Das Modul benachrichtigt, wenn neue Daten an einem Pin anliegen, also zur Verarbeitung zur Verfügung stehen.
 	Sodann wird die Logik auf die eingelesenen Daten angewandt und die Ergebnisse über die Outputs wieder nach ``draußen'' gegeben.
 
@@ -131,14 +132,14 @@
 
 	Um Filter zu verwenden, müssen diese in Konfigurationen integriert werden.
 	Hier können mehrere Filter gleichzeitig platziert werden.
-	Eine erste Konfiguration ist bereits in \autoref{img_LaneDetectionConfig} gezeigt.
+	Eine erste Konfiguration ist bereits in \autoref{img-LaneDetectionConfig} gezeigt.
 	Hier können die durch Filter repräsentierten Logikabschnitte miteinander verbunden werden.
 	Die Outputs des einen Filters können dabei also die Inputs des Nächsten darstellen.
 	\\
-	Dies sieht dann zum Beispiel so aus:\footnote{Visualisiert in \autoref{img_LiveConfig}.}
+	Dies sieht dann zum Beispiel so aus:\footnote{Visualisiert in \autoref{img-LiveConfig}.}
 	\begin{enumerate}
 		\item Arduino triggert und liest Ultraschallsensoren aus.
-		\item Daten stehen der Hinderniserkennung (siehe \autoref{section_ObstacleDetection}) zur Verfügung.
+		\item Daten stehen der Hinderniserkennung (siehe \autoref{section-ObstacleDetection}) zur Verfügung.
 		\item Motorregler erhält ``Hindernis erkannt''-Signal und leitet Nothalt ein.
 		\item Arduino stoppt die Motoren.
 	\end{enumerate}
@@ -150,14 +151,14 @@
 % Author: Felix Maaß
 
 	Ebenso ist es möglich, Konfigurationen in Anderen einzubetten, sie also zu verschachteln.
-	In unserer ``Live''-Konfiguration (siehe \autoref{img_LiveConfig}) wurde die Fahrbahnerkennung, die zur Übersichtlichkeit eine eigene Konfiguration besitzt, eingebettet.
+	In unserer ``Live''-Konfiguration (siehe \autoref{img-LiveConfig}) wurde die Fahrbahnerkennung, die zur Übersichtlichkeit eine eigene Konfiguration besitzt, eingebettet.
 	Darüber hinaus wurden auch die Filter, die für Low-Level-Operationen zuständig sind, in die ``Main''-Konfiguration ausgelagert.
 
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/LiveConfig}
 		\caption{Verschachtelungen von Konfigurationen}
-		\label{img_LiveConfig}
+		\label{img-LiveConfig}
 	\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -181,7 +182,7 @@
 	Es wurde sich aus Gründen der besseren Visualisierung für einen eigenen ADTF-Filter entschieden.
 	Dieser nimmt ein Eingangssignal entgegen, welches daraufhin mit einem Gain und Offset versehen wird und anschließend den modulierten Wert zurückliefert.
 
-	Diese Funktionalität entspricht einer "Linearen Funktion":
+	Diese Funktionalität entspricht einer ``Linearen Funktion'':
 
 	\[y = g \cdot x + o\]
 
@@ -195,7 +196,7 @@
 
 	Um verschiedene Filter zu testen, die einen Wert als Eingang benötigten, wurde dieser Block erstellt.
 
-	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst wurden, definierten wir einen \texttt{WatchDog} als Input. So wurde mit jedem Auslösen des WatchDog der Wert gesendet. Der Wert konnte in den Einstellungen des Filters während der Laufzeit gesetzt werden.
+	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst wurden, definierten wir einen \texttt{WatchDog} als Input. So wird mit jedem Auslösen des WatchDog der Wert gesendet. Der Wert kann in den Einstellungen des Filters während der Laufzeit gesetzt werden.
 
 
 \subsection{In Entwicklung}
@@ -222,7 +223,7 @@
 	Dies liegt daran, dass die Räder unterschiedlichen Radien folgen müssen, um einen gemeinsamen Kurvenmittelpunkt zu besitzen.
 	Gibt es keinen Gemeinsamen, so entsteht mehr Abrieb bzw. Schlupf, was wiederum zu ungenauen Lenk- und Wegverhalten führt.
 
-	Oft verwendet wird die sogenannte Ackermann-Lenkung, die genau diesem Prozess entgegenwirken soll, indem die Räder unterschiedlich stark einlenken.
+	Oft verwendet wird die sogenannte Ackerman-Lenkung \cite{berry16}, die genau diesem Prozess entgegenwirken soll, indem die Räder unterschiedlich stark einlenken.
 
 	\paragraph{Theorie.}
 	Es wurde sich für eine Annäherung der Winkel entschieden, da wir die Räder nicht getrennt anstellen können.
@@ -277,34 +278,39 @@
 \chapter{Motorregelung}
 % Author: Franz Wernicke
 
-%TODO: Passivieren!! :)
+	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden.
+	Da die Arduinos nur Werte zwischen $-100$ und $+100$ annehmen, musste dies zunächst umgerechnet werden.
+	Zusätzlich sollte die Geschwindigkeit geregelt werden, um bei verschiedenen Fahrtzuständen immer die Sollgeschwindigkeit zu erreichen.
 
-	Die Geschwindigkeit sollte in \meter\per\second\usk angegeben werden. Da die Arduinos nur Werte zwischen $-100$ und $+100$ annehmen, musste dies zunächst umgerechnet werden.
-	Zusätzlich sollte die Geschwindigkeit geregelt werden, um bei verschiedenen Fahrtzuständen immer die Sollgeschwindigkeit zu erreichen. \\
 	Über Drehimpulsgeber wird die zurückgelegte Strecke ermittelt.
-	Ein Ableiten nach der Zeit liefert die Geschwindigkeit. \\
+	Ein Ableiten nach der Zeit liefert die Geschwindigkeit.
+
 	Im ADTF sind bereits zwei nutzbare Filter vorhanden:
 	\begin{enumerate}[label=]
-		\item Converter Wheels, der die Werte der Wheel Encoder in eine Geschwindigkeit umrechnet. \\
-		\item Wheel Speed Controller, welcher verschiedene Regelalgorithemen darstellt. \\
+		\item Converter Wheels, der die Werte der Wheel Encoder in eine Geschwindigkeit umrechnet.
+		\item Wheel Speed Controller, welcher verschiedene Regelalgorithemen darstellt.
 	\end{enumerate}
 	Die fertigen Filter boten bereits einen guten Ausgangspunkt und wurden zunächst übernommen.
 	Um einen guten Regler zu erhalten, sollte zuerst das System des Autos bestimmt werden.
 	Dazu sollte eine Sprungfunktion aufgenommen werden.
-	Dies erwies sich als schwieriger als erwartet, da das Auto eine recht hohe Endgeschwindigkeit besaß und der Boden in der Robotik und in dem Flur davor sich als sehr rutschig herausstellte. \\
+	Dies erwies sich als schwieriger als erwartet, da das Auto eine recht hohe Endgeschwindigkeit besaß und der Boden in der Robotik und in dem Flur davor sich als sehr rutschig herausstellte.
+
 	Nach einigen Überlegungen fiel die Wahl der Teststrecke auf den Flur vor dem Rechnernetzelabor.
-	Dieser war sehr lang, eben und bietete direkt vor der Tür des Labors eine Fußmatte, die durch bessere Traktion eine hohe Beschleunigung erlaubte. \\
+	Dieser war sehr lang, eben und bietete direkt vor der Tür des Labors eine Fußmatte, die durch bessere Traktion eine hohe Beschleunigung erlaubte.
 
 \section{Aufnahme der Sprungfunktion}
 	Durch den \emph{HardDisk-Recorder} konnten die Sensorwerte auf einfache Weise aufgenommen werden.
-	Die Aufgabe bestand sodann darin, dass Auto sprungfunktionsartig zu Beschleunigen. \\
-	Auf dem Weg zur Teststrecke wurde der geräumigen Flur vor Hörsaal 5 genutzt, um einen Test durchzuführen und auch diesen aufzuzeichnen. \\
+	Die Aufgabe bestand sodann darin, dass Auto sprungfunktionsartig zu Beschleunigen.
+
+	Auf dem Weg zur Teststrecke wurde der geräumigen Flur vor Hörsaal 5 genutzt, um einen Test durchzuführen und auch diesen aufzuzeichnen.
+
 	Zur Auswertung der Messdaten wurde der \emph{Wheel Speed Converter} angepasst, um die Messwerte in eine CSV Datei zu schreiben.
-	Diese CSV Datei wurde dann in einer Tabellenkalkulation bearbeitet. \\
+	Diese CSV Datei wurde dann in einer Tabellenkalkulation bearbeitet.
+
 	Zuerst wurde bestimmt, wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist.
 	Alle Werte vor und nach diesem Zeitraum wurden entfernt.
 	Da die Zeitstempel die ganze Zeit mitlaufen, mussten die Zeiten auf den Anfang der Beschleunigung verschoben werden.
-	Durch diese Anpassungen erhielten wir die Graphen \ref{img-accelleration1} und \ref{img-accelleration2}.\\
+	Durch diese Anpassungen erhielten wir die Graphen \ref{img-accelleration1} und \ref{img-accelleration2}.
 	\begin{figure}[ht]
 		\centering
 		\begin{tikzpicture}
@@ -335,14 +341,16 @@
 	Dazu wurden die Werte betrachtet und mithilfe von verschieden breiten Medianen die Werte gefiltert.
 	Nun wurden die Differenzen betrachtet.
 	Durch die Messungenauigkeiten kam es immer wieder zu negativen Differenzen.
-	Daher wurden alle Werte, wonach die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß, als erreichte Höchstgeschwindigkeit interpretiert. \\
+	Daher wurden alle Werte, wonach die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß, als erreichte Höchstgeschwindigkeit interpretiert.
+
 	Die erste Beschleunigung diente nur als Test, um ein Gefühl für das Fahrverhalten des Autos bei höheren Geschwindigkeiten zu bekommen, bevor der eigentliche Test im deutlich engeren Flur durchgeführt wurde.
-	So wurden auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.\\
-	Aus der zweiten Beschleunigung ermittelten wir eine Höchstgeschwindigkeit von $4,75 \meter\per\second$.\\
+	So wurden auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.
+
+	Aus der zweiten Beschleunigung ermittelten wir eine Höchstgeschwindigkeit von $4,75 \meter\per\second$.
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=250pt,keepaspectratio]{assets/PT1-Sprungantwort.PNG}
-		\caption{Sprungantwort eines PT1 Gliedes}
+		\caption{Sprungantwort eines PT1 Gliedes \cite{Regelungstechnik}}
 		\label{img-PT1-Sprungantwort}
 	\end{figure}\\
 	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort} verglichen, liegt es nahe, dass sich das Auto wie ein PT1-Glied verhält. Daher sind wir von einem $PT_1$-Glied ausgegangen. \\
@@ -427,7 +435,7 @@
 
 	\paragraph{Problem.}
 	Leider war es jedoch der Fall, dass die Messungen Ausreißer aufwiesen.
-	Teils wurden leicht erkennbare Fehler zurückgegeben ($-1$). Teils wichen die Werte aber auch um erhebliche Beträge ab.
+	Teils wurden leicht erkennbare Fehler zurückgegeben ($-1$), teils wichen die Werte aber auch um erhebliche Beträge ab.
 
 	Den Grund für Letzteres diagnostizierten wir in der gleichzeitigen Ansteuerung der Sensoren.
 	Da jedoch der Code der Arduinos (welche sich um die Erfassung der Werte kümmern) nicht offen lag, konnten wir vorerst keine Änderungen daran vornehmen.
@@ -437,14 +445,14 @@
 	\paragraph{Maßnahme.}
 	Zur Stabilisierung der Messwerte entschieden wir uns für eine Filterung.
 	Es wurde nach einem Filter gesucht, der robust gegenüber Ausreißern ist.
-	Hier kam uns als Erstes ein Medianfilter in den Sinn.
+	Hier kam als Erstes ein Medianfilter in den Sinn.
 
 	Ein entsprechender Filter wurde nun sowohl als C++ Klasse als auch als ADTF-Filter erstellt.
 
 	Der ADTF-Filter besitzt einen Parameter, der die Fenstergröße einstellt (i.e. die Anzahl an Werten über die der Median gebildet werden soll) und ermöglicht damit eine flexible Filterung der Messwerte.
 
 \section{Hinderniserkennung}
-\label{section_ObstacleDetection}
+\label{section-ObstacleDetection}
 
 	Mithilfe der aufbereiteten Ultraschallsensordaten wird es möglich sein, das Auto sicher durch die Umgebung zu navigieren.\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 
@@ -517,12 +525,12 @@
 	\end{figure}
 
 \subsubsection{Parabelfunktion und Schwellwerte}
-	
+
 	Da sich die eben beschriebene Glockenkurve mit den gewählten Parametern in der Praxis als nicht durchsetzungsfähig erwies, fiel die zweite Wahl daher auf ein mehrteiliges Verfahren.
-	
+
 	Zuerst wird dabei eine parabelförmige Gewichtung auf den Schwellwert $s_{std}$ zur Erkennung angewendet.
 	Dies geschieht erneut auf Basis des aktuellen Lenkwinkels $\alpha$ und der Geschwindigkeit $v$.
-	
+
 	\begin{align*}
 		m_{pre} &= b \cdot \left(1 - \left(x-\alpha\right)^2\right)
 		&&||\quad b=
@@ -534,7 +542,7 @@
 		\\
 		\Rightarrow s_{dyn} &= m_{pre} \cdot s_{std}
 	\end{align*}
-	
+
 	Der somit dynamisch gewichtete Schwellwert $s_{dyn}$ wird nun wiederum durch einen oberen und unteren Schwellwert begrenzt ($s_{min}$ und $s_{max}$).
 
 	\begin{align*}
@@ -549,14 +557,13 @@
 	\end{align*}
 
 	Letztendlich erhält man so den finalen Schwellwert $s_{bounded}$.
-	Liegt der gemessene Sensorwert unterhalb dieser Schwelle, so wird dies als Hindernis gewertet. 
+	Liegt der gemessene Sensorwert unterhalb dieser Schwelle, so wird dies als Hindernis gewertet.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionserkennung}
 % Author: Thorger Dittmann
 
-	Mithilfe der Daten des Beschleunigungssensors werden Kollisionen erkannt und ein sofortiger Nothalt ausgelöst.
-	\footnote{Dieses Feature befindet sich noch in Entwicklung.}
+	Mithilfe der Daten des Beschleunigungssensors werden Kollisionen erkannt und ein sofortiger Nothalt ausgelöst.\footnote{Dieses Feature befindet sich noch in Entwicklung.}
 
 	Dabei wird darauf geachtet, dass die Ausschläge der Werte entsprechend hoch und kurzweilig sind, da auch bei starkem Abbremsen bereits starke aber anhaltende Beschleunigungen entstehen.
 
@@ -577,16 +584,18 @@
 	Diese Entscheidung hatte wiederrum die Folge, dass der Code sich nicht auf PCs ohne nVidia-Grafikkarte ausführen lassen konnte, da die OpenCV-GPU-Implementierung auf der CUDA-Bibliothek basiert, die nur für nVidia-Grafikkarten nutzbar ist.
 	Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
 
-% NOTE: Erfahrungen a la "Blöd, zwischen GPU/CPU zu switchen?" -- "Doch ziemlich leichte Handhabung" -- "Wenig Codebeispiele" ?
+	\paragraph{Erfahrungen.}
+	Trotz der wenigen und zum Teil nicht aktuellen Codebeispiele lässt sich die GPU-Schnittstelle nach einer kurzen Einfindungsphase leicht handhaben. Allerdings sind nicht alle Funktionen von OpenCV als GPU-Variante verfügbar, weshalb wir manchmal auf die CPU-Variante umsteigen mussten. Entsprechende Stellen sind im Quelltext beschrieben. Des Weiteren ist der Wechsel zwischen Ausführung auf der CPU im Gegensatz zur Ausführung auf der GPU ziemlich aufwendig, da sämtliche Funktionsaufrufe geändert werden müssen. Anhand der Funktion \hyperlink{https://docs.opencv.org/trunk/d8/d40/group\_\_cudacore\_\_init.html\#gaaa93892f9189163e5d53790b4b1e88db}{\texttt{cv::cuda::getCudaEnabled\-DeviceCount()}} kann zur Laufzeit festgestellt werden, ob mindestens eine CUDA-fähige GPU verwendet wird. Anhand dieser Feststellung kann dann der Code auf der CPU oder auf der GPU ausgeführt werden. Dazu müsste im Quelltext allerdings eine CPU- und eine GPU-Variante existieren, was zu ordentlicher Redundanz führen würde. Wir haben uns daher vorerst auf die reine GPU-Implementierung (mit Nutzung der CPU bei Nichtvorhandensein der GPU-Variante) konzentriert.
 
 \pagebreak
 
 \section{Übersicht}
 % Author: Jan Ottmüller
+	\autoref{img-bvaFlowchart} gibt einen groben Überblick über den Ablauf der Bildverarbeitung, die genutzten Parameter und das Zusammenwirken mit ADTF.
 
 	\begin{figure}[ht]
 		\centering
-		\includegraphics[width=250pt,keepaspectratio]{assets/bvaFlowchart.jpg}
+		\includegraphics[width=.6\textwidth,keepaspectratio]{assets/bvaFlowchart.jpg}
 		%DONE: Tippfehler in "Binarisierung" entfernen. --hoe
 		\caption{Übersicht der Bildverarbeitung}
 		\label{img-bvaFlowchart}
@@ -596,11 +605,14 @@
 
 \section{Linienerkennung (Binarisierung)}
 % Author: Frauke Jörgens
+	Die von einer Kamera (RealSense\texttrademark\ oder der Basler-Kamera) aufgenommene RGB-Bilder werden zunächst in das HSV-Farbmodell übertragen, um eine genauere Segmentierung anhand von Farben im Bild zu ermöglichen, anstatt nur anhand der typischen Kanäle Rot, Grün und Blau des RGB-Farbmodells Farbbereiche zu erkennen.
+	In dem HSV-Farbmodell werden Farben als Farbwinkel (0\degree\ für Rot, 120\degree\ für Grün, 240\degree\ für Blau \cite{HSV-Wiki}) repräsentiert. Zusätzlich wird die Sättigung und der Helligkeitswert der Farbe angegeben.
+	Dieses Farbmodell erlaubt eine bessere -- und für Menschen intuitive -- Unterteilung von Farben im Bild.
+	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt\footnote{Da es sich bei dem Bild um ein 8-Bit-Bild handelt, werden die Werte für den Farbwinkel (\textit{hue}) in den Bereich von 0\degree\ bis 180\degree\ skaliert, da Werte über 255 nicht über 8 Bit repräsentiert werden können.
+	Siehe auch \url{https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html\#cvtcolor} unter RGB $\longleftrightarrow$ HSV.}.
+	Die zugehörigen Parameter (\texttt{hue}, \texttt{saturation} und \texttt{value}), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
+	Die für uns idealen Parameter für das blaue Klebeband sind in \autoref{table-hsv-values} aufgeführt.
 
-	Die von einer Kamera (Realsense oder Basler) aufgenommene RGB-Bilder werden zunächst in das HSV-Farbmodell übertragen, um eine genauere Segmentierung anhand von Farben im Bild zu ermöglichen.
-	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt.
-	Die zugehörigen Parameter ($hue$, $saturation$ und $value$), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
-	Die für uns idealen Parameter für das Blaue Klebeband sind in \autoref{table-hsv-values} aufgeführt.
 	\begin{table}
 		\centering
 		\begin{tabular}{l|l}
@@ -608,68 +620,113 @@
 			Saturation / Sättigung & 100 - 255\\\hline
 			Value / Helligkeitswert & 80 - 255
 		\end{tabular}
-		\label{table-hsv-values}
 		\caption{Gut funktionierende Parameter für die blaue Fahrbahnmarkierung. In ADTF werden \texttt{HueLow}, \texttt{HueHigh} und die unteren Grenzen für Sättigung (\texttt{Saturation}) und Helligkeitswert (\texttt{Value}) gesetzt.}
+		\label{table-hsv-values}
 	\end{table}
+
 	Das Ergebnis dieser Operation ist ein Binärbild es unterteilt die Pixel des HSV-Bilds in Pixel, die Teil des Unterraums sind (weiß) und solche, die nicht Teil des Unterraums sind (schwarz).
 	Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \texttt{cv::inRange} genutzt.
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
+	\autoref{img-applying-cvtColor} verdeutlicht die Anwendung dieser Bearbeitungsschritte.
 
-\section{Canny Edge Detection} %TODO vorher/nachher Bilder
+	\begin{figure}
+		\centering
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{assets/Strasse.png}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{assets/Strasse-Binaer.png}
+		\end{subfigure}
+		\caption{Ursprüngliches Kamerabild der Realsense-Kamera (links) und binarisiertes Bild (rechts).}
+		\label{img-applying-cvtColor}
+	\end{figure}
+
+\section{Canny Edge Detection}
 % Author: Frauke Jörgens
-
-	Um in dem Binärbild die Fahrbahnen als Linien erkennen zu können, wird ein Kantendetektionsverfahren -- der Canny Edge Detector, der bereits in OpenCV implementiert wurde -- verwendet (siehe auch \footnote{\url{https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/canny\_detector/canny\_detector.html}}).
+	Um in dem Binärbild die Fahrbahnen als Linien erkennen zu können, wird ein Kantendetektionsverfahren -- der Canny Edge Detector, der bereits in OpenCV implementiert wurde -- verwendet\footnote{siehe auch \url{https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/canny\_detector/canny\_detector.html}}.
 	Dieser erkennt in einem Grauwertbild mithilfe des Sobel-Operators Kanten, deren Stärke und Gewichtung pro Pixel aufgenommen wird.
 	Um sicherzustellen, dass die Kanten nur einen Pixel breit sind, werden alle zu Kanten zugehörigen Pixel, die keine lokalen Maxima sind, aussortiert.
-	Schließlich werden über zwei Schwellwerte die Kantenkandidaten weiter gefiltert, sodass ein Binärbild entsteht.
-	Ist die Kantenstärke eines Pixels größer als der obere Schwellwert, wird der Pixel als Kante akzeptiert.
-	Ist die Kantenstärke eines Pixels niedriger als der untere Schwellwert, wird dieser Pixel als Kandidat verworfen.
-	Über eine Hysterese werden die Pixel gefiltert, die zwischen beiden Schwellwerten liegen, sodass "`Ausreißer"' vermieden werden.
+	Schließlich werden über zwei Schwellenwerte die Kantenkandidaten weiter gefiltert, sodass ein Binärbild entsteht.
+	Ist die Kantenstärke eines Pixels größer als der obere Schwellenwert, wird der Pixel als Kante akzeptiert.
+	Ist die Kantenstärke eines Pixels niedriger als der untere Schwellenwert, wird dieser Pixel als Kandidat verworfen.
+	Über eine Hysterese werden die Pixel gefiltert, die zwischen beiden Schwellenwerten liegen, sodass "`Ausreißer"' vermieden werden.
+
 	Dementsprechend nimmt die Funktion \texttt{cv::Canny}, bzw. das GPU-Pendant \texttt{cv::cuda::createCannyEdgeDetector} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators.
-	Für das Verhältnis der Schwellwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
+	Für das Verhältnis der Schwellenwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
+	\autoref{img-appling-canny} zeigt das Ergebnis des Canny-Algorithmus' nach der Anwendung auf das Binärbild.
 	% NOTE: Das ist okay, aber ihr dürft davon ausgehen, dass der Leser weiß, wie der Canny Filter arbeitet. Ihr müsst die Parameter nicht erklären, es sei denn das war euch bei der Parameterwertsuche besonders wichtig. Konzentriert euch lieber auf die Beschreibung von dem, was ihr gemacht habt. :) --hoe
 
-	Angewandt auf das binarisierte Bild der Straße hat der Canny-Algorithmus folgenden Effekt:
+	\begin{figure}
+		\centering
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{assets/Strasse-Binaer.png}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{assets/Strasse-Canny.png}
+		\end{subfigure}
+		\caption{Kamerabild vor (links) und nach der Anwendung des Canny-Algorithmus' (rechts).}
+		\label{img-applying-canny}
+	\end{figure}
 
-	% TODO Bilder!
+\section{Perspektivische Verzerrung}
+% Author: Frauke Jörgens
+	Die Realsense-Kamera, die genutzt wird, sieht die Straße in einem Winkel, der nicht im rechten Winkel zur Straße ist.
+	Daraus ergibt sich eine perspektivische Verzerrung, die im Kamerabild deutlich wird.
+	Für die Bildverarbeitung wäre allerdings ein orthografisch projiziertes Bild (ähnlich der Vogelperspektive) ideal, um Probleme, die aufgrund der Perspektive auftreten, zu vermeiden.
+	Beispielsweise erhofften wir uns von diesem Ansatz, Kurven besser erkennen zu können.
 
-	% TODO perspektivische Verzerrung erwähnen
+	Anhand eines Schachbrettmusters wurde das Kamerabild so kalibriert, dass die Quadrate des Musters auch im Kamerabild quadratisch sind.
+	Zur Transformation werden 4 Punkte benutzt, die ein Viereck aufspannen und die Eckpunkte der Straße angeben. Anhand der OpenCV-Funktion \texttt{cv::get\-PerspectiveTransform} wird die zugehörige Transformationsmatrix berechnet, welche mit der OpenCV-Funktion \texttt{cv::cuda::warpPerspective} angewandt wird. \autoref{img-applying-persp-warp} zeigt das Bild der Straße vor und nach Anwendung der perspektivischen Verzerrung.
+
+	\begin{figure}[h]
+		\centering
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{assets/Strasse-Canny.png}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=.8\textwidth]{assets/Strasse-Persp.png}
+		\end{subfigure}
+		\caption{Kamerabild vor (links) und nach der Anwendung der perspektivischen Verzerrung (rechts).}
+		\label{img-applying-persp-warp}
+	\end{figure}
 
 \section{Hough Line Transformation}
 % Author: Jan Ottmüller
 
 	Nachdem die Kanten der Fahrbahnen nun gefiltert sind, können aus den Bilddaten die Fahrstreifen abstrahiert werden.
-	Für die Positionsberechnung ist es notwendig, die Fahrbahnen nun in dem gefilterten Bild zu erkennen, und in geeigneter Weise zu mathematisch zu repräsentieren.
+	Für die Positionsberechnung ist es notwendig, die Fahrbahnen nun in dem gefilterten Bild zu erkennen, und in geeigneter Weise mathematisch zu repräsentieren.
 
-	OpenCV bringt die hierfür geeignete Hough Line Transformation mit. Diese transformiert das Bild in den Hough Raum.
+	OpenCV bringt die hierfür geeignete Hough Line Transformation mit.
+	Diese transformiert das Bild in den Hough Raum.
 	Über einen Threshhold Parameter kann hierbei die Empfindlichkeit des Filters eingestellt werden.
 	Je niedriger, desto mehr Linien werden im Bild erkannt.
 	Diesen Parameter kann im ADTF zur Laufzeit angepasst werden.
 
 	Ebenfalls probierten wir zu Anfang noch die probabilistic Hough Transformation aus.
 	Diese, ebenfalls von OpenCV mitgebrachte Funktion, hat die zusätzliche Eigenschaft, dass beispielsweise die gestrichelten Mittellinien nicht als eine einzelne Gerade erkannt werden, sondern jeder Strich der Mittellinie als einzelne Gerade.
-	Da uns jedoch nur die Mittlline an sich interessiert, haben wir uns dazu entschieden, diese Transformation nicht zu verwenden.
-	Dies reduziuert zudem die Menge der zu verarbeitenden Geraden.
+	Da uns jedoch nur die Mittellinie an sich interessiert, haben wir uns dazu entschieden, diese Transformation nicht zu verwenden.
+	Dies reduziert zudem die Menge der zu verarbeitenden Geraden.
 
 	Die mit Hilfe der Hough Line Transformation erkannten Geraden werden in Polarkoordinaten dargestellt.
 	Hierbei befindet sich der Ursprung oben links im Bild.
-	Von diesem Punkt aus wird die Gerade mit einem orthogonalen Stützvektor mit dem Winkel $\theta$ und der Länge $r$ beschrieben.
+	Von diesem Punkt aus wird die Gerade mit einem orthogonalen Stützvektor mit dem Winkel $\theta$ und der Länge $r$ beschrieben (siehe auch \autoref{img-Winkelnormalisierung}).
 
-	Aufgrund der Tatsache, dass das Bild so verzerrt wurde, dass wir die Straße aus einer senkrechten Obersicht betrachten, entsprechen die Winkel der gefunden Geraden nun dem relativen Winkel der Fahrbahn zu unserem Model. %NOTE: Das widerspricht sich mit der nächsten Sektion. Genauer erläutern, was mit relativem Winkel gemeint ist. Z.B. Winkel liegt bereits richtig skaliert vor. --felix
 
 \section{Line-Clustering}
 % Author: Frauke Jörgens
 
-	%NOTE: Vielleicht in eigene Section auslagern? --felix 
+	%NOTE: Vielleicht in eigene Section auslagern? --felix
 	Bevor die Linien zusammengefasst werden, werden sie einer Normalisierung unterzogen.
-	In OpenCV haben die Normalenvektoren, die sich nach der Hough Line Transformation ergeben, einen Winkel von 0 bis $180\degree$ relativ zu der x-Achse.
+	In OpenCV haben die Normalenvektoren, die sich nach der Hough Line Transformation ergeben, einen Winkel von $0$ bis $180\degree$ zu der x-Achse.
 	Bei einem theoretisch größeren Winkel wird die Gerade durch eine negative Distanz dargestellt.
 	Da vertikale Linien einen horizontalen Normalenvektor haben, schwanken die Winkel oft zwischen $\sim0$ und $\sim180\degree$ bei vertikaler Ausrichtung.
+
 	In dem Straßenbild sind oft vertikale Linien vorhanden.
 	Um die Erkennung dieser einfacher zu machen, werden die Winkel der gefundenen Linien so verändert, dass sie in einem Bereich von -90 bis +90 $\degree$ liegen.
 	Vertikale Linien haben folglich einen Winkel von ca. $0 \degree$.
 	Winkel außerhalb dieses Bereichs werden anhand einer negativen Distanz dargestellt.
-	\autoref{img-Winkelnormalisierung} verdeutlicht diese Überlegung.
+	Aufgrund der Tatsache, dass das Bild so verzerrt wurde, dass wir die Straße aus einer senkrechten Obersicht betrachten, Entsprechen die Winkel der gefunden Geraden nun dem relativen Winkel der Fahrbahn zu unserem Model. %NOTE: Das widerspricht sich mit der nächsten Sektion. Genauer erläutern, was mit relativem Winkel gemeint ist. Z.B. Winkel liegt bereits richtig skaliert vor. --felix
+	\autoref{img-Winkelnormalisierung} verdeutlich diese Überlegung.
 
 	\begin{figure}
 		\centering
@@ -680,7 +737,7 @@
 
 	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden.
 	Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt.
-	Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden.
+	Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden (im Quellcode \texttt{isEquivalent} genannt).
 	Der Vergleich erfolgt anhand des Winkels und der Länge des Normalenvektors der Linie.
 	Nach dem Clustering gibt es eine Zuordnung jeder Linie in eine Klasse. %NOTE: Der satz klingt seltsam :O --felix
 	Alle Linien einer Klasse werden anschließend zu einer Linie zusammengefasst, indem Winkel und Abstand der Klasse zugehörigen Linien gemittelt werden.
@@ -688,40 +745,41 @@
 
 \section{Klassifizierung}
 % Author: Frauke Jörgens
-
 	Nachdem die Linien aufgrund des Ähnlichkeitskriteriums gebündelt wurden, werden sie in Kategorien unterteilt, um das Straßenbild sinngemäß zusammenzufassen.
-	Wir haben uns für eine Unterteilung in folgende Kategorien entschieden: %NOTE: Wirkt etwas gedrungen. Vielleicht lieber Aufzählung? --felix
+	Wir haben uns für eine Unterteilung in Kategorien entschieden, die in \autoref{table-lineClassification} aufgelistet und beschrieben sind. %NOTE: Wirkt etwas gedrungen. Vielleicht lieber Aufzählung? --felix
 	\begin{table}
 		\begin{tabular}{p{.125\textwidth}|p{.35\textwidth}|p{.35\textwidth}|p{.05\textwidth}}
 			Art der Linie & Beschreibung & Bedingung & Farbe\\\hline
-			Linke Linie &  Die linke erkannte Linie. Aufgrund des Kamerablickwinkels entspricht diese Linie also eigentlich der mittleren gestrichelten Linie der Straße & Die Linie ist vertikal (ihr Winkel zur y-Achse ist kleiner als $20\degree$) und sie befindet sich auf der linken Seite des Bildes & grün\\\hline
+			Linke Linie &  Die linke erkannte Linie. Aufgrund des Kamerablickwinkels entspricht diese Linie also eigentlich der mittleren gestrichelten Linie der Straße & Die Linie ist vertikal (ihr Winkel zur y-Achse ist kleiner als 20\degree) und sie befindet sich auf der linken Seite des Bildes & grün\\\hline
 			Rechte Linie & Die rechte erkannte Linie (= die rechte Fahrbahnmarkierung) & Die Linie ist vertikal (s.o.) und sie befindet sich auf der rechten Seite des Bildes & blau\\\hline
-			Haltelinie & Eine Haltelinie, wie sie an einer Kreuzung üblich ist & Die Linie ist horizontal (ihr Winkel zur y-Achse ist größer als $75 \degree$) & rot\\\hline
+			Haltelinie & Eine Haltelinie, wie sie an einer Kreuzung üblich ist & Die Linie ist horizontal (ihr Winkel zur y-Achse ist größer als 75 \degree) & rot\\\hline
 			Unklassifi-zierte Linie & Eine Linie, die keiner der obigen Kategorien entspricht & Eine Linie wird keiner der Kategorien zugeordnet  & gelb\\
 		\end{tabular}
+		\caption{Beschreibung der verschiedenen Klassen von erkannten und nicht erkannten Linien.
+		In \autoref{img-lines} wird veranschaulicht, wie die Linien entsprechend ihrer Klasse eingefärbt und anhand der Anzahl der zusammengefassten Linien dicker oder dünner gezeichnet werden.}
 		\label{table-lineClassification}
-		\caption{Beschreibung der verschiedenen Klassen von erkannten und nicht erkannten Linien. In \autoref{img-lines} wird veranschaulicht, wie die Linien entsprechend ihrer Klasse eingefärbt und anhand der Anzahl der zusammengefassten Linien dicker oder dünner gezeichnet.}
 	\end{table}
 
 	\begin{figure}
 		\centering
-		\includegraphics[width=.5\textwidth]{assets/line-classification}
-		\caption{Canny-Bild mit erkannten Linien. Oben links wird der berechnete Lenkwinkel angezeigt.}
+		\includegraphics[width=.5\textwidth]{assets/Strasse-Final}
+		\caption{Perspektivisch verzerrtes Canny-Bild aus \autoref{img-applying-persp-warp} mit erkannten Linien.
+			Es wurde eine Linke (grün) und eine Rechte (blau) erkannt. Oben links im Bild wird der berechnete Lenkwinkel und die berechnete Geschwindigkeit angezeigt.}
 		\label{img-lines}
 	\end{figure}
+
+% TODO vllt noch ein Bild mit erkannter Stopplinie und unklassifizierten Linien am Montag machen?
 
 \subsection{Haltelinien}
 % Author: Jan Ottmüller
 
-	Wird eine waagerechte Linie erkannt, so wird sie als Stopplinie klassifiziert.
-	Je näher das Fahrzeug dieser Linie kommt, desto langsamer wird es.
-	
-	Dieser Anhaltealgorithmus ist jedoch nur unter der Bedingung aktiv, dass genügend Stopplinien erkannt wurden.
+	Wird eine waagerechte Linie erkannt, so wird sie als Haltelinie klassifiziert.
+	Je näher sich das Fahrzeug dieser Linie nähert, desto langsamer wird es.
+	Dieser Anhaltealgorithmus ist jedoch nur aktiv, wenn genügend Haltelinien bzw. eine stark gewichtete Haltelinie erkannt wurden.
 	So vermeiden wir, dass das Auto schon anhält, wenn es nur eine sehr schwache Stopplinie erkannt hat, was durch Rauschen ausgelöst werden kann.
-	Dieser Threshold kann mit dem ADTF Parameter 'Stop Threshold' angepasst werden.
+	Dieser Schwellwert kann mit dem ADTF-Parameter 'Stop Threshold' angepasst werden.
 	Für uns hat der Wert 0,4 gut funktioniert.
-	Es müssen somit mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält. %NOTE: Ist das wirklich so? -- felix
-
+	Es müssen dann also mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält. %NOTE: Ist das wirklich so? -- felix
 
 \section{Zentrierung in der Fahrspur}
 % Author: Felix Maaß
@@ -780,12 +838,13 @@
 		\label{img-spurzentrierung-function}
 	\end{figure}
 
-	% TODO Besonderheiten in der Kurve erwähnen
+\section{Besonderheiten in der Kurve}
+% TODO (macht Frauke)
 
 \section{Weitere Überlegungen}
 % Author: Jan Ottmüller
 
-	An dieser Stelle möchten wir noch einige Überlegungen und Erkentnisse festhalten,
+	An dieser Stelle möchten wir noch einige Überlegungen und Erkenntnisse festhalten,
 	die es nicht in die fertige Software geschafft haben.
 
 \subsection{Alternative Fahrstreifenrepräsentation}
@@ -794,7 +853,7 @@
 	Hierdurch können gerade Fahrstreifen sehr präzise dargestellt werden, jedoch zeigt das Verfahren Schwächen bei der Repräsentation von Kurven.
 	Eine andere Form der Darstellung wäre eine Polynomfunktion zweiten Grades.
 	Hierbei kann die Polynomfunktion genau an die Kurve angepasst werden.
-	Da unser Ansatz jedoch schon recht gut funktionierte und wir keine geeignete Funktion für das Anpassen der Polynomfunktion fanden, haben wir uns auf unseren schon implementierten Ansatz weiter konzentriert.
+	Da unser erster Ansatz jedoch schon recht gut funktionierte und wir keine geeignete Funktion für das Anpassen der Polynomfunktion fanden, haben wir uns auf unseren schon implementierten Ansatz weiter konzentriert.
 
 	% TODO evtl. Jury-Modul mit abbiegen usw. nach Haltelinie erwähnen
 
@@ -803,11 +862,11 @@
 
 	Zuletzt werden alle Ergebnisse aus den vorgeschalteten Filtern zusammengeführt und eine finale Entscheidung getroffen, welche Aktionen durchgeführt werden sollen.
 	Dazu wurde der \texttt{cMainController} entwickelt. Er nimmt nun den Lenkwinkel und die Geschwindigkeit der Fahrbahnerkennung sowie die Flags der Hindernis- und Kollisionserkennung entgegen und evaluiert darauf basierend die aktuelle Lage.
-	
-	Der Filter steuert dann die Geschwindigkeit und den Lenkwinkel sowie die Fahrzeugbeleuchtung. 
-	
+
+	Der Filter steuert dann die Geschwindigkeit und den Lenkwinkel sowie die Fahrzeugbeleuchtung.
+
 	Grob gesagt, wird hier zwischen den folgenden Verhalten differenziert:
-	
+
 	\begin{enumerate}
 		\item{\textbf{Normaler Zustand: Fahrt}
 			\begin{enumerate}
@@ -841,7 +900,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modifikationen am Fahrzeug}
 
-%TODO: Rückinstallation der Baslerkamera (3 Unterlegscheiben) für die Realsense-Kamera für Hermann als Text
+Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne am Modellauto mit einer 3D-gedruckten Halterung befestigt. Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie oben mit dem Magneten und mit einer Schraube mit 3 Unterlegscheiben gesichert werden.
+\begin{figure}
+	\centering
+	\begin{subfigure}[c]{.45\textwidth}
+		\includegraphics[width=\textwidth]{assets/Kamerahalterung.PNG}
+	\end{subfigure}
+	\begin{subfigure}[c]{.45\textwidth}
+		\includegraphics[width=\textwidth]{assets/Kamera-Anbringung.jpg}
+	\end{subfigure}
+	\caption{CAD-Modell der Halterung (links) und Anbringung des 3D-Modells (gelb) und der Kamera am Modellfahrzeug (rechts).}
+	\label{img-camera}
+\end{figure}
+
+
+\chapter{Fazit}
+% TODO Fazit hier!
 
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
@@ -864,7 +938,12 @@
 	December 2016:\\
 	\url{http://datagenetics.com/blog/december12016/index.html}
 
-
+	\bibitem{HSV-Wiki}
+	Wikipedia,
+	\textit{HSV-Farbraum}.\\
+	Letzte Bearbeitung: 8. September 2017 um 17:55 Uhr,
+	Letzter Zugriff am: 21. Januar 2018,
+	\url{https://de.wikipedia.org/wiki/HSV-Farbraum}
 
 \end{thebibliography}
 
