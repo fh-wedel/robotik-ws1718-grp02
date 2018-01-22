@@ -153,8 +153,22 @@ public:
      */
     tResult Init(tInitStage eStage, ucom::IException** __exception_ptr);
 
+    /*!
+     * Creates the input pins.
+     * \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
+     *        If not using the cException smart pointer, the interface has to
+     *        be released by calling Unref().
+     * \return                           Standard Result Code.
+     */
     tResult CreateInputPins(__exception);
 
+    /*!
+     * Creates the output pins.
+     * \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
+     *        If not using the cException smart pointer, the interface has to
+     *        be released by calling Unref().
+     * \return                           Standard Result Code.
+     */
     tResult CreateOutputPins(__exception);
 
     /*!
@@ -219,27 +233,6 @@ public:
     tResult PropertyChanged(const tChar* strName);
 
 private: // private methods
-
-    /*!
-     * Searches for the lanes.
-     *
-     * \param           detectionLines      The detection lines.
-     * \param           image               The image.
-     * \param [in,out]  detectedLinePoints  The left lane pixels.
-     * \return  Returns a standard result code.
-     *
-     */
-    tResult findLinePoints(const vector<tInt>& detectionLines, const cv::Mat& image, vector <cPoint>& detectedLinePoints);
-
-    /*!
-     * Gets detection lines.
-     *
-     * \param [in,out]  detectionLines  The detection lines.
-     *
-     * \return  The detection lines.
-     */
-    tResult getDetectionLines(vector<tInt>& detectionLines);
-
     /*! function to set the m_sProcessFormat and the  m_sInputFormat variables
      *   \param pFormat the new format for the input pin
      *   \return Standard Result Code.
@@ -252,6 +245,13 @@ private: // private methods
      */
     tResult UpdateOutputImageFormat(const cv::Mat& outputImage, cVideoPin &outputVideoPin, tBitmapFormat &format);
 
+    /*!
+     * Transmits an image.
+     * @param  image          The image to be transmitted.
+     * @param  outputVideoPin The pin for the transmitted image.
+     * @param  format         The format of the image.
+     * @return                Standard Result Code.
+     */
     tResult transmitImage(cv::Mat &image, cVideoPin &outputVideoPin, tBitmapFormat &format);
 
     /*! function to process the mediasample
@@ -303,37 +303,44 @@ private: // private methods
         /*! Threshold for image binarization */
         int thresholdImageBinarization;
 
-        //eigene
+        /*! Low hue threshold for image binarisation */
         int hueLow;
+        /*! High hue threshold for image binarisation */
         int hueHigh;
+        /*! Low saturation threshold for image binarisation */
         int saturation;
+        /*! Low value threshold for image binarisation */
         int value;
+        /*! Hough threshold for hough line transform */
         int houghThresh;
+        /*! Angle threshold for line clustering */
         float angleThresh;
+        /*! Distance threshold for line clustering */
         float distanceThresh;
+        /*! Stop threshold for stop lines */
         float stopThresh;
 
     }
     /*! the filter properties of this class */
     m_filterProperties;
 
-    /*!
-     * Transmit gcl.
-     *
-     * \param   detectionLines  The detection lines.
-     * \param   detectedLinePoints  The left lane pixels.
-     *
-     * \return  A tResult.
-     */
-    tResult transmitGCL(const vector<tInt>& detectionLines, const vector<cPoint>& detectedLinePoints);
-
-
-
     /*! media description for encoding steering output */
     cObjectPtr<IMediaTypeDescription> m_SteeringOutputDescription;
 
+    /*!
+     * Transmits a float value.
+     * @param  value     The float value to be transmitted.
+     * @param  outputPin The output pin on which the float value should be
+     *                   transmitted.
+     * @return           A tResult.
+     */
     tResult transmitValue(tFloat32 value, cOutputPin& outputPin);
 
+    /*!
+     * Initializes a media sample.
+     * @param  typeDescription The type description.
+     * @return                 The media sample.
+     */
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
 

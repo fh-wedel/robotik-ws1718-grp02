@@ -37,7 +37,6 @@ using namespace adtf_graphics;
 #include <opencv2/core/cuda.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/cudaimgproc.hpp>
-//~ #include <opencv2/core/cuda_gpu_mat.hpp>
 
 
 #endif // __STD_INCLUDES_HEADER
