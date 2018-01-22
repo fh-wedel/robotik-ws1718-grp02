@@ -558,6 +558,46 @@
 
 	Letztendlich erhält man so den finalen Schwellwert $s_{bounded}$.
 	Liegt der gemessene Sensorwert unterhalb dieser Schwelle, so wird dies als Hindernis gewertet.
+	
+	In unseren Test haben sich die Schwellenwerte $s_{dyn} = 30cm$, $s_{min} = 7cm$ und $s_{max} = 150cm$ als gut erwiesen.
+	\autoref{img-uss-function-parabola} zeigt die Auswirkungen von Änderungen der Geschwindigkeit und des Lenkwinkels.
+	
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}
+		\datavisualization [
+		scientific axes=clean,
+		style sheet=strong colors,
+		style sheet=vary dashing,
+		all axes={grid},
+		y axis={label=Verstärkung, ticks={step=50, tick unit=cm}, include value=0, include value=200},
+		x axis={label=Montagewinkel, ticks={step=30, tick unit=\degree}},
+		visualize as smooth line/.list={func0, func25, funcSpeed},
+		func0={label in legend={text=Standard}},
+		func25={label in legend={text=Lenkwinkel $+25\degree$}},
+		funcSpeed={label in legend={text=Geschwindigkeit $v \geq 2 \cdot v_{std}$}},
+		data/format=function
+		]
+		
+		data [set=func0] {
+			var x : interval [-90:90] samples 180;
+			func y = max(7, min(100 * (1 - (\value x / 180 * pi)^2), 150));
+		}
+		
+		data [set=func25] {
+			var x : interval [-90:90] samples 180;
+			func y = max(7, min(100 * (1 - ((\value x - 34) / 180 * pi)^2), 150);
+		}
+		
+		data [set=funcSpeed] {
+			var x : interval [-90:90] samples 180;
+			func y = max(7, min(100 * 2 * (1 - (\value x / 180 * pi)^2), 150));
+		};
+		\end{tikzpicture}
+		
+		\caption{Gewichtung der Schwellenwerte}
+		\label{img-uss-function-parabola}
+	\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionserkennung}
