@@ -39,10 +39,7 @@
 %DONE: Gruppenfoto (mit Auto) - ✓
 %DONE: Bilder - ✓
 
-%TODO: Passiver Schreibstil
-%TODO: Allgemeine Beschreibungen der Kapitel
 %TODO: Fazit
-%TODO: Zwischenfazit für jedes Kapitel?
 
 \begin{document}
 
@@ -606,18 +603,18 @@
 
 
 	Mithilfe der Daten des Beschleunigungssensors werden Kollisionen erkannt und ein sofortiger Nothalt erfolgt.\\
-Zunächst wird ein Medianfilter auf die Werte des Accelerometers angewendet. Danach werden die Beschleunigungswerte der drei Achsen über den Satz des Pythagoras (Formel \ref{pyth}) zusammengerechnet.
-\begin{align}
-	a = \sqrt{a_{x}^2+a_{y}^2+a_{z}^2}
-	\label{pyth}
-\end{align}
-Überschreitet die Beschleunigung einen bestimmten Schwellenwert, wird als Ursache eine Kollision angenommen, wodurch wiederum ein Nothalt ausgelöst wird.
-
-Einerseits muss der Schwellenwert niedrig genug sein, damit der Motor nicht erst ausgeschaltet wird, falls man mit Maximalgeschwindigkeit gegen eine Wand fährt.
-Andererseits muss die Schwelle hoch genug sein, damit bestimmte Ereignisse (beispielsweise Anfahren) nicht als Kollision interpretiert werden.
-Dabei ist problematisch, dass nicht alle Kollisionen bei der gleichen Geschwindigkeit stattfinden
-Auch ist mit zu beachten, dass die Kollisionsobjekte (z.B. Wände, Personen) das Auto verschieden stark abbremsen, woraus wiederum verschiedene Beschleunigungswerte resultieren.
-Als Kriterium zur Wahl des Schwellwerts wurde vorrangig Zusammenstöße mit Wänden verwendet.
+	Zunächst wird ein Medianfilter auf die Werte des Accelerometers angewendet. Danach werden die Beschleunigungswerte der drei Achsen über den Satz des Pythagoras (Formel \ref{pyth}) zusammengerechnet.
+	\begin{align}
+		a = \sqrt{a_{x}^2+a_{y}^2+a_{z}^2}
+		\label{pyth}
+	\end{align}
+	Überschreitet die Beschleunigung einen bestimmten Schwellenwert, wird als Ursache eine Kollision angenommen, wodurch wiederum ein Nothalt ausgelöst wird.
+	
+	Einerseits muss der Schwellenwert niedrig genug sein, damit der Motor nicht erst ausgeschaltet wird, falls man mit Maximalgeschwindigkeit gegen eine Wand fährt.
+	Andererseits muss die Schwelle hoch genug sein, damit bestimmte Ereignisse (beispielsweise Anfahren) nicht als Kollision interpretiert werden.
+	Dabei ist problematisch, dass nicht alle Kollisionen bei der gleichen Geschwindigkeit stattfinden.
+	Auch ist mit zu beachten, dass die Kollisionsobjekte (z.B. Wände, Personen) das Auto verschieden stark abbremsen, woraus wiederum verschiedene Beschleunigungswerte resultieren.
+	Als Kriterium zur Wahl des Schwellenwerts wurden vorrangig Zusammenstöße mit festen Objekten wie Wänden verwendet.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
