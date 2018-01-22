@@ -20,6 +20,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include "stdafx.h"
 #include "ADTF_OpenCV_helper.h"
+#include "includes/StdFilter.h"
 
 
 #define OID_ADTF_FILTER_DEF "adtf.aadc_LaneDetection_Custom" //unique for a filter
@@ -91,7 +92,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 /*!
 * This class is the main class of the OpenCV Template Filter and can be used as template for user specific image processing filters
 */
-class cLaneDetection : public adtf::cFilter
+class cLaneDetection : public cStdFilter
 {
 
     /*! This macro does all the plugin setup stuff */
