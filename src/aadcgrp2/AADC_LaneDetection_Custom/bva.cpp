@@ -187,7 +187,7 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines,
 																	float stopThresh) {
 
-	if(stopLines.size() > 0 && stopLines.at(0) > stopThresh) {
+	if(stopLines.size() > 0 && stopLines.at(0)[2] > stopThresh) {
 		cv::Vec3f thickestLine = stopLines.at(0);
 
 		// We look for the thickest (most sure) stop line
