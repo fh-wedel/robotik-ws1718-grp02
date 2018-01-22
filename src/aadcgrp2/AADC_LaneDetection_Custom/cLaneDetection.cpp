@@ -101,8 +101,8 @@ tResult cLaneDetection::CreateOutputPins(__exception) {
  	RETURN_IF_FAILED(RegisterPin(&m_oDebugPerspWarpVideoOutputPin));
 
 	// Steering Angle and Speed Output Pin
-	RETURN_IF_FAILED(registerFloatInputPin("steeringAngle", &m_SteeringPin, __exception_ptr));
-	RETURN_IF_FAILED(registerFloatInputPin("speed", &m_SpeedPin, __exception_ptr));
+	RETURN_IF_FAILED(registerFloatOutputPin("steeringAngle", &m_SteeringPin, __exception_ptr));
+	RETURN_IF_FAILED(registerFloatOutputPin("speed", &m_SpeedPin, __exception_ptr));
 
     RETURN_NOERROR;
 }

@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include "stdafx.h"
 #include "ADTF_OpenCV_helper.h"
-#include "includes/StdFilter.h"
+#include "../includes/StdFilter.h"
 
 
 #define OID_ADTF_FILTER_DEF "adtf.aadc_LaneDetection_Custom" //unique for a filter
@@ -171,21 +171,6 @@ public:
      */
     tResult CreateOutputPins(__exception);
 
-    /*!
-     *   Implements the default cFilter state machine call. It will be
-     *   called automatically by changing the filters state and needs
-     *   to be overwritten by the special filter.
-     *   Please see page_filter_life_cycle for further information on when the state of a filter changes.
-     *
-     *   \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
-     *                                   If not using the cException smart pointer, the interface has to
-     *                                   be released by calling Unref().
-     *   \param  [in] eStage The Init function will be called when the filter state changes as follows:\n   *
-     *   \result Returns a standard result code.
-     *
-     */
-    tResult Shutdown(tInitStage eStage, ucom::IException** __exception_ptr = NULL);
-
     /*! This Function will be called by all pins the filter is registered to.
      *   \param [in] pSource Pointer to the sending pin's IPin interface.
      *   \param [in] nEventCode Event code. For allowed values see IPinEventSink::tPinEventCode
@@ -197,31 +182,6 @@ public:
      *   You need to synchronize this call by your own. Have a look to adtf_util::__synchronized , adtf_util::__synchronized_obj .
      */
     tResult OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample);
-
-    /*! Implements the default cFilter state machine calls. It will be
-     *    called automatically by changing the filters state IFilter::State_Ready -> IFilter::State_Running
-     *    and can be overwritten by the special filter.
-     *    \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
-     *        If not using the cException smart pointer, the interface has to
-     *        be released by calling Unref().
-     *    \return Standard Result Code.
-     *    \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
-     *    (see:  section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
-     *
-     */
-    tResult Start(ucom::IException** __exception_ptr = NULL);
-
-    /*!  Implements the default cFilter state machine calls. It will be
-     *   called automatically by changing the filters state IFilter::State_Running -> IFilter::State_Ready
-     *   and can be overwritten by the special filter.
-     *   \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
-     *   If not using the cException smart pointer, the interface has to
-     *   be released by calling Unref().
-     *   \return Standard Result Code.
-     *   \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
-     *   (see: section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
-     */
-    tResult Stop(ucom::IException** __exception_ptr = NULL);
 
     /*! This Function is always called when any property has changed. This should be the only place
      *    to read from the properties itself and store their values in a member.

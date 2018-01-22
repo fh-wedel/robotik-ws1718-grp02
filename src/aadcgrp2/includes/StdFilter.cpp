@@ -178,7 +178,7 @@ cObjectPtr<IMediaSample> cStdFilter::initMediaSample(cObjectPtr<IMediaTypeDescri
 
 tResult cStdFilter::transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
 
-    if (!(*outputPin.IsConnected())) {
+    if (!(outputPin->IsConnected())) {
         RETURN_NOERROR;
     }
 
@@ -206,10 +206,10 @@ tResult cStdFilter::transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
 }
 tResult cStdFilter::transmitBoolValue(tBool value, cOutputPin* outputPin) {
 
-    if (!(*outputPin.IsConnected())) {
+    if (!(outputPin->IsConnected())) {
         RETURN_NOERROR;
     }
-    
+
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_OutputBoolValueDescription);
     {
         // focus for sample write lock
