@@ -194,9 +194,10 @@
 \section{Float Wert Generator}
 % Author: Franz Wernicke
 
-	Um verschiedene Filter zu testen, die einen Wert als Eingang benötigten, wurde dieser Block erstellt.
-
-	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst wurden, definierten wir einen \texttt{WatchDog} als Input. So wird mit jedem Auslösen des WatchDog der Wert gesendet. Der Wert kann in den Einstellungen des Filters während der Laufzeit gesetzt werden.
+	Um verschiedene Filter zu testen, die einen Wert als Eingang benötigten, wurde dieser Block erstellt.\\
+	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst wurden, definierten wir einen \texttt{WatchDog} als Input. 
+	So wird mit jedem Auslösen des WatchDog der Wert gesendet. 
+	Der gesendete Wert kann in den Einstellungen des Filters während der Laufzeit verändert werden.
 
 
 \subsection{In Entwicklung}
@@ -301,12 +302,12 @@
 \section{Aufnahme der Sprungfunktion}
 	Durch den \emph{HardDisk-Recorder} konnten die Sensorwerte auf einfache Weise aufgenommen werden.
 	Die Aufgabe bestand sodann darin, dass Auto sprungfunktionsartig zu Beschleunigen.
-
+	\\
 	Auf dem Weg zur Teststrecke wurde der geräumigen Flur vor Hörsaal 5 genutzt, um einen Test durchzuführen und auch diesen aufzuzeichnen.
-
+	\\
 	Zur Auswertung der Messdaten wurde der \emph{Wheel Speed Converter} angepasst, um die Messwerte in eine CSV Datei zu schreiben.
 	Diese CSV Datei wurde dann in einer Tabellenkalkulation bearbeitet.
-
+	\\
 	Zuerst wurde bestimmt, wann die Beschleunigung beginnt und wann die Höchstgeschwindigkeit erreicht ist.
 	Alle Werte vor und nach diesem Zeitraum wurden entfernt.
 	Da die Zeitstempel die ganze Zeit mitlaufen, mussten die Zeiten auf den Anfang der Beschleunigung verschoben werden.
@@ -342,18 +343,18 @@
 	Nun wurden die Differenzen betrachtet.
 	Durch die Messungenauigkeiten kam es immer wieder zu negativen Differenzen.
 	Daher wurden alle Werte, wonach die Differenz weniger als 1\% der aktuellen Geschwindigkeit besaß, als erreichte Höchstgeschwindigkeit interpretiert.
-
+	\\
 	Die erste Beschleunigung diente nur als Test, um ein Gefühl für das Fahrverhalten des Autos bei höheren Geschwindigkeiten zu bekommen, bevor der eigentliche Test im deutlich engeren Flur durchgeführt wurde.
 	So wurden auch schon die Höchstgeschwindigkeit und die dafür benötigte Strecke abgeschätzt.
-
+	\\
 	Aus der zweiten Beschleunigung ermittelten wir eine Höchstgeschwindigkeit von $4,75 \meter\per\second$.
 	\begin{figure}[ht]
 		\centering
 		\includegraphics[width=250pt,keepaspectratio]{assets/PT1-Sprungantwort.PNG}
-		\caption{Sprungantwort eines PT1 Gliedes \cite{Regelungstechnik}}
+		\caption{Sprungantwort eines PT1 Gliedes}
 		\label{img-PT1-Sprungantwort}
 	\end{figure}\\
-	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort} verglichen, liegt es nahe, dass sich das Auto wie ein PT1-Glied verhält. Daher sind wir von einem $PT_1$-Glied ausgegangen. \\
+	Wird unser Graph mit dem Graph aus der Grafik \ref{img-PT1-Sprungantwort}\footnote{Folie 60 der Vorlesung Regelungstechnik \cite{Regelungstechnik}} verglichen, liegt es nahe, dass sich das Auto wie ein PT1-Glied verhält. Daher sind wir von einem $PT_1$-Glied ausgegangen. \\
 	Wie in \autoref{img-PT1-Sprungantwort} gezeigt, ließen sich dann die Werte des Gliedes bestimmen.\\
 	So wurde bei unserem Auto $K_p$ mit $5,75 \meter\per\second\usk$ und $T_1$ mit $0,5\second\usk$ ermittelt.\\
 
@@ -392,7 +393,7 @@
 	Durch probieren hatte sich im Vorfeld herausgestellt, dass das Auto ab einem Ausgabewert von 8 Anfährt.
 	Durch debug Ausgaben wurde festgestellt, dass der Regler mit Ausgaben etwa eine Potenz unter diesem Wert lag.
 	So wurde als Übergangslösung ein Gain von 10 verwendet
-	 Da dies immer noch etwas langsam war, wurde Gain auf 15 erhöht. \\
+	 Da dies immer noch etwas langsam war, wurde der Gain auf 15 erhöht. \\
 
 \section{Bremslichter}
 	Es sollten bei Bremsmanövern die Bremsleuchten eingeschaltet werden.
@@ -400,6 +401,11 @@
 	Der erste Teil konnte einfach umgesetzt werden, so wurden beim Zurücksetzen des Reglers die Bremsleuchten eingeschaltet.
 	Das beschleunigungs-abhängige Einschalten war schwieriger, da durch Messungenauigkeiten und Schwingungen im Regler der Ausgabewert bei normaler Fahrt stärker schwankt als beim Bremsen.
 	Es wurden Schwankungen im Output bei normaler Fahrt von etwa $1$ beobachtet, während beim Bremsen der Output sehr kontrolliert verringert wird, etwa $0.1$ pro Berechnung.
+	Es kam zwischenzeitlich die Idee auf, einen Filter zu bauen der die Fahrzustände Verwaltet und dann Befehle an die anderen Filter sendet. 
+	Dieser Filter wüsste dann, ob abgebremst oder beschleunigt wird. 
+	Dann kann in dem entsprechenden Zustand reagiert werden. 
+	Dieses Konzept wurde dann mit dem \texttt{Main Controller} umgesetzt.
+	
 
 \section{Probleme mit dem ADTF}
 	Die Arbeit mit den vorimplementierten Filtern von ADTF stellte sich als schwierig heraus. \\
@@ -917,7 +923,7 @@ Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie 
 	\caption{CAD-Modell der Halterung (links) und Anbringung des 3D-Modells (gelb) und der Kamera am Modellfahrzeug (rechts).}
 	\label{img-camera}
 \end{figure}
-
+\\
 Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie oben auf der rechten Seite mit dem Magneten und auf der linken Seite mit einer Schraube mit 3 Unterlegscheiben gesichert werden.
 Alle benötigten Teile sind in einem Tütchen in der Gruppen Box. \\
 Die Zeichnung \ref{RealSense-Montage} zeigt die Montage von der linken Fahrzeugseite.
