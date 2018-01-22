@@ -591,7 +591,12 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
 
 	\paragraph{Erfahrungen.}
-	Trotz der wenigen und zum Teil nicht aktuellen Codebeispiele lässt sich die GPU-Schnittstelle nach einer kurzen Einfindungsphase leicht handhaben. Allerdings sind nicht alle Funktionen von OpenCV als GPU-Variante verfügbar, weshalb wir manchmal auf die CPU-Variante umsteigen mussten. Entsprechende Stellen sind im Quelltext beschrieben. Des Weiteren ist der Wechsel zwischen Ausführung auf der CPU im Gegensatz zur Ausführung auf der GPU ziemlich aufwendig, da sämtliche Funktionsaufrufe geändert werden müssen. Anhand der Funktion \hyperlink{https://docs.opencv.org/trunk/d8/d40/group\_\_cudacore\_\_init.html\#gaaa93892f9189163e5d53790b4b1e88db}{\texttt{cv::cuda::getCudaEnabled\-DeviceCount()}} kann zur Laufzeit festgestellt werden, ob mindestens eine CUDA-fähige GPU verwendet wird. Anhand dieser Feststellung kann dann der Code auf der CPU oder auf der GPU ausgeführt werden. Dazu müsste im Quelltext allerdings eine CPU- und eine GPU-Variante existieren, was zu ordentlicher Redundanz führen würde. Wir haben uns daher vorerst auf die reine GPU-Implementierung (mit Nutzung der CPU bei Nichtvorhandensein der GPU-Variante) konzentriert.
+	Trotz der wenigen und zum Teil nicht aktuellen Codebeispiele lässt sich die GPU-Schnittstelle nach einer kurzen Einfindungsphase leicht handhaben.
+	Allerdings sind nicht alle Funktionen von OpenCV als GPU-Variante verfügbar, weshalb wir manchmal auf die CPU-Variante umsteigen mussten. Entsprechende Stellen sind im Quelltext beschrieben. Des Weiteren ist der Wechsel zwischen Ausführung auf der CPU im Gegensatz zur Ausführung auf der GPU ziemlich aufwendig, da sämtliche Funktionsaufrufe geändert werden müssen.
+	Anhand der Funktion \href{https://docs.opencv.org/3.4.0/d8/d40/group\_\_cudacore\_\_init.html\#gaaa93892f9189163e5d53790b4b1e88db}{\texttt{cv::cuda::getCudaEnabled\-DeviceCount()}} \cite{opencv-doc} kann zur Laufzeit festgestellt werden, ob mindestens eine CUDA-fähige GPU verwendet wird.
+	Anhand dieser Feststellung kann dann der Code auf der CPU oder auf der GPU ausgeführt werden.
+	Dazu müsste im Quelltext allerdings eine CPU- und eine GPU-Variante existieren, was zu ordentlicher Redundanz führen würde.
+	Wir haben uns daher vorerst auf die reine GPU-Implementierung (mit Nutzung der CPU bei Nichtvorhandensein der GPU-Variante) konzentriert.
 
 \pagebreak
 
@@ -614,7 +619,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	In dem HSV-Farbmodell werden Farben als Farbwinkel (0\degree\ für Rot, 120\degree\ für Grün, 240\degree\ für Blau \cite{HSV-Wiki}) repräsentiert. Zusätzlich wird die Sättigung und der Helligkeitswert der Farbe angegeben.
 	Dieses Farbmodell erlaubt eine bessere -- und für Menschen intuitive -- Unterteilung von Farben im Bild.
 	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt\footnote{Da es sich bei dem Bild um ein 8-Bit-Bild handelt, werden die Werte für den Farbwinkel (\textit{hue}) in den Bereich von 0\degree\ bis 180\degree\ skaliert, da Werte über 255 nicht über 8 Bit repräsentiert werden können.
-	Siehe auch \url{https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html\#cvtcolor} unter RGB $\longleftrightarrow$ HSV.}.
+	Siehe auch \href{https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html\#cvtcolor}{\texttt{cv::cvtColor}} \cite{opencv-doc} unter RGB $\longleftrightarrow$ HSV.}.
 	Die zugehörigen Parameter (\texttt{hue}, \texttt{saturation} und \texttt{value}), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
 	Die für uns idealen Parameter für das blaue Klebeband sind in \autoref{table-hsv-values} aufgeführt.
 
@@ -630,7 +635,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	\end{table}
 
 	Das Ergebnis dieser Operation ist ein Binärbild es unterteilt die Pixel des HSV-Bilds in Pixel, die Teil des Unterraums sind (weiß) und solche, die nicht Teil des Unterraums sind (schwarz).
-	Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \texttt{cv::inRange} genutzt.
+	Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \href{https://docs.opencv.org/3.4.0/d2/de8/group\_\_core\_\_array.html\#ga48af0ab51e36436c5d04340e036ce981}{\texttt{cv::inRange}} \cite{opencv-doc} genutzt.
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
 	\autoref{img-applying-cvtColor} verdeutlicht die Anwendung dieser Bearbeitungsschritte.
 
@@ -656,7 +661,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Ist die Kantenstärke eines Pixels niedriger als der untere Schwellenwert, wird dieser Pixel als Kandidat verworfen.
 	Über eine Hysterese werden die Pixel gefiltert, die zwischen beiden Schwellenwerten liegen, sodass "`Ausreißer"' vermieden werden.
 
-	Dementsprechend nimmt die Funktion \texttt{cv::Canny}, bzw. das GPU-Pendant \texttt{cv::cuda::createCannyEdgeDetector} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators.
+	Dementsprechend nimmt die Funktion \href{https://docs.opencv.org/3.4.0/dd/d1a/group\_\_imgproc\_\_feature.html\#ga04723e007ed888ddf11d9ba04e2232de}{\texttt{cv::Canny}} \cite{opencv-doc}, bzw. das GPU-Pendant \href{https://docs.opencv.org/3.4.0/d0/d05/group\_\_cudaimgproc.html\#gabc17953de36faa404acb07dc587451fc}{\texttt{cv::cuda::createCannyEdgeDetector}} \cite{opencv-doc} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators.
 	Für das Verhältnis der Schwellenwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
 	\autoref{img-applying-canny} zeigt das Ergebnis des Canny-Algorithmus' nach der Anwendung auf das Binärbild.
 	% NOTE: Das ist okay, aber ihr dürft davon ausgehen, dass der Leser weiß, wie der Canny Filter arbeitet. Ihr müsst die Parameter nicht erklären, es sei denn das war euch bei der Parameterwertsuche besonders wichtig. Konzentriert euch lieber auf die Beschreibung von dem, was ihr gemacht habt. :) --hoe
@@ -681,7 +686,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Beispielsweise erhofften wir uns von diesem Ansatz, Kurven besser erkennen zu können.
 
 	Anhand eines Schachbrettmusters wurde das Kamerabild so kalibriert, dass die Quadrate des Musters auch im Kamerabild quadratisch sind.
-	Zur Transformation werden 4 Punkte benutzt, die ein Viereck aufspannen und die Eckpunkte der Straße angeben. Anhand der OpenCV-Funktion \texttt{cv::get\-PerspectiveTransform} wird die zugehörige Transformationsmatrix berechnet, welche mit der OpenCV-Funktion \texttt{cv::cuda::warpPerspective} angewandt wird. \autoref{img-applying-persp-warp} zeigt das Bild der Straße vor und nach Anwendung der perspektivischen Verzerrung.
+	Zur Transformation werden 4 Punkte benutzt, die ein Viereck aufspannen und die Eckpunkte der Straße angeben. Anhand der OpenCV-Funktion \href{https://docs.opencv.org/3.4.0/da/d54/group\_\_imgproc\_\_transform.html\#ga15302cbff82bdcddb70158a58b73d981}{\texttt{cv::get\-PerspectiveTransform}} \cite{opencv-doc} wird die zugehörige Transformationsmatrix berechnet, welche mit der OpenCV-Funktion \href{https://docs.opencv.org/3.4.0/db/d29/group\_\_cudawarping.html\#ga7a6cf95065536712de6b155f3440ccff}{\texttt{cv::cuda::warpPerspective}} \cite{opencv-doc} angewandt wird. \autoref{img-applying-persp-warp} zeigt das Bild der Straße vor und nach Anwendung der perspektivischen Verzerrung.
 
 	\begin{figure}[h]
 		\centering
@@ -741,7 +746,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 \section{Line-Clustering}
 % Author: Frauke Jörgens
 	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden.
-	Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt.
+	Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \href{https://docs.opencv.org/3.4.0/d5/d38/group\_\_core\_\_cluster.html\#ga2037c989e69b499c1aa271419f3a9b34}{\texttt{cv::partition}} \cite{opencv-doc} verwendet, welches die Linien in Äquivalenzklassen unterteilt.
 	Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden (im Quellcode \texttt{isEquivalent} genannt).
 	Der Vergleich erfolgt anhand des Winkels und der Länge des Normalenvektors der Linie.
 	Nach dem Clustering ist jede Linie einer Klasse zugeordnet.
@@ -845,8 +850,13 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 
 \section{Besonderheiten in der Kurve}
 % Author: Frauke Jörgens
-% TODO (macht Frauke)
 	
+	Ein generelles Problem der Bildverarbeitung ist, dass das aufgenommene Kamerabild ca. 20cm vor der Vorderkante des Modellfahrzeugs liegt und immer geradeaus schaut -- unabhängig von der Fahrtrichtung.
+	In geraden Fahrtabschnitten ist dies weitestgehend unproblematisch.
+	In Kurven allerdings entsteht das Problem, dass meistens nur ein kleiner Teil der äußeren Fahrbahnmarkierung im Kamerabild zu sehen ist.
+	Ideal wäre es also, wenn sich die Kamera entsprechend des Lenkwinkels des Fahrzeugs mitbewegen könnte.
+	Da uns dies ohne Weiteres nicht möglich war, mussten wir eine andere Variante finden, um diesem Problem mindestens ein wenig entgegenwirken zu können.
+	Wird eine gekrümmte Linie gefunden (der absolute Winkel ihres Stützvektors ist größer als ein Schwellenwert\footnote{Der Wert 12\degree\ hat für uns gut funktioniert}), so wird ihr Winkel entsprechend ihrer Krümmung gestreckt, damit sie eine nicht so starke Auswirkung hat.	
 
 \section{Weitere Überlegungen}
 % Author: Jan Ottmüller
@@ -941,8 +951,6 @@ Die Zeichnung \ref{RealSense-Montage} zeigt die Montage von der linken Fahrzeugs
 %- Bei Beschleunigungssensor schwer zu unterscheiden, ob absichtliches Bremsen oder gegen weiches Objekt fahren, oder Erschütterungen im Boden
 % TODO Fazit hier!
 
-\listoftables
-
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
 \begin{thebibliography}{9}
@@ -970,6 +978,12 @@ Die Zeichnung \ref{RealSense-Montage} zeigt die Montage von der linken Fahrzeugs
 	Letzte Bearbeitung: 8. September 2017 um 17:55 Uhr,
 	Letzter Zugriff am: 21. Januar 2018,
 	\url{https://de.wikipedia.org/wiki/HSV-Farbraum}
+	
+	\bibitem{opencv-doc}
+	OpenCV 3.4.0--Dokumentation\\
+	Generiert am 22. Dezember 2017 um 22:15:44,
+	Letzter Zugriff am: 22. Januar 2018,
+	\url{https://docs.opencv.org/3.4.0/}
 
 \end{thebibliography}
 
