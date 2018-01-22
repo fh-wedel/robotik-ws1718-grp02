@@ -45,7 +45,7 @@
 
 %%%%%%%%%%%%%%%%%%%%% HEADER %%%%%%%%%%%%%%%%%%%%%
 
-	\title{Robotik Praktikum -- Gruppe 2\\FACHHOCHSCHULE WEDEL}
+	\title{Robotik Praktikum -- Gruppe 2\\Fachhochschule Wedel}
 	\author{Frauke Jörgens (minf101207) \and Franz Wernicke (ite101729) \and Thorger Dittmann (ite101646) \and Jan Ottmüller (tinf101737) \and Felix Maaß (ite101754)}
 	\date{\today}
 	\titlepic{\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/group_photo}}
@@ -994,36 +994,38 @@ Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie o
 	Abschließend ist zu sagen, dass wir mit unserem Fortschritt im Rahmen des Projektes zufrieden sind. 
 	Bei der Umsetzung kamen viele neue Ideen, die jedoch deutlich mehr Zeit erfordern. 
 	Mit der Umsetzung von Features kamen immer neue Ideen, die das Projekt ergänzen würden. 
-	Auch gibt es viele Theoretische Ansätze (z.B. den Kalman Filter) die noch nicht umgesetzt wurden. 
-	\\
-	Unterschätzt haben wir den Zeitlichen Aufwand für die Einarbeitung in das ADTF. 
+	Auch gibt es viele theoretische Ansätze (z.B. den Kalman Filter) die noch nicht umgesetzt wurden.
+	
+	Unterschätzt haben wir den zeitlichen Aufwand für die Einarbeitung in das ADTF. 
 	Durch die Funktionalität die das ADTF bietet, ist sehr viel Code in den vorgefertigten Klassen, die ein Einlesen sehr langwierig gestalten. 
 	Ein großer Vorteil des ADTF ist, dass man sich nicht um den Datenaustausch zwischen den Filtern kümmern muss. 
-	Auch das verbinden ist durch die grafische Oberfläche sehr einfach. 
-	Die Umsetzung machte ein verstehen des Codes jedoch schwierig. 
+	Auch das Verbinden ist durch die grafische Oberfläche sehr einfach. 
+	Die Umsetzung machte ein Verstehen des Codes jedoch schwierig. 
 	In den jeweiligen Filtern brauchte es sehr viel Code, um die Input/Output Pins zu registrieren und auch um Daten von Pins zu lesen oder zu schreiben. 
 	Hätten wir den \texttt{StdFilter} zu einem frühen Zeitpunkt umgesetzt, wäre uns viel Aufwand bei der Erstellung neuer Filter erspart geblieben.
-	Eine weitere Schwierigkeit waren die Fehlerhaften oder auch fehlenden Kommentare der ADTF Entwickler. 
-	An vielen Stellen war offensichtlich Code zusammen mit Kommentaren kopiert worden, dabei wurde der Code angepasst, die Kommentare jedoch nicht.
-	So kamen es zu vielen Fehlerhaften Kommentaren, die oft verwirrten. 
-	%TODO void * statt Generics
-	Das Arbeiten mit dem ADTF führte häufig zu Abstürzen die wir anfangs nur schwierig nachvollziehen konnten, da die Ausgaben in ein Terminal geschrieben wurden, das sich bei einem Absturz schloss. 
+	Eine weitere Schwierigkeit waren die fehlerhaften oder auch fehlenden Kommentare der ADTF-Entwickler. 
+	An vielen Stellen war offensichtlich Code zusammen mit Kommentaren kopiert worden, wobei der Code angepasst wurde, die Kommentare jedoch nicht.
+	So kamen es zu vielen fehlerhaften Kommentaren, die oft verwirrten. 
+	
+	Das Arbeiten mit dem ADTF führte häufig zu Abstürzen, die wir anfangs nur schwierig nachvollziehen konnten, da die Ausgaben in ein Terminal geschrieben wurden, das sich bei einem Absturz schloss. 
 	Durch öffnen des ADTF über ein Terminal, blieben die Ausgaben erhalten. 
-	Hier viel auf, das bei manchen Abstürzen kein eigener Code verantwortlich war. 
+	Hier fiel auf, das bei manchen Abstürzen kein eigener Code verantwortlich war. 
 	Bei einigen Abstürzen konnten wir Muster erkennen. 
 	Zum Beispiel stürzte das ADTF ab, wenn direkt auf den Play Button geklickt wurde. 
 	Hier half es erst den Einschaltknopf und dann den Play Button anzuklicken.
 	Auch die Benutzeroberfläche benötigte an einigen Stellen eine besondere Bedienung. 
 	So konnte nur in dem Hauptfenster eine Konfiguration neu geladen werden, was nach Änderungen am Code notwendig war.
-	%TODO BVA
+	
+	Bezüglich der Bildverarbeitung fragen wir uns, ob eine %TODO
+	
 	Bei der Lenkregelung wurde deutlich, dass Theorie $\neq$ Praxis gilt. 
 	Wir hatten die Lenkwinkel der Reifen vermessen und daraus auf die möglichen Kurvenradien geschlossen.
-	Die Überlegungen stellten sich beim messen der Kurvenradien als sehr ungenau heraus. 
-	Hier stellte sich eine große Differenz zwischen vorwärts und rückwärts Fahrt heraus, die durch Spiel in der Aufhängung entsteht.
-	Die eigentliche Motorregelung lies sich trotz der schwankenden Werte gut umsetzen, jedoch weiterführende Funktionen wurden schwierig, z.B. die Bremslichter.
+	Die Überlegungen stellten sich beim Messen der Kurvenradien als sehr ungenau heraus. 
+	Hier stellte sich eine große Differenz zwischen Vorwärts- und Rückwärtsfahrt heraus, die durch Spiel in der Aufhängung entsteht.
+	Die eigentliche Motorregelung ließ sich trotz der schwankenden Werte gut umsetzen, jedoch weiterführende Funktionen wurden schwierig, z.B. die Bremslichter.
 	In der Umsetzung der Kollisionserkennung kam es durch die stark variierenden Werten zu erheblichen Problemen. 
 	Durch die geringen Geschwindigkeiten sind die Beschleunigungen bei Zusammenstößen relativ gering. 
-	Eine Unterscheidung zwischen Zusammenstoß mit einem weichen Objekt und stärkeren Vibrationen am Sensor war so schwierig Umzusetzen.
+	Eine Unterscheidung zwischen Zusammenstoß mit einem weichen Objekt und stärkeren Vibrationen am Sensor war so schwierig umzusetzen.
 
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
