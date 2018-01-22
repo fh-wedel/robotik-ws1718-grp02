@@ -3,12 +3,12 @@
 
 #include "commonIncludes.h"
 
-//! A convenience implementation of cFilter.
-/*!
+/**
+ * A convenience implementation of cFilter.
+ * It supplies the user with easier registration of pins as well
+ * as value readings and transmissions of float and boolean type pins.
  *
- *
- *
- *
+ * @param __info the name of the filter instance
  */
 class cStdFilter : public adtf::cFilter {
 
@@ -25,16 +25,45 @@ public:
     ~cStdFilter();
 
 //######################################//
-
-// NOTE: CONVENINIENCE HELPER Functions
 protected:
 // For registering pins
 
+    /**
+     * Registers a float input pin using a given name.
+     * @param  name        the name to display in the configuration editor.
+     * @param  inputPin    the object to store a reference in.
+     * @param  __exception exception
+     * @return             standard atdf error code
+     */
     tResult registerFloatInputPin(cString name, cInputPin* inputPin, __exception);
+    /**
+     * Registers a boolean input pin using a given name.
+     * @param  name        the name to display in the configuration editor.
+     * @param  inputPin    the object to store a reference in.
+     * @param  __exception exception
+     * @return             standard atdf error code
+     */
     tResult registerBoolInputPin(cString name, cInputPin* inputPin, __exception);
+
+    /**
+     * Registers a float output pin using a given name.
+     * @param  name        the name to display in the configuration editor.
+     * @param  inputPin    the object to store a reference in.
+     * @param  __exception exception
+     * @return             standard atdf error code
+     */
     tResult registerFloatOutputPin(cString name, cOutputPin* outputPin, __exception);
+
+    /**
+     * Registers a boolean output pin using a given name.
+     * @param  name        the name to display in the configuration editor.
+     * @param  inputPin    the object to store a reference in.
+     * @param  __exception exception
+     * @return             standard atdf error code
+     */
     tResult registerBoolOutputPin(cString name, cOutputPin* outputPin, __exception);
 
+    //TODO: why __exception? shouldnt it be ucom::IException** __exception_ptr = NULL
 
 // For decoding input
 
@@ -81,12 +110,31 @@ protected:
     /*! the id for the arduino time stamp of the media description */
     tBufferID m_OutputBoolValueTimestampID;
 
-
+    /**
+     * Transmits a float value via a given output pin.
+     *
+     * @param  value     value to transmit.
+     * @param  outputPin pin to use.
+     * @return           standard atdf error code
+     */
     tResult transmitFloatValue(tFloat32 value, cOutputPin* outputPin);
+
+    /**
+     * Transmits a boolean value via a given output pin.
+     *
+     * @param  value     value to transmit
+     * @param  outputPin pin to use
+     * @return           standard atdf error code
+     */
     tResult transmitBoolValue(tBool value, cOutputPin* outputPin);
 
+    /**
+     * Prepares a media sample ready for transmission.
+     *
+     * @param  typeDescription the type description
+     * @return                 prepared media sample
+     */
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
-
 
 };
 #endif //  _StdFilter_H_

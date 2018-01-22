@@ -6,6 +6,13 @@
 #include <vector>
 #include <algorithm>
 
+
+/**
+ * An implementation of a median filter.
+ *
+ * @param windowSize The number of values which should be considered.
+ *                   This can be changed at any time.
+ */
 class cMedian {
 
 public:
@@ -23,8 +30,19 @@ public:
     /*! the most up to date values */
     std::vector<float> storedValues;
 
+    /**
+     * Adds a new value to the median filter.
+     * If the number of values exceeds the windowSize, the oldest value is discarded.
+     *
+     * @param value the value to add
+     */
     void pushValue(float value);
 
+    /**
+     * Calculates the current median on the stored values.
+     *
+     * @return the median value.
+     */
     float calculateMedian();
 };
 

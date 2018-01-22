@@ -104,27 +104,45 @@ protected: // overwrites cFilter
 
 // PROPERTIES which can be set in the configuration editor
 
+    /**
+     * Gets called when a filter property is changed via the GUI.
+     *
+     * @param  strName the property identifier
+     * @return         standard adtf error code
+     */
     tResult PropertyChanged(const tChar* strName);
 
-    /*! the struct with all the properties
-    struct filterProperties {
-
-    } m_filterProperties;*/
 
 private:
-    /*! creates all the input Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
+
+   /**
+    * Creates the boolean input pins.
+    * @param  __exception_ptr the exception pointer
+    * @return                 standard adtf error code
     */
     tResult CreateBoolInputPins(ucom::IException** __exception_ptr = NULL);
+
+    /**
+     * Creates the float input pins.
+     * @param  __exception_ptr the exception pointer
+     * @return                 standard adtf error code
+     */
     tResult CreateFloatInputPins(ucom::IException** __exception_ptr = NULL);
 
-    /*! creates all the output Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
+    /**
+     * Creates the boolean output pins.
+     * @param  __exception_ptr the exception pointer
+     * @return                 standard adtf error code
+     */
     tResult CreateBoolOutputPins(ucom::IException** __exception_ptr = NULL);
+
+    /**
+     * Creates the float output pins.
+     * @param  __exception_ptr the exception pointer
+     * @return                 standard adtf error code
+     */
     tResult CreateFloatOutputPins(ucom::IException** __exception_ptr = NULL);
+
 // Debug
 
     /*! if the debug mode is enabled */
@@ -150,6 +168,12 @@ private:
 
 // Own Helper Functions
 
+    /**
+     * Gets called when a new input value has been received.
+     * Used to update the outputs.
+     *
+     * @return standard adtf error code
+     */
     tResult OnValueChanged();
 
 };
