@@ -28,11 +28,6 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 	OID_ADTF_FILTER_DEF,
 	cLaneDetection)
 
-
-cv::Mat linePoints;
-std::vector<cv::Point> rightPoints;
-std::vector<cv::Point> leftPoints;
-
 cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 {
 
@@ -104,7 +99,7 @@ tResult cLaneDetection::CreateInputPins(__exception) {
 
 tResult cLaneDetection::CreateOutputPins(__exception) {
 
-// Debug Video Output Pins
+	// Debug Video Output Pins
 
 	RETURN_IF_FAILED(m_oVideoOutputPin.Create("Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
 	RETURN_IF_FAILED(RegisterPin(&m_oVideoOutputPin));
@@ -118,7 +113,7 @@ tResult cLaneDetection::CreateOutputPins(__exception) {
 	RETURN_IF_FAILED(m_oDebugPerspWarpVideoOutputPin.Create("Perpsective_Warp_Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
  	RETURN_IF_FAILED(RegisterPin(&m_oDebugPerspWarpVideoOutputPin));
 
-// Steering Angle Output Pin
+	// Steering Angle Output Pin
 
     // create description manager
     cObjectPtr<IMediaDescriptionManager> pDescManager;
@@ -207,7 +202,7 @@ tResult cLaneDetection::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1,
 	{
 		if (pSource == &m_oVideoInputPin)
 		{
-			//the input format was changed, so the imageformat has to changed in this filter also
+			// the input format was changed, so the imageformat has to changed in this filter also
 			RETURN_IF_FAILED(UpdateInputImageFormat(m_oVideoInputPin.GetFormat()));
 		}
 	}
@@ -217,7 +212,7 @@ tResult cLaneDetection::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1,
 tResult cLaneDetection::PropertyChanged(const tChar* strName)
 {
 	RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
-	//associate the properties to the member
+	// associate the properties to the member
 	if (cString::IsEqual(strName, SC_PROP_DEBUG_MODE))
 		m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
 
@@ -355,7 +350,8 @@ tResult cLaneDetection::UpdateInputImageFormat(const tBitmapFormat* pFormat)
 	RETURN_NOERROR;
 }
 
-tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage, cVideoPin &outputVideoPin, tBitmapFormat &format)
+tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage,
+					cVideoPin &outputVideoPin, tBitmapFormat &format)
 {
 	//check if pixelformat or size has changed
 	if (tInt32(outputImage.total() * outputImage.elemSize()) != format.nSize)
