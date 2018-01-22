@@ -10,17 +10,16 @@
 /** The maximum speed our car should be able to drive at the moment. */
 #define MAX_SPEED  0.25f
 
-#define CURVE_THRESH 12.0f //20
+#define CURVE_THRESH 12.0f
 
 /** Threshold for the angle for hough line transform. */
-
 static float bva_angleThresh;
 
 /** Threshold for the distance for hough line transform. */
 static float bva_distanceThresh;
 
 // returns true if two lines are similar
-static bool isEqual(cv::Vec2f a, cv::Vec2f b) {
+static bool isEquivalent(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
 	float dist = fabs(a[0] - b[0]);
 
@@ -37,42 +36,23 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 		float angle = rad2deg(line[1]);
 
 		// Line Classification
-
-		bool lineIsStraight           = angle > -CURVE_THRESH && angle < CURVE_THRESH;
-
-		bool lineCrossesTopScreenEdge = help::xValueOfLineAt(line, 0)    > 0
-									  	&& help::xValueOfLineAt(line, 0) < help::screenSize.width;
-
 		bool lineIsLeftCurve          = angle < -CURVE_THRESH; // linkskurve
-										//&& yValueOfLineAt(line, screenSize.width)  > screenSize.height * 0.9f;
 
 		bool lineIsRightCurve         = angle > CURVE_THRESH; // rechtskurve
-				 						//&& yValueOfLineAt(line, 0) > screenSize.height * 0.9f;
-
-		bool lineIsCurve              = lineIsLeftCurve || lineIsRightCurve;
 
 		float factor = 1.0f;
 
-		if(lineIsLeftCurve){
+		if (lineIsLeftCurve) {
 			angle = max(0.0f, min(help::yValueOfLineAt(line, help::screenSize.width * 0.6)
 														/ help::screenSize.height * factor, 1.0f )) * angle ;
 		}
 
-		if(lineIsRightCurve){
+		if (lineIsRightCurve) {
 			angle = max(0.0f, min(help::yValueOfLineAt(line, help::screenSize.width * 0.4)
 														/ help::screenSize.height * factor, 1.0f)) * angle ;
 		}
 
-
-		/*if (lineIsStraight || (lineIsCurve && lineCrossesTopScreenEdge)) {
-				// linie wird für kurveberechnung mit einbezogen
-				if(lineIsCurve){
-					angle = max(0.0f, min(yValueOfLineAt(line, screenSize.width / 2) / screenSize.height * factor, 1.0f)) * angle ;
-				}*/
-				sum += angle * line[2];
-		/*} else {
-			printf("Keine Wertung\n");
-		}*/
+		sum += angle * line[2];
 
 	}
 
@@ -204,28 +184,10 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 	}
 }
 
-//MARK: - Distance Approximation
+static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines,
+																	float stopThresh) {
 
-// TODO not yet in use
-static float convertPixelToMM(float pixel) {
-	//TODO: Constant based on perspective transform.
-	//TODO: Should be the same for vertical and horizontal (-> keep aspect ratio).
-	float ratio = 0.5f; //dummy value -> 1080 pixel equal approx. 55cm
-
-	return ratio * pixel;
-}
-
-
-static float distanceFromStopLine(cv::Vec3f& line) {
-	return convertPixelToMM(
-		help::yValueOfLineAt(line, help::screenSize.width / 2)
-	);
-}
-
-
-static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines) {
-
-	if(stopLines.size() > 0) {
+	if(stopLines.size() > 0 && stopLines.at(0) > stopThresh) {
 		cv::Vec3f thickestLine = stopLines.at(0);
 
 		// We look for the thickest (most sure) stop line
@@ -319,11 +281,11 @@ void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
 
 //MARK: - Clustering and Detection
 
-// Clusters lines according to a similarity measure (isEqual())
+// Clusters lines according to a similarity measure (isEquivalent())
 // weight saved in clusteredLines[2]
 static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
 	std::vector<int> labels;
-	int amountOfClasses = cv::partition(lines, labels, isEqual);
+	int amountOfClasses = cv::partition(lines, labels, isEquivalent);
 
 	for (int i = 0; i < amountOfClasses; i++) {
 		float sumAngle = 0;
@@ -417,7 +379,7 @@ void bva::findLines(cv::cuda::GpuMat& img, cv::Mat& out, int houghThresh,
 	angle = getAngle(rightLines, leftLines, unclassifiedLines);
 
 	// speed
-	float tempSpeed = MAX_SPEED * getSpeedPercentage(stopLines);
+	float tempSpeed = MAX_SPEED * getSpeedPercentage(stopLines, stopThresh);
 
 	// using an epsilon to make the car halt at very low speeds.
 	speed = tempSpeed > 0.1f ? tempSpeed : 0;
