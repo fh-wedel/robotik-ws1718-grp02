@@ -1,6 +1,16 @@
+/**
+ * Implementation of main bva tasks.
+ * @author Frauke Jörgens, Jan Ottmüller
+ */
 #include "bva.h"
 #include "helper.h"
 
+/**
+ * Writes a debug RGB Image as a cv::Mat from a cv::cuda::GpuMat
+ * @param[in]  out          The original output image to be copied (cv::cuda::GpuMat)
+ * @param[in]  debug        The debug flag
+ * @param[out]  debugOutput The output image as a cv::Mat
+ */
 #define WRITE_DEBUG_VIDEO(out, debug, debugOutput) \
 	if (debug) { \
 		out.download(debugOutput); \
@@ -10,6 +20,7 @@
 /** The maximum speed our car should be able to drive at the moment. */
 #define MAX_SPEED  0.25f
 
+/** The angle at which a line is considered a curve. */
 #define CURVE_THRESH 12.0f
 
 /** Threshold for the angle for hough line transform. */
@@ -18,7 +29,13 @@ static float bva_angleThresh;
 /** Threshold for the distance for hough line transform. */
 static float bva_distanceThresh;
 
-// returns true if two lines are similar
+/**
+ * Returns true if two lines are considered equivalent.
+ * @param[in]  a The first line.
+ * @param[in]  b The second line.
+ * @return       true,  if the lines are considered equal.
+ * 			     false, otherwise.
+ */
 static bool isEquivalent(cv::Vec2f a, cv::Vec2f b) {
 	float angle = fabs(rad2deg(a[1]) - rad2deg(b[1]));
 	float dist = fabs(a[0] - b[0]);
@@ -26,30 +43,31 @@ static bool isEquivalent(cv::Vec2f a, cv::Vec2f b) {
 	return (angle < bva_angleThresh) && (dist < bva_distanceThresh);
 }
 
-// gets the weighted angle sum for all the lines in a vector.
+/**
+ * Gets the weighted angle sum for all the lines in a vector.
+ * @param[in]  lines The lines with which the angle is to be calculated.
+ * @return           The calculated angle.
+ */
 static float getAngleSum(std::vector<cv::Vec3f> lines) {
 	float sum = 0.0f;
 	for (cv::Vec3f line : lines) {
-
-
-
 		float angle = rad2deg(line[1]);
 
 		// Line Classification
-		bool lineIsLeftCurve          = angle < -CURVE_THRESH; // linkskurve
-
-		bool lineIsRightCurve         = angle > CURVE_THRESH; // rechtskurve
+		bool lineIsLeftCurve          = angle < -CURVE_THRESH;
+		bool lineIsRightCurve         = angle >  CURVE_THRESH;
 
 		float factor = 1.0f;
 
+		// Handling the curvature problem.
 		if (lineIsLeftCurve) {
 			angle = max(0.0f, min(help::yValueOfLineAt(line, help::screenSize.width * 0.6)
-														/ help::screenSize.height * factor, 1.0f )) * angle ;
+									/ help::screenSize.height * factor, 1.0f )) * angle ;
 		}
 
 		if (lineIsRightCurve) {
 			angle = max(0.0f, min(help::yValueOfLineAt(line, help::screenSize.width * 0.4)
-														/ help::screenSize.height * factor, 1.0f)) * angle ;
+									/ help::screenSize.height * factor, 1.0f)) * angle ;
 		}
 
 		sum += angle * line[2];
@@ -59,6 +77,11 @@ static float getAngleSum(std::vector<cv::Vec3f> lines) {
 	return sum;
 }
 
+/**
+ * Pools a vector of lines so that they become one averaged line.
+ * @param[in] lines   The vector of lines to be pooled.
+ * @param[out] output The output (averaged) line.
+ */
 static void poolLines(std::vector<cv::Vec3f>& lines, cv::Vec3f& output) {
 	int amountOfLines = (int)lines.size();
 
@@ -77,15 +100,19 @@ static void poolLines(std::vector<cv::Vec3f>& lines, cv::Vec3f& output) {
 	output[2] = totalWeight;
 }
 
-// calculates steering angle
+/**
+ * Calculates the steering angle.
+ * @param[in]  rightLines        All detected right lines.
+ * @param[in]  leftLines         All detected left lines.
+ * @param[in]  unclassifiedLines All unclassified lines.
+ * @return                       The calculated steering angle.
+ */
 static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 						 std::vector<cv::Vec3f> leftLines,
 					 	 std::vector<cv::Vec3f> unclassifiedLines) {
 
   	int linesSize = rightLines.size() + leftLines.size() + unclassifiedLines.size();
-	if (linesSize == 0) return 0; //no lane was detected
-	// TODO: not distinguishable to 'straight' -> maybe a struct is the desired return type
-	// Car: "Just go straight and full speed :]"
+	if (linesSize == 0) return 0; // no lane was detected
 
 	tFloat32 sum = getAngleSum(rightLines);
 	sum += getAngleSum(leftLines);
@@ -93,21 +120,20 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	tFloat32 steeringAngle = sum / (linesSize);
 
 	// Lane keeping
-	// NOTE: Use first 30 frames or so for optimal line placement detection?
-
 	if (rightLines.size() > 0 || leftLines.size() > 0) {
 		cv::Vec3f rightLine;
 		cv::Vec3f leftLine;
 
+		// We only want one line per side
 		poolLines(rightLines, rightLine);
 		poolLines(leftLines, leftLine);
 
 		float rightDistance = (rightLines.size() > 0)
-														? help::screenSize.width - help::xValueOfLineAt(rightLine, help::screenSize.height)
-													  : -1;
+							? help::screenSize.width - help::xValueOfLineAt(rightLine, help::screenSize.height)
+						    : -1;
 		float leftDistance  = (leftLines.size() > 0)
-														? -help::xValueOfLineAt(leftLine, help::screenSize.height)
-													  :  1;
+							? -help::xValueOfLineAt(leftLine, help::screenSize.height)
+						    :  1;
 
 		float deviation = (rightDistance + leftDistance) / 2.0f;
 
@@ -133,13 +159,20 @@ static tFloat32 getAngle(std::vector<cv::Vec3f> rightLines,
 	return steeringAngle;
 }
 
-// classifies a line into one of these categories:
-// - right line
-// - left line
-// - stop line
-//
-// based off its angle and distance.
-// If no category matches, the line is unclassified.
+/**
+ * Classifies a line into one of these categories:
+ * - right line
+ * - left line
+ * - stop line
+ *
+ * based off its angle and distance.
+ * If no category matches, the line is unclassified.
+ * @param[in] lines              The lines to be classified.
+ * @param[out] rightLines        The detected right lines.
+ * @param[out] leftLines     	 The detected left lines.
+ * @param[out] stopLines      	 The detected stop lines.
+ * @param[out] unclassifiedLines The unclassified lines lines.
+ */
 static void classifyLines(std::vector<cv::Vec3f>& lines,
 	std::vector<cv::Vec3f>& rightLines,
 	std::vector<cv::Vec3f>& leftLines,
@@ -162,7 +195,15 @@ static void classifyLines(std::vector<cv::Vec3f>& lines,
 	}
 }
 
-// draws the detected and clustered lines in the specified color
+/**
+ * Draws the detected and clustered lines in the specified color.
+ *
+ * As cv::line doesn't support GPU computation, we do this on the CPU.
+ *
+ * @param[in, out] out   The image to be drawn on.
+ * @param[in] lines      The lines to be drawn.
+ * @param[in] color      The color to draw the lines with.
+ */
 static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar color) {
 
 	std::vector<cv::Vec3f>::const_iterator it = lines.begin();
@@ -173,7 +214,7 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 		float weight = (*it)[2]; // third element is the weight of the line
 
 
-    // point of intersection of the line with first row
+        // point of intersection of the line with first row
 		cv::Point pt1(rho / cos(theta), 0);
 		// point of intersection of the line with last row
 		cv::Point pt2((rho - help::screenSize.height*sin(theta)) / cos(theta), help::screenSize.height);
@@ -184,44 +225,65 @@ static void drawLines(cv::Mat& out, std::vector<cv::Vec3f>& lines, cv::Scalar co
 	}
 }
 
+/**
+ * Gets the speed percentage by the stop lines and stop threshold.
+ * @param[in] stopLines  The detected stop lines.
+ * @param[in] stopThresh The stop line threshold.
+ * @return               The speed percentage.
+ */
 static tFloat32 getSpeedPercentage(std::vector<cv::Vec3f> stopLines,
-																	float stopThresh) {
+									float stopThresh) {
 
-	if(stopLines.size() > 0 && stopLines.at(0)[2] > stopThresh) {
+	if(stopLines.size() > 0) {
 		cv::Vec3f thickestLine = stopLines.at(0);
 
 		// We look for the thickest (most sure) stop line
-		for(cv::Vec3f& line : stopLines){
+		for(cv::Vec3f& line : stopLines) {
 			if (line[2] > thickestLine[2]) {
 		 		thickestLine = line;
 			}
 		}
-	 float dist = help::yValueOfLineAt(thickestLine, help::screenSize.width / 2);
+		if (thickestLine[2] < stopThresh) return 1;
 
-	 #define BREAK_DISTANCE 0.1f
-	 float lowerPart = help::screenSize.height * BREAK_DISTANCE;
-	 float upperPart = help::screenSize.height - lowerPart;
+		float dist = help::yValueOfLineAt(thickestLine, help::screenSize.width / 2);
 
-	 return 1 / (upperPart) * (help::screenSize.height - dist);
+		#define BREAK_DISTANCE 0.1f
+		float lowerPart = help::screenSize.height * BREAK_DISTANCE;
+		float upperPart = help::screenSize.height - lowerPart;
+
+		return 1 / (upperPart) * (help::screenSize.height - dist);
 	}
 
 	return 1;
 }
 
+/**
+ * Detects the blue lines in an image using the HSV model and given parameters.
+ *
+ * As cv::inRange doesn't support GPU computation, we do this on the CPU.
+ *
+ * @param input_img[in]  The BGR input image.
+ * @param out[out]       The binary outut image.
+ * @param hueLow[in]     The low hue threshold.
+ * @param hueHigh[in]    The upper hue threshold.
+ * @param saturation[in] The low saturation threshold.
+ * @param value[in]      The low value threshold.
+ */
 void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
           int hueLow, int hueHigh, int saturation, int value) {
+
 	cv::Mat hsv;
-	//convert to HSV colorspace
+	// convert to HSV colorspace
 	cv::cvtColor(input_img, hsv, CV_BGR2HSV);
 
-	//Filter blue color (range: ~90-120 saturation: ~120-255)
+	// Filter blue color (range: ~90-120 saturation: ~120-255)
 	cv::inRange(hsv,
 				cv::Scalar(hueLow, saturation, value),
 				cv::Scalar(hueHigh, 255, 255),
 				out
 	);
 
-	//closing
+	// closing
 	int kernelSize = 6;
 	cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
 										cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1));
@@ -231,6 +293,14 @@ void bva::lineBinarization(cv::Mat& input_img, cv::Mat& out,
 	cv::GaussianBlur(out, out, cv::Size(5, 5), 0, 0);
 }
 
+/**
+ * Applies the canny algorithm to a cv::Mat binary image and gives the output
+ * as a cv::cuda::GpuMat.
+ * @param src[in]          The binary inout image.
+ * @param out[out]         The output image after applying Canny.
+ * @param debug[in]        Flag, indicating whether debug mode is enabled.
+ * @param debugOutput[out] The debug output image (The out image but as cv::Mat).
+ */
 void bva::applyCanny(cv::Mat& src, cv::cuda::GpuMat& out,
 						bool debug, cv::Mat& debugOutput) {
 	cv::cuda::GpuMat image(src);
@@ -241,6 +311,13 @@ void bva::applyCanny(cv::Mat& src, cv::cuda::GpuMat& out,
 	WRITE_DEBUG_VIDEO(out, debug, debugOutput)
 }
 
+/**
+ * Applies the perspective warp to an image.
+ * @param img[in]          The input cv::cuda::GpuMat image.
+ * @param out[out]         The output cv::cuda::GpuMat image.
+ * @param debug[in]        Flag, indicating whether debug mode is enabled.
+ * @param debugOutput[out] The debug output cv::Mat image.
+ */
 void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
 							bool debug, cv::Mat& debugOutput) {
 	cv::Mat transform_matrix;
@@ -250,13 +327,6 @@ void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
 	// Parameters
 	cv::Point2f refPoint = cv::Point(230, 270);
 	int bottomCornerInset = 550;
-
-	/*	TODO: refPoint.x < imageSize.width / 2
-	 * 	-> ansonsten wird das bild gespiegelt?!
-	 *
-	 * 	vielleicht hier lieber eine eingabe in prozent verwenden?
-	 * 	(länge der oberen kante des trapezes beträgt x% der bildbreite)
-	 */
 
 	source_points[0] = refPoint;
 	source_points[1] = cv::Point(0, img.rows - 1); // bottom left corner
@@ -269,6 +339,7 @@ void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
 	dest_points[3] = cv::Point(img.cols - 1, 0);
 
 	transform_matrix = cv::getPerspectiveTransform(source_points, dest_points);
+
 	cv::cuda::warpPerspective(
 		img,
 		out,
@@ -281,8 +352,12 @@ void bva::applyPerspectiveWarp(cv::cuda::GpuMat& img, cv::cuda::GpuMat& out,
 
 //MARK: - Clustering and Detection
 
-// Clusters lines according to a similarity measure (isEquivalent())
-// weight saved in clusteredLines[2]
+/**
+ * Clusters lines according to a similarity measure (isEquivalent()).
+ * Weight saved in clusteredLines[2].
+ * @param lines[in]           The lines to be clustered.
+ * @param clusteredLines[out] The clustered lines.
+ */
 static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& clusteredLines) {
 	std::vector<int> labels;
 	int amountOfClasses = cv::partition(lines, labels, isEquivalent);
@@ -304,7 +379,20 @@ static void clusterLines(std::vector<cv::Vec2f>& lines, std::vector<cv::Vec3f>& 
 	}
 }
 
-// own implementation of line detection
+/**
+ * Looks for left lines, right lines, stop lines in an image and gives the
+ * steering angle and speed as output parameters.
+ *
+ * @param img[in]            The input cv::cuda::GpuMat image after applying
+ * 							 Canny and perspective warp.
+ * @param out[out]           The output cv::Mat image.
+ * @param houghThresh[in]    The hough threshold.
+ * @param angleThresh[in]    The angle threshold for line classification.
+ * @param distanceThresh[in] The distance threshold for line classification.
+ * @param stopThresh[in]     The stop threshold for stop lines.
+ * @param angle[out]         The calculated steering angle.
+ * @param speed[out]         The calculated speed.
+ */
 void bva::findLines(cv::cuda::GpuMat& img, cv::Mat& out, int houghThresh,
 						float angleThresh, float distanceThresh, float stopThresh,
 						tFloat32& angle, tFloat32& speed) {
