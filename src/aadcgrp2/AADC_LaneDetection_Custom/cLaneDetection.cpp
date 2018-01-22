@@ -28,12 +28,7 @@ ADTF_FILTER_PLUGIN(ADTF_FILTER_DESC,
 	OID_ADTF_FILTER_DEF,
 	cLaneDetection)
 
-
-cv::Mat linePoints;
-std::vector<cv::Point> rightPoints;
-std::vector<cv::Point> leftPoints;
-
-cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
+cLaneDetection::cLaneDetection(const tChar* __info) : cStdFilter(__info)
 {
 
 	SetPropertyBool(SC_PROP_DEBUG_MODE, tFalse);
@@ -80,19 +75,6 @@ cLaneDetection::cLaneDetection(const tChar* __info) : cFilter(__info)
 
 cLaneDetection::~cLaneDetection() {}
 
-tResult cLaneDetection::Start(__exception)
-{
-
-	return cFilter::Start(__exception_ptr);
-}
-
-tResult cLaneDetection::Stop(__exception)
-{
-	//destroyWindow("Debug");
-	return cFilter::Stop(__exception_ptr);
-}
-
-
 tResult cLaneDetection::CreateInputPins(__exception) {
 	// Video Input
 	RETURN_IF_FAILED(m_oVideoInputPin.Create("Video_Input", IPin::PD_Input, static_cast<IPinEventSink*>(this)));
@@ -104,7 +86,7 @@ tResult cLaneDetection::CreateInputPins(__exception) {
 
 tResult cLaneDetection::CreateOutputPins(__exception) {
 
-// Debug Video Output Pins
+	// Debug Video Output Pins
 
 	RETURN_IF_FAILED(m_oVideoOutputPin.Create("Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
 	RETURN_IF_FAILED(RegisterPin(&m_oVideoOutputPin));
@@ -118,27 +100,9 @@ tResult cLaneDetection::CreateOutputPins(__exception) {
 	RETURN_IF_FAILED(m_oDebugPerspWarpVideoOutputPin.Create("Perpsective_Warp_Video_Output_Debug", IPin::PD_Output, static_cast<IPinEventSink*>(this)));
  	RETURN_IF_FAILED(RegisterPin(&m_oDebugPerspWarpVideoOutputPin));
 
-// Steering Angle Output Pin
-
-    // create description manager
-    cObjectPtr<IMediaDescriptionManager> pDescManager;
-    RETURN_IF_FAILED(_runtime->GetObject(OID_ADTF_MEDIA_DESCRIPTION_MANAGER,IID_ADTF_MEDIA_DESCRIPTION_MANAGER,(tVoid**)&pDescManager,__exception_ptr));
-
-    // get media type
-    tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
-    RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //TODO: Soll angeblich ein "deprecated constructor" sein !!
-
-    // set member media description
-    RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_SteeringOutputDescription));
-
-    // create pin
-    RETURN_IF_FAILED(m_SteeringPin.Create("steeringAngle", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_SteeringPin));
-
-		// create pin
-    RETURN_IF_FAILED(m_SpeedPin.Create("speed", pTypeSignalValue, static_cast<IPinEventSink*> (this)));
-    RETURN_IF_FAILED(RegisterPin(&m_SpeedPin));
+	// Steering Angle and Speed Output Pin
+	RETURN_IF_FAILED(registerFloatOutputPin("steeringAngle", &m_SteeringPin, __exception_ptr));
+	RETURN_IF_FAILED(registerFloatOutputPin("speed", &m_SpeedPin, __exception_ptr));
 
     RETURN_NOERROR;
 }
@@ -175,17 +139,6 @@ tResult cLaneDetection::Init(tInitStage eStage, __exception)
 	RETURN_NOERROR;
 }
 
-
-
-tResult cLaneDetection::Shutdown(tInitStage eStage, ucom::IException** __exception_ptr)
-{
-	if (eStage == StageGraphReady)
-	{
-	}
-
-	return cFilter::Shutdown(eStage, __exception_ptr);
-}
-
 tResult cLaneDetection::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample)
 {
 
@@ -207,7 +160,7 @@ tResult cLaneDetection::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1,
 	{
 		if (pSource == &m_oVideoInputPin)
 		{
-			//the input format was changed, so the imageformat has to changed in this filter also
+			// the input format was changed, so the imageformat has to changed in this filter also
 			RETURN_IF_FAILED(UpdateInputImageFormat(m_oVideoInputPin.GetFormat()));
 		}
 	}
@@ -217,7 +170,7 @@ tResult cLaneDetection::OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1,
 tResult cLaneDetection::PropertyChanged(const tChar* strName)
 {
 	RETURN_IF_FAILED(cFilter::PropertyChanged(strName));
-	//associate the properties to the member
+	// associate the properties to the member
 	if (cString::IsEqual(strName, SC_PROP_DEBUG_MODE))
 		m_bDebugModeEnabled = GetPropertyBool(SC_PROP_DEBUG_MODE);
 
@@ -329,15 +282,11 @@ tResult cLaneDetection::ProcessVideo(IMediaSample* pSample)
 
 	transmitImage(outputImage, m_oVideoOutputPin, m_sOutputFormat);
 
-	if (m_SteeringPin.IsConnected()) {
-		if (m_bDebugModeEnabled) printf("Winkel %f\n", angle);
-		transmitValue(angle, m_SteeringPin);
-	}
+	if (m_bDebugModeEnabled) printf("Winkel %f\n", angle);
+	RETURN_IF_FAILED(transmitFloatValue(angle, &m_SteeringPin));
 
-	if (m_SpeedPin.IsConnected()) {
-		if (m_bDebugModeEnabled) printf("Speed %f\n", speed);
-		transmitValue(speed, m_SpeedPin);
-	}
+	if (m_bDebugModeEnabled) printf("Speed %f\n", speed);
+	RETURN_IF_FAILED(transmitFloatValue(speed, &m_SpeedPin));
 
 	RETURN_NOERROR;
 }
@@ -355,7 +304,8 @@ tResult cLaneDetection::UpdateInputImageFormat(const tBitmapFormat* pFormat)
 	RETURN_NOERROR;
 }
 
-tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage, cVideoPin &outputVideoPin, tBitmapFormat &format)
+tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage,
+					cVideoPin &outputVideoPin, tBitmapFormat &format)
 {
 	//check if pixelformat or size has changed
 	if (tInt32(outputImage.total() * outputImage.elemSize()) != format.nSize)
@@ -367,51 +317,4 @@ tResult cLaneDetection::UpdateOutputImageFormat(const cv::Mat& outputImage, cVid
 		outputVideoPin.SetFormat(&format, NULL);
 	}
 	RETURN_NOERROR;
-}
-
-tResult cLaneDetection::transmitValue(tFloat32 value, cOutputPin& outputPin) {
-
-    cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_SteeringOutputDescription);
-    {
-        // focus for sample write lock
-        // read data from the media sample with the coder of the descriptor
-        __adtf_sample_write_lock_mediadescription(m_SteeringOutputDescription, pMediaSample, pCoder);
-
-        /*! indicates of bufferIDs were set */
-        static tBool m_SteeringOutputDescriptionIsInitialized = false;
-        /*! the id for the f32value of the media description for input pin for the set speed */
-        static tBufferID m_FloatOutputDescriptionID;
-        /*! the id for the arduino time stamp of the media description for input pin for the set speed */
-        static tBufferID m_OutputValueTimestampID;
-
-        if(!m_SteeringOutputDescriptionIsInitialized) {
-            pCoder->GetID("f32Value", m_FloatOutputDescriptionID);
-            pCoder->GetID("ui32ArduinoTimestamp", m_OutputValueTimestampID);
-            m_SteeringOutputDescriptionIsInitialized = tTrue;
-        }
-
-        //write values to media sample
-        pCoder->Set(m_FloatOutputDescriptionID, (tVoid*)&value);
-    }
-
-    //transmit media sample over output pin
-    RETURN_IF_FAILED(pMediaSample->SetTime(_clock->GetStreamTime()));
-    RETURN_IF_FAILED(outputPin.Transmit(pMediaSample));
-
-    RETURN_NOERROR;
-}
-
-cObjectPtr<IMediaSample> cLaneDetection::initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription) {
-
-    // determine size in memory using the type descriptor
-    cObjectPtr<IMediaSerializer> pSerializer;
-    typeDescription->GetMediaSampleSerializer(&pSerializer);
-    tInt nSize = pSerializer->GetDeserializedSize();
-
-    // create new media sample
-    cObjectPtr<IMediaSample> pMediaSample;
-    AllocMediaSample((tVoid**)&pMediaSample);
-    pMediaSample->AllocBuffer(nSize);
-
-    return pMediaSample;
 }

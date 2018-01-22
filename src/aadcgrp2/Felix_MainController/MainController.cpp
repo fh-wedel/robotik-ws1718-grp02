@@ -187,7 +187,7 @@ tResult cMainController::OnValueChanged() {
         /* No collision */
         emergencyStop = false;
 
-        /*TODO: Where do we want to go? */
+        /*NOTE: Where do we want to go? */
         turnLeft = m_crossingHasLeft;
         turnRight = m_crossingHasRight && !turnLeft;
         keepStraight = m_crossingHasStraight && !turnLeft && !turnRight;
@@ -196,28 +196,26 @@ tResult cMainController::OnValueChanged() {
         blinkerRightOn = false;
     }
 
-    //TODO: Return if failed..
-
-    transmitFloatValue(steeringAngle, &m_OutputSteeringAngle);
+    RETURN_IF_FAILED(transmitFloatValue(steeringAngle, &m_OutputSteeringAngle));
     m_previousWrittenSteeringAngle = steeringAngle;
 
-    transmitFloatValue(speed, &m_OutputSpeed);
+    RETURN_IF_FAILED(transmitFloatValue(speed, &m_OutputSpeed));
 
-    transmitBoolValue(headLightsOn, &m_OutputHeadLights);
-    transmitBoolValue(brakeLightsOn, &m_OutputBrakeLights);
+    RETURN_IF_FAILED(transmitBoolValue(headLightsOn, &m_OutputHeadLights));
+    RETURN_IF_FAILED(transmitBoolValue(brakeLightsOn, &m_OutputBrakeLights));
 
-    transmitBoolValue(emergencyStop, &m_OutputHazardLights);
+    RETURN_IF_FAILED(transmitBoolValue(emergencyStop, &m_OutputHazardLights));
 
     /* indicate turn direction */
-    transmitBoolValue(blinkerLeftOn, &m_OutputBlinkerLeft);
-    transmitBoolValue(blinkerRightOn, &m_OutputBlinkerRight);
+    RETURN_IF_FAILED(transmitBoolValue(blinkerLeftOn, &m_OutputBlinkerLeft));
+    RETURN_IF_FAILED(transmitBoolValue(blinkerRightOn, &m_OutputBlinkerRight));
 
     /* outputs for behaviour */
-    transmitBoolValue(turnLeft, &m_OutputCrossingTurnLeft);
-    transmitBoolValue(turnRight, &m_OutputCrossingTurnRight);
-    transmitBoolValue(keepStraight, &m_OutputCrossingGoStraight);
+    RETURN_IF_FAILED(transmitBoolValue(turnLeft, &m_OutputCrossingTurnLeft));
+    RETURN_IF_FAILED(transmitBoolValue(turnRight, &m_OutputCrossingTurnRight));
+    RETURN_IF_FAILED(transmitBoolValue(keepStraight, &m_OutputCrossingGoStraight));
 
-    transmitBoolValue(emergencyStop, &m_OutputEmergencyStop);
+    RETURN_IF_FAILED(transmitBoolValue(emergencyStop, &m_OutputEmergencyStop));
 
     RETURN_NOERROR;
 }

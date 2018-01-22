@@ -15,6 +15,7 @@
 	bookmarksopen = true,
 	bookmarksnumbered = true,
 	linkcolor = black,
+	urlcolor = blue,
 	plainpages = false,
 	hypertexnames = false,
 	citecolor = black
@@ -38,16 +39,13 @@
 %DONE: Gruppenfoto (mit Auto) - ✓
 %DONE: Bilder - ✓
 
-%TODO: Passiver Schreibstil
-%TODO: Allgemeine Beschreibungen der Kapitel
 %TODO: Fazit
-%TODO: Zwischenfazit für jedes Kapitel?
 
 \begin{document}
 
 %%%%%%%%%%%%%%%%%%%%% HEADER %%%%%%%%%%%%%%%%%%%%%
 
-	\title{Robotik Praktikum -- Gruppe 2}
+	\title{Robotik Praktikum -- Gruppe 2\\FACHHOCHSCHULE WEDEL}
 	\author{Frauke Jörgens (minf101207) \and Franz Wernicke (ite101729) \and Thorger Dittmann (ite101646) \and Jan Ottmüller (tinf101737) \and Felix Maaß (ite101754)}
 	\date{\today}
 	\titlepic{\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{assets/group_photo}}
@@ -564,6 +562,46 @@
 
 	Letztendlich erhält man so den finalen Schwellenwert $s_{bounded}$.
 	Liegt der gemessene Sensorwert unterhalb dieser Schwelle, so wird dies als Hindernis gewertet.
+	
+	In unseren Test haben sich die Schwellenwerte $s_{dyn} = 30cm$, $s_{min} = 7cm$ und $s_{max} = 150cm$ als gut erwiesen.
+	\autoref{img-uss-function-parabola} zeigt die Auswirkungen von Änderungen der Geschwindigkeit und des Lenkwinkels.
+	
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}
+		\datavisualization [
+		scientific axes=clean,
+		style sheet=strong colors,
+		style sheet=vary dashing,
+		all axes={grid},
+		y axis={label=Verstärkung, ticks={step=50, tick unit=cm}, include value=0, include value=200},
+		x axis={label=Montagewinkel, ticks={step=30, tick unit=\degree}},
+		visualize as smooth line/.list={func0, func25, funcSpeed},
+		func0={label in legend={text=Standard}},
+		func25={label in legend={text=Lenkwinkel $+25\degree$}},
+		funcSpeed={label in legend={text=Geschwindigkeit $v \geq 2 \cdot v_{std}$}},
+		data/format=function
+		]
+		
+		data [set=func0] {
+			var x : interval [-90:90] samples 180;
+			func y = max(7, min(100 * (1 - (\value x / 180 * pi)^2), 150));
+		}
+		
+		data [set=func25] {
+			var x : interval [-90:90] samples 180;
+			func y = max(7, min(100 * (1 - ((\value x - 34) / 180 * pi)^2), 150);
+		}
+		
+		data [set=funcSpeed] {
+			var x : interval [-90:90] samples 180;
+			func y = max(7, min(100 * 2 * (1 - (\value x / 180 * pi)^2), 150));
+		};
+		\end{tikzpicture}
+		
+		\caption{Gewichtung der Schwellenwerte}
+		\label{img-uss-function-parabola}
+	\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Kollisionserkennung}
@@ -571,13 +609,18 @@
 
 
 	Mithilfe der Daten des Beschleunigungssensors werden Kollisionen erkannt und ein sofortiger Nothalt erfolgt.\\
-Zunächst wird ein Medianfilter auf die Werte des Accelerometers angewendet. Danach werden die Beschleunigungswerte der drei Achsen über den Satz des Pythagoras (Formel \ref{pyth}) zusammengerechnet.
-\begin{align}
-	a = \sqrt{a_{x}^2+a_{y}^2+a_{z}^2}
-	\label{pyth}
-\end{align}
-Überschreitet die Beschleunigung einen bestimmten Schwellwert, wird als Ursache eine Kollision angenommen, wodurch wiederum ein Nothalt ausgelöst wird.\\
-Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst ausgeschaltet wird, falls man mit Maximalgeschwindigkeit gegen eine Wand fährt. Andererseits muss die Schwelle hoch genug sein, damit bestimmte Ereignisse (beispielsweise Anfahren) nicht als Kollision interpretiert werden. Dabei ist problematisch, dass nicht alle Kollisionen bei der gleichen Geschwindigkeit stattfinden. Auch ist mit zu beachten, dass die Kollisionsobjekte (z.B. Wände, Personen) das Auto verschieden stark abbremsen, woraus wiederum verschiedene Beschleunigungswerte resultieren. Als Kriterium zur Wahl des Schwellwerts wurde vorrangig Zusammenstöße mit Wänden verwendet.
+	Zunächst wird ein Medianfilter auf die Werte des Accelerometers angewendet. Danach werden die Beschleunigungswerte der drei Achsen über den Satz des Pythagoras (Formel \ref{pyth}) zusammengerechnet.
+	\begin{align}
+		a = \sqrt{a_{x}^2+a_{y}^2+a_{z}^2}
+		\label{pyth}
+	\end{align}
+	Überschreitet die Beschleunigung einen bestimmten Schwellenwert, wird als Ursache eine Kollision angenommen, wodurch wiederum ein Nothalt ausgelöst wird.
+	
+	Einerseits muss der Schwellenwert niedrig genug sein, damit der Motor nicht erst ausgeschaltet wird, falls man mit Maximalgeschwindigkeit gegen eine Wand fährt.
+	Andererseits muss die Schwelle hoch genug sein, damit bestimmte Ereignisse (beispielsweise Anfahren) nicht als Kollision interpretiert werden.
+	Dabei ist problematisch, dass nicht alle Kollisionen bei der gleichen Geschwindigkeit stattfinden.
+	Auch ist mit zu beachten, dass die Kollisionsobjekte (z.B. Wände, Personen) das Auto verschieden stark abbremsen, woraus wiederum verschiedene Beschleunigungswerte resultieren.
+	Als Kriterium zur Wahl des Schwellenwerts wurden vorrangig Zusammenstöße mit festen Objekten wie Wänden verwendet.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -597,7 +640,12 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Dieses Manko nahmen wir in Kauf, und einige Gruppenmitglieder befassten sich mit der Konfiguration des nVidia-Treibers auf dem heimischen Rechner mit eigenen oder ausgeliehenen Grafikkarten, sodass auch der GPU-Code von zu Hause aus ausführbar war.
 
 	\paragraph{Erfahrungen.}
-	Trotz der wenigen und zum Teil nicht aktuellen Codebeispiele lässt sich die GPU-Schnittstelle nach einer kurzen Einfindungsphase leicht handhaben. Allerdings sind nicht alle Funktionen von OpenCV als GPU-Variante verfügbar, weshalb wir manchmal auf die CPU-Variante umsteigen mussten. Entsprechende Stellen sind im Quelltext beschrieben. Des Weiteren ist der Wechsel zwischen Ausführung auf der CPU im Gegensatz zur Ausführung auf der GPU ziemlich aufwendig, da sämtliche Funktionsaufrufe geändert werden müssen. Anhand der Funktion \hyperlink{https://docs.opencv.org/trunk/d8/d40/group\_\_cudacore\_\_init.html\#gaaa93892f9189163e5d53790b4b1e88db}{\texttt{cv::cuda::getCudaEnabled\-DeviceCount()}} kann zur Laufzeit festgestellt werden, ob mindestens eine CUDA-fähige GPU verwendet wird. Anhand dieser Feststellung kann dann der Code auf der CPU oder auf der GPU ausgeführt werden. Dazu müsste im Quelltext allerdings eine CPU- und eine GPU-Variante existieren, was zu ordentlicher Redundanz führen würde. Wir haben uns daher vorerst auf die reine GPU-Implementierung (mit Nutzung der CPU bei Nichtvorhandensein der GPU-Variante) konzentriert.
+	Trotz der wenigen und zum Teil nicht aktuellen Codebeispiele lässt sich die GPU-Schnittstelle nach einer kurzen Einfindungsphase leicht handhaben.
+	Allerdings sind nicht alle Funktionen von OpenCV als GPU-Variante verfügbar, weshalb wir manchmal auf die CPU-Variante umsteigen mussten. Entsprechende Stellen sind im Quelltext beschrieben. Des Weiteren ist der Wechsel zwischen Ausführung auf der CPU im Gegensatz zur Ausführung auf der GPU ziemlich aufwendig, da sämtliche Funktionsaufrufe geändert werden müssen.
+	Anhand der Funktion \href{https://docs.opencv.org/3.4.0/d8/d40/group\_\_cudacore\_\_init.html\#gaaa93892f9189163e5d53790b4b1e88db}{\texttt{cv::cuda::getCudaEnabled\-DeviceCount()}} \cite{opencv-doc} kann zur Laufzeit festgestellt werden, ob mindestens eine CUDA-fähige GPU verwendet wird.
+	Anhand dieser Feststellung kann dann der Code auf der CPU oder auf der GPU ausgeführt werden.
+	Dazu müsste im Quelltext allerdings eine CPU- und eine GPU-Variante existieren, was zu ordentlicher Redundanz führen würde.
+	Wir haben uns daher vorerst auf die reine GPU-Implementierung (mit Nutzung der CPU bei Nichtvorhandensein der GPU-Variante) konzentriert.
 
 \pagebreak
 
@@ -620,7 +668,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	In dem HSV-Farbmodell werden Farben als Farbwinkel (0\degree\ für Rot, 120\degree\ für Grün, 240\degree\ für Blau \cite{HSV-Wiki}) repräsentiert. Zusätzlich wird die Sättigung und der Helligkeitswert der Farbe angegeben.
 	Dieses Farbmodell erlaubt eine bessere -- und für Menschen intuitive -- Unterteilung von Farben im Bild.
 	Da die Fahrbahnmarkierung aktuell blau ist, wird der blaue Anteil von den anderen Farben im Bild getrennt\footnote{Da es sich bei dem Bild um ein 8-Bit-Bild handelt, werden die Werte für den Farbwinkel (\textit{hue}) in den Bereich von 0\degree\ bis 180\degree\ skaliert, da Werte über 255 nicht über 8 Bit repräsentiert werden können.
-	Siehe auch \url{https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html\#cvtcolor} unter RGB $\longleftrightarrow$ HSV.}.
+	Siehe auch \href{https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html\#cvtcolor}{\texttt{cv::cvtColor}} \cite{opencv-doc} unter RGB $\longleftrightarrow$ HSV.}.
 	Die zugehörigen Parameter (\texttt{hue}, \texttt{saturation} und \texttt{value}), die einen Unterraum des Farbraums bestimmen, können während der Laufzeit über die Eigenschaften des Filters in ADTF geändert werden, sodass auch Fahrbahnmarkierungen anderer Farben erkannt werden können.
 	Die für uns idealen Parameter für das blaue Klebeband sind in \autoref{table-hsv-values} aufgeführt.
 
@@ -636,7 +684,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	\end{table}
 
 	Das Ergebnis dieser Operation ist ein Binärbild es unterteilt die Pixel des HSV-Bilds in Pixel, die Teil des Unterraums sind (weiß) und solche, die nicht Teil des Unterraums sind (schwarz).
-	Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \texttt{cv::inRange} genutzt.
+	Für die Bestimmung der Unterräume sowie die Binarisierung wird die OpenCV-Funktion \href{https://docs.opencv.org/3.4.0/d2/de8/group\_\_core\_\_array.html\#ga48af0ab51e36436c5d04340e036ce981}{\texttt{cv::inRange}} \cite{opencv-doc} genutzt.
 	Damit potenzielle Löcher, die durch Rauschen entstehen können, geschlossen werden, wird ein Closing auf das Binärbild angewandt.
 	\autoref{img-applying-cvtColor} verdeutlicht die Anwendung dieser Bearbeitungsschritte.
 
@@ -654,7 +702,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 
 \section{Canny Edge Detection}
 % Author: Frauke Jörgens
-	Um in dem Binärbild die Fahrbahnen als Linien erkennen zu können, wird ein Kantendetektionsverfahren -- der Canny Edge Detector, der bereits in OpenCV implementiert wurde -- verwendet\footnote{siehe auch \url{https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/canny\_detector/canny\_detector.html}}.
+	Um in dem Binärbild die Fahrbahnen als Linien erkennen zu können, wird ein Kantendetektionsverfahren -- der Canny Edge Detector, der bereits in OpenCV implementiert wurde -- verwendet\footnote{siehe auch \url{https://docs.opencv.org/3.4.0/da/d5c/tutorial_canny_detector.html} \cite{opencv-doc}}.
 	Dieser erkennt in einem Grauwertbild mithilfe des Sobel-Operators Kanten, deren Stärke und Gewichtung pro Pixel aufgenommen wird.
 	Um sicherzustellen, dass die Kanten nur einen Pixel breit sind, werden alle zu Kanten zugehörigen Pixel, die keine lokalen Maxima sind, aussortiert.
 	Schließlich werden über zwei Schwellenwerte die Kantenkandidaten weiter gefiltert, sodass ein Binärbild entsteht.
@@ -662,7 +710,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Ist die Kantenstärke eines Pixels niedriger als der untere Schwellenwert, wird dieser Pixel als Kandidat verworfen.
 	Über eine Hysterese werden die Pixel gefiltert, die zwischen beiden Schwellenwerten liegen, sodass "`Ausreißer"' vermieden werden.
 
-	Dementsprechend nimmt die Funktion \texttt{cv::Canny}, bzw. das GPU-Pendant \texttt{cv::cuda::createCannyEdgeDetector} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators.
+	Dementsprechend nimmt die Funktion \href{https://docs.opencv.org/3.4.0/dd/d1a/group\_\_imgproc\_\_feature.html\#ga04723e007ed888ddf11d9ba04e2232de}{\texttt{cv::Canny}} \cite{opencv-doc}, bzw. das GPU-Pendant \href{https://docs.opencv.org/3.4.0/d0/d05/group\_\_cudaimgproc.html\#gabc17953de36faa404acb07dc587451fc}{\texttt{cv::cuda::createCannyEdgeDetector}} \cite{opencv-doc} in Kombination mit der Funktion \texttt{detect}, die auf das Objekt angewandt wird, neben dem Bild folgende Parameter entgegen: \texttt{threshold1}, der die untere Grenze für die Aussortierung der Kandidaten bildet, \texttt{threshold2}, der die obere Grenze für die Aussortierung der Kandidaten bildet und \texttt{apertureSize}, die Größe des Sobel-Operators.
 	Für das Verhältnis der Schwellenwerte zueinander wird das Verhältnis 2:1 bzw. 3:1 (\textit{upper:lower}) empfohlen.
 	\autoref{img-applying-canny} zeigt das Ergebnis des Canny-Algorithmus' nach der Anwendung auf das Binärbild.
 	% NOTE: Das ist okay, aber ihr dürft davon ausgehen, dass der Leser weiß, wie der Canny Filter arbeitet. Ihr müsst die Parameter nicht erklären, es sei denn das war euch bei der Parameterwertsuche besonders wichtig. Konzentriert euch lieber auf die Beschreibung von dem, was ihr gemacht habt. :) --hoe
@@ -687,7 +735,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Beispielsweise erhofften wir uns von diesem Ansatz, Kurven besser erkennen zu können.
 
 	Anhand eines Schachbrettmusters wurde das Kamerabild so kalibriert, dass die Quadrate des Musters auch im Kamerabild quadratisch sind.
-	Zur Transformation werden 4 Punkte benutzt, die ein Viereck aufspannen und die Eckpunkte der Straße angeben. Anhand der OpenCV-Funktion \texttt{cv::get\-PerspectiveTransform} wird die zugehörige Transformationsmatrix berechnet, welche mit der OpenCV-Funktion \texttt{cv::cuda::warpPerspective} angewandt wird. \autoref{img-applying-persp-warp} zeigt das Bild der Straße vor und nach Anwendung der perspektivischen Verzerrung.
+	Zur Transformation werden 4 Punkte benutzt, die ein Viereck aufspannen und die Eckpunkte der Straße angeben. Anhand der OpenCV-Funktion \href{https://docs.opencv.org/3.4.0/da/d54/group\_\_imgproc\_\_transform.html\#ga15302cbff82bdcddb70158a58b73d981}{\texttt{cv::get\-PerspectiveTransform}} \cite{opencv-doc} wird die zugehörige Transformationsmatrix berechnet, welche mit der OpenCV-Funktion \href{https://docs.opencv.org/3.4.0/db/d29/group\_\_cudawarping.html\#ga7a6cf95065536712de6b155f3440ccff}{\texttt{cv::cuda::warpPerspective}} \cite{opencv-doc} angewandt wird. \autoref{img-applying-persp-warp} zeigt das Bild der Straße vor und nach Anwendung der perspektivischen Verzerrung.
 
 	\begin{figure}[h]
 		\centering
@@ -747,7 +795,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 \section{Line-Clustering}
 % Author: Frauke Jörgens
 	Durch die Hough Line Transformation werden tendenziell zu viele Linien gefunden.
-	Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \texttt{cv::partition} verwendet, welches die Linien in Äquivalenzklassen unterteilt.
+	Um die Anzahl der Linien zu reduzieren, wird ein Clustering mithilfe der Funktion \href{https://docs.opencv.org/3.4.0/d5/d38/group\_\_core\_\_cluster.html\#ga2037c989e69b499c1aa271419f3a9b34}{\texttt{cv::partition}} \cite{opencv-doc} verwendet, welches die Linien in Äquivalenzklassen unterteilt.
 	Es wird eine Äquivalenzfunktion benutzt, die besagt, wann zwei Linien als äquivalent angesehen werden (im Quellcode \texttt{isEquivalent} genannt).
 	Der Vergleich erfolgt anhand des Winkels und der Länge des Normalenvektors der Linie.
 	Nach dem Clustering ist jede Linie einer Klasse zugeordnet.
@@ -757,19 +805,15 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 \section{Klassifizierung}
 % Author: Frauke Jörgens
 	Nachdem die Linien aufgrund des Ähnlichkeitskriteriums gebündelt wurden, werden sie in Kategorien unterteilt, um das Straßenbild sinngemäß zusammenzufassen.
-	Wir haben uns für eine Unterteilung in Kategorien entschieden, die in \autoref{table-lineClassification} aufgelistet und beschrieben sind. %NOTE: Wirkt etwas gedrungen. Vielleicht lieber Aufzählung? --felix
-	\begin{table}
-		\begin{tabular}{p{.125\textwidth}|p{.35\textwidth}|p{.35\textwidth}|p{.05\textwidth}}
-			Art der Linie & Beschreibung & Bedingung & Farbe\\\hline
-			Linke Linie &  Die linke erkannte Linie. Aufgrund des Kamerablickwinkels entspricht diese Linie also eigentlich der mittleren gestrichelten Linie der Straße & Die Linie ist vertikal (ihr Winkel zur y-Achse ist kleiner als 20\degree) und sie befindet sich auf der linken Seite des Bildes & grün\\\hline
-			Rechte Linie & Die rechte erkannte Linie (= die rechte Fahrbahnmarkierung) & Die Linie ist vertikal (s.o.) und sie befindet sich auf der rechten Seite des Bildes & blau\\\hline
-			Haltelinie & Eine Haltelinie, wie sie an einer Kreuzung üblich ist & Die Linie ist horizontal (ihr Winkel zur y-Achse ist größer als 75 \degree) & rot\\\hline
-			Unklassifi-zierte Linie & Eine Linie, die keiner der obigen Kategorien entspricht & Eine Linie wird keiner der Kategorien zugeordnet  & gelb\\
-		\end{tabular}
-		\caption{Beschreibung der verschiedenen Klassen von erkannten und nicht erkannten Linien.
-		In \autoref{img-lines} wird veranschaulicht, wie die Linien entsprechend ihrer Klasse eingefärbt und anhand der Anzahl der zusammengefassten Linien dicker oder dünner gezeichnet werden.}
-		\label{table-lineClassification}
-	\end{table}
+	Wir haben uns für eine Unterteilung in folgende Kategorien entschieden: %NOTE: Wirkt etwas gedrungen. Vielleicht lieber Aufzählung? --felix
+	\begin{itemize}
+		\item \textbf{Linke Linie.} Aufgrund des Kamerawinkels entspricht diese Linie der gestrichelten Mittellinie der Straße.
+		Damit eine Linie als linke Linie anerkannt wird, muss ihr absoluter Winkel kleiner als 20\degree\ sein und sich auf der linken Hälfte des Bildes befinden. Sie wird im Video grün dargestellt.
+		\item \textbf{Rechte Linie.} Diese Linie entspricht der rechten Fahrbahnmarkierung.
+		Damit eine Linie als rechte Linie erkannt wird, muss ihr absoluter Winkel kleiner als 20\degree\ sein und sich auf der rechten Hälfte des Bildes befinden. Sie wird im Video blau dargestellt.
+		\item \textbf{Haltelinie.} Waagerechte Linien (der absolute Winkel ist größer als 75\degree) werden als Haltelinien von Kreuzungen erkannt, an denen das Modellauto halten und ggf. abbiegen kann.
+		\item \textbf{Unklassifizierte Linie.} Alle Linien, die nicht den Eigenschaften der vorigen Kategorien entsprechen, werden als unklassifiziert angesehen. Sie werden im Video gelb dargestellt.
+	\end{itemize}
 
 	\begin{figure}
 		\centering
@@ -790,7 +834,7 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	So vermeiden wir, dass das Auto schon anhält, wenn es nur eine sehr schwache Stopplinie erkannt hat, was durch Rauschen ausgelöst werden kann.
 	Dieser Schwellenwert kann mit dem ADTF-Parameter 'Stop Threshold' angepasst werden.
 	Für uns hat der Wert 0,4 gut funktioniert.
-	Es müssen dann also mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält. %NOTE: Ist das wirklich so? -- felix
+	Es müssen dann also mindestens 40\% der Linien eine Stopplinie sein, damit das Fahrzeug anhält.
 
 \section{Zentrierung in der Fahrspur}
 % Author: Felix Maaß
@@ -851,8 +895,13 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 
 \section{Besonderheiten in der Kurve}
 % Author: Frauke Jörgens
-% TODO (macht Frauke)
 	
+	Ein generelles Problem der Bildverarbeitung ist, dass das aufgenommene Kamerabild ca. 20cm vor der Vorderkante des Modellfahrzeugs liegt und immer geradeaus schaut -- unabhängig von der Fahrtrichtung.
+	In geraden Fahrtabschnitten ist dies weitestgehend unproblematisch.
+	In Kurven allerdings entsteht das Problem, dass meistens nur ein kleiner Teil der äußeren Fahrbahnmarkierung im Kamerabild zu sehen ist.
+	Ideal wäre es also, wenn sich die Kamera entsprechend des Lenkwinkels des Fahrzeugs mitbewegen könnte.
+	Da uns dies ohne Weiteres nicht möglich war, mussten wir eine andere Variante finden, um diesem Problem mindestens ein wenig entgegenwirken zu können.
+	Wird eine gekrümmte Linie gefunden (der absolute Winkel ihres Stützvektors ist größer als ein Schwellenwert\footnote{Der Wert 12\degree\ hat für uns gut funktioniert.}), so wird ihr Winkel entsprechend ihrer Krümmung gestreckt, damit sie eine nicht so starke Auswirkung hat.	
 
 \section{Weitere Überlegungen}
 % Author: Jan Ottmüller
@@ -911,28 +960,23 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modifikationen am Fahrzeug}
 
-	Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne am Modellauto mit einer 3D-gedruckten Halterung befestigt. 
-	\begin{figure}[ht]
+Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne am Modellauto mit einer 3D-gedruckten Halterung befestigt. 
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[c]{.45\textwidth}
+		\includegraphics[width=\textwidth]{assets/Kamerahalterung.PNG}
+	\end{subfigure}
+	\begin{subfigure}[c]{.45\textwidth}
+		\includegraphics[width=\textwidth]{assets/Kamera-Anbringung.jpg}
+	\end{subfigure}
+	\begin{subfigure}{\textwidth}
 		\centering
-		\begin{subfigure}[c]{.45\textwidth}
-			\includegraphics[width=\textwidth]{assets/Kamerahalterung.PNG}
-		\end{subfigure}
-		\begin{subfigure}[c]{.45\textwidth}
-			\includegraphics[width=\textwidth]{assets/Kamera-Anbringung.jpg}
-		\end{subfigure}
-		\caption{CAD-Modell der Halterung (links) und Anbringung des 3D-Modells (gelb) und der Kamera am Modellfahrzeug (rechts).}
-		\label{img-camera}
-	\end{figure}
-	\\
-	Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie oben auf der rechten Seite mit dem Magneten und auf der linken Seite mit einer Schraube mit 3 Unterlegscheiben gesichert werden.
-	Alle benötigten Teile sind in einem Tütchen in der Gruppen Box. \\
-	Die Zeichnung \ref{RealSense-Montage} zeigt die Montage von der linken Fahrzeugseite.
-	\begin{figure}[ht]
-		\centering
-		\includegraphics[width=250pt,keepaspectratio]{assets/RealSense-Montage.PNG}
-		\caption{Montage der RealSense}
-		\label{RealSense-Montage}
-	\end{figure}
+		\includegraphics[width=.5\textwidth]{assets/RealSense-Montage2.PNG}
+	\end{subfigure}
+	\caption{CAD-Modell der Halterung (oben links), Anbringung des 3D-Modells (gelb) und der Kamera am Modellfahrzeug (oben rechts) und schematische Darstellung der Installation an der ursprünglichen Position (unten).}
+	\label{img-camera}
+\end{figure}
+Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie oben auf der rechten Seite mit dem Magneten und auf der linken Seite mit einer Schraube mit 3 Unterlegscheiben gesichert werden. Alle benötigten Teile sind in einem Tütchen in der Gruppenbox. \autoref{img-camera} (unten) zeigt die Montage von der linken Fahrzeugseite.
 
 
 \chapter{Fazit}
@@ -981,8 +1025,6 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Durch die geringen Geschwindigkeiten sind die Beschleunigungen bei Zusammenstößen relativ gering. 
 	Eine Unterscheidung zwischen Zusammenstoß mit einem weichen Objekt und stärkeren Vibrationen am Sensor war so schwierig Umzusetzen.
 
-\listoftables
-
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
 \begin{thebibliography}{9}
@@ -1010,6 +1052,12 @@ Einerseits muss der Schwellwert niedrig genug sein, damit der Motor nicht erst a
 	Letzte Bearbeitung: 8. September 2017 um 17:55 Uhr,
 	Letzter Zugriff am: 21. Januar 2018,
 	\url{https://de.wikipedia.org/wiki/HSV-Farbraum}
+	
+	\bibitem{opencv-doc}
+	OpenCV 3.4.0--Dokumentation\\
+	Generiert am 22. Dezember 2017 um 22:15:44,
+	Letzter Zugriff am: 22. Januar 2018,
+	\url{https://docs.opencv.org/3.4.0/}
 
 \end{thebibliography}
 

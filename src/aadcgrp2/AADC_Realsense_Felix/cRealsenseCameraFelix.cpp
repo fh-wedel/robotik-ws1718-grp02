@@ -461,7 +461,7 @@ tResult cRealsenseCameraFelix::ThreadFunc(adtf::cKernelThread* Thread, tVoid* da
         // Depth Stream
         if (m_dev->is_stream_enabled(rs::stream::depth)) {
             // Raw Depth Data
-            TransmitDepthRaw(m_dev->get_frame_data(rs::stream::depth)); //TODO Here we go!
+            TransmitDepthRaw(m_dev->get_frame_data(rs::stream::depth));
             // Calling Convert Function for Visualization
             std::vector<uchar> image;
             image.resize(m_BitmapFormatDepthOut.nSize);
@@ -536,7 +536,6 @@ tResult cRealsenseCameraFelix::TransmitDepthRaw(const void *pData) {
     RETURN_IF_FAILED(pMediaSample->AllocBuffer(DEPTH_FRAME_SIZE));
     //updating media sample
     RETURN_IF_FAILED(pMediaSample->Update(_clock->GetStreamTime(), pData, DEPTH_FRAME_SIZE, IMediaSample::MSF_None));
-    //TODO: Can we reaccess the data property of a media sample?
 
     //transmitting
     RETURN_IF_FAILED(m_outputDepthRaw.Transmit(pMediaSample));

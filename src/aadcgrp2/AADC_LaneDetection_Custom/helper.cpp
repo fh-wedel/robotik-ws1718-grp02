@@ -1,4 +1,8 @@
 #include "helper.h"
+/**
+ * Implementation for bva helper functions.
+ * @author Frauke Jörgens, Jan Ottmüller
+ */
 
 float help::xValueOfLineAt(float distance, float angle, float yValue) {
 	return distance / cos(angle) + tan(angle) * yValue;
@@ -63,12 +67,11 @@ bool help::lineIsVertical(cv::Vec3f& line) {
 		return fabs(angle) < 20.0f;
 }
 
-// returns if a line is a stop line
 bool help::lineIsStopLine(cv::Vec3f& line) {
 	return lineIsHorizontal(line);
 }
 
-// returns if a line is a left line
+
 bool help::lineIsLeftLine(cv::Vec3f& line) {
 	float dist = line[0];
 
@@ -77,7 +80,7 @@ bool help::lineIsLeftLine(cv::Vec3f& line) {
 	return (lineIsVertical(line) && dist < screenSize.width / 2.0f);
 }
 
-// returns if a line is a right line
+
 bool help::lineIsRightLine(cv::Vec3f& line) {
 	float dist = line[0];
 

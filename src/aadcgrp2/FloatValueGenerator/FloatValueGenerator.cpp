@@ -61,7 +61,7 @@ tResult cFloatValueGenerator::CreateOutputPins(__exception) {
     // get media type
     tChar const * strDescSignalValue = pDescManager->GetMediaDescription("tSignalValue");
     RETURN_IF_POINTER_NULL(strDescSignalValue);
-    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //TODO: Soll angeblich ein "deprecated constructor" sein !!
+    cObjectPtr<IMediaType> pTypeSignalValue = new cMediaType(0, 0, 0, "tSignalValue", strDescSignalValue, IMediaDescription::MDF_DDL_DEFAULT_VERSION); //WARNING: Soll angeblich ein "deprecated constructor" sein !!
 
     // set member media description
     RETURN_IF_FAILED(pTypeSignalValue->GetInterface(IID_ADTF_MEDIA_TYPE_DESCRIPTION, (tVoid**)&m_FloatDescription));

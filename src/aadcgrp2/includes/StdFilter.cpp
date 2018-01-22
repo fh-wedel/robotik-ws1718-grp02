@@ -178,6 +178,10 @@ cObjectPtr<IMediaSample> cStdFilter::initMediaSample(cObjectPtr<IMediaTypeDescri
 
 tResult cStdFilter::transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
 
+    if (!(outputPin->IsConnected())) {
+        RETURN_NOERROR;
+    }
+
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_OutputFloatValueDescription);
     {
         // focus for sample write lock
@@ -192,7 +196,6 @@ tResult cStdFilter::transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
 
         //write values to media sample
         pCoder->Set(m_OutputFloatValueDescriptionID, (tVoid*)&value);
-        // TODO: write timestamp
     }
 
     //transmit media sample over output pin
@@ -202,6 +205,10 @@ tResult cStdFilter::transmitFloatValue(tFloat32 value, cOutputPin* outputPin) {
     RETURN_NOERROR;
 }
 tResult cStdFilter::transmitBoolValue(tBool value, cOutputPin* outputPin) {
+
+    if (!(outputPin->IsConnected())) {
+        RETURN_NOERROR;
+    }
 
     cObjectPtr<IMediaSample> pMediaSample = initMediaSample(m_OutputBoolValueDescription);
     {
@@ -217,7 +224,6 @@ tResult cStdFilter::transmitBoolValue(tBool value, cOutputPin* outputPin) {
 
         //write values to media sample
         pCoder->Set(m_OutputBoolValueDescriptionID, (tVoid*)&value);
-        // TODO: write timestamp
     }
 
     //transmit media sample over output pin

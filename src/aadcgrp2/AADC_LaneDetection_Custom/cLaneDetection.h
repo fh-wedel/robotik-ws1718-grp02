@@ -20,6 +20,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 
 #include "stdafx.h"
 #include "ADTF_OpenCV_helper.h"
+#include "../includes/StdFilter.h"
 
 
 #define OID_ADTF_FILTER_DEF "adtf.aadc_LaneDetection_Custom" //unique for a filter
@@ -91,7 +92,7 @@ THIS SOFTWARE IS PROVIDED BY AUDI AG AND CONTRIBUTORS �AS IS� AND ANY EXPRES
 /*!
 * This class is the main class of the OpenCV Template Filter and can be used as template for user specific image processing filters
 */
-class cLaneDetection : public adtf::cFilter
+class cLaneDetection : public cStdFilter
 {
 
     /*! This macro does all the plugin setup stuff */
@@ -152,24 +153,23 @@ public:
      */
     tResult Init(tInitStage eStage, ucom::IException** __exception_ptr);
 
+    /*!
+     * Creates the input pins.
+     * \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
+     *        If not using the cException smart pointer, the interface has to
+     *        be released by calling Unref().
+     * \return                           Standard Result Code.
+     */
     tResult CreateInputPins(__exception);
 
-    tResult CreateOutputPins(__exception);
-
     /*!
-     *   Implements the default cFilter state machine call. It will be
-     *   called automatically by changing the filters state and needs
-     *   to be overwritten by the special filter.
-     *   Please see page_filter_life_cycle for further information on when the state of a filter changes.
-     *
-     *   \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
-     *                                   If not using the cException smart pointer, the interface has to
-     *                                   be released by calling Unref().
-     *   \param  [in] eStage The Init function will be called when the filter state changes as follows:\n   *
-     *   \result Returns a standard result code.
-     *
+     * Creates the output pins.
+     * \param [in,out] __exception_ptr   An Exception pointer where exceptions will be put when failed.
+     *        If not using the cException smart pointer, the interface has to
+     *        be released by calling Unref().
+     * \return                           Standard Result Code.
      */
-    tResult Shutdown(tInitStage eStage, ucom::IException** __exception_ptr = NULL);
+    tResult CreateOutputPins(__exception);
 
     /*! This Function will be called by all pins the filter is registered to.
      *   \param [in] pSource Pointer to the sending pin's IPin interface.
@@ -183,31 +183,6 @@ public:
      */
     tResult OnPinEvent(IPin* pSource, tInt nEventCode, tInt nParam1, tInt nParam2, IMediaSample* pMediaSample);
 
-    /*! Implements the default cFilter state machine calls. It will be
-     *    called automatically by changing the filters state IFilter::State_Ready -> IFilter::State_Running
-     *    and can be overwritten by the special filter.
-     *    \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
-     *        If not using the cException smart pointer, the interface has to
-     *        be released by calling Unref().
-     *    \return Standard Result Code.
-     *    \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
-     *    (see:  section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
-     *
-     */
-    tResult Start(ucom::IException** __exception_ptr = NULL);
-
-    /*!  Implements the default cFilter state machine calls. It will be
-     *   called automatically by changing the filters state IFilter::State_Running -> IFilter::State_Ready
-     *   and can be overwritten by the special filter.
-     *   \param __exception_ptr  [inout] An Exception pointer where exceptions will be put when failed.
-     *   If not using the cException smart pointer, the interface has to
-     *   be released by calling Unref().
-     *   \return Standard Result Code.
-     *   \note This method will be also called during the shutdown of a configuration if the Filter is connected to the Message Bus.
-     *   (see: section_message_bus)! This has to be done, to disconnect the Message Bus and to avoid Race Conditions.
-     */
-    tResult Stop(ucom::IException** __exception_ptr = NULL);
-
     /*! This Function is always called when any property has changed. This should be the only place
      *    to read from the properties itself and store their values in a member.
      *
@@ -218,27 +193,6 @@ public:
     tResult PropertyChanged(const tChar* strName);
 
 private: // private methods
-
-    /*!
-     * Searches for the lanes.
-     *
-     * \param           detectionLines      The detection lines.
-     * \param           image               The image.
-     * \param [in,out]  detectedLinePoints  The left lane pixels.
-     * \return  Returns a standard result code.
-     *
-     */
-    tResult findLinePoints(const vector<tInt>& detectionLines, const cv::Mat& image, vector <cPoint>& detectedLinePoints);
-
-    /*!
-     * Gets detection lines.
-     *
-     * \param [in,out]  detectionLines  The detection lines.
-     *
-     * \return  The detection lines.
-     */
-    tResult getDetectionLines(vector<tInt>& detectionLines);
-
     /*! function to set the m_sProcessFormat and the  m_sInputFormat variables
      *   \param pFormat the new format for the input pin
      *   \return Standard Result Code.
@@ -251,6 +205,13 @@ private: // private methods
      */
     tResult UpdateOutputImageFormat(const cv::Mat& outputImage, cVideoPin &outputVideoPin, tBitmapFormat &format);
 
+    /*!
+     * Transmits an image.
+     * @param  image          The image to be transmitted.
+     * @param  outputVideoPin The pin for the transmitted image.
+     * @param  format         The format of the image.
+     * @return                Standard Result Code.
+     */
     tResult transmitImage(cv::Mat &image, cVideoPin &outputVideoPin, tBitmapFormat &format);
 
     /*! function to process the mediasample
@@ -302,37 +263,44 @@ private: // private methods
         /*! Threshold for image binarization */
         int thresholdImageBinarization;
 
-        //eigene
+        /*! Low hue threshold for image binarisation */
         int hueLow;
+        /*! High hue threshold for image binarisation */
         int hueHigh;
+        /*! Low saturation threshold for image binarisation */
         int saturation;
+        /*! Low value threshold for image binarisation */
         int value;
+        /*! Hough threshold for hough line transform */
         int houghThresh;
+        /*! Angle threshold for line clustering */
         float angleThresh;
+        /*! Distance threshold for line clustering */
         float distanceThresh;
+        /*! Stop threshold for stop lines */
         float stopThresh;
 
     }
     /*! the filter properties of this class */
     m_filterProperties;
 
-    /*!
-     * Transmit gcl.
-     *
-     * \param   detectionLines  The detection lines.
-     * \param   detectedLinePoints  The left lane pixels.
-     *
-     * \return  A tResult.
-     */
-    tResult transmitGCL(const vector<tInt>& detectionLines, const vector<cPoint>& detectedLinePoints);
-
-
-
     /*! media description for encoding steering output */
     cObjectPtr<IMediaTypeDescription> m_SteeringOutputDescription;
 
+    /*!
+     * Transmits a float value.
+     * @param  value     The float value to be transmitted.
+     * @param  outputPin The output pin on which the float value should be
+     *                   transmitted.
+     * @return           A tResult.
+     */
     tResult transmitValue(tFloat32 value, cOutputPin& outputPin);
 
+    /*!
+     * Initializes a media sample.
+     * @param  typeDescription The type description.
+     * @return                 The media sample.
+     */
     cObjectPtr<IMediaSample> initMediaSample(cObjectPtr<IMediaTypeDescription> typeDescription);
 
 

@@ -9,6 +9,8 @@ INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR})
 
 adtf_add_filter(${FILTER_NAME}
     stdafx.h
+    ../includes/StdFilter.h
+    ../includes/StdFilter.cpp
 
     cLaneDetection.h
     cLaneDetection.cpp
