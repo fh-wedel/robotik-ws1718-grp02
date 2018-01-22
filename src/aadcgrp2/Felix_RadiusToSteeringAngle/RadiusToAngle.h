@@ -76,6 +76,12 @@ protected: // overwrites cFilter
 
 // PROPERTIES which can be set in the configuration editor
 
+    /**
+     * Gets called when a filter property is changed via the GUI.
+     *
+     * @param  strName the property identifier
+     * @return         standard adtf error code
+     */
     tResult PropertyChanged(const tChar* strName);
 
     /*! the struct with all the properties*/
@@ -95,6 +101,13 @@ private:
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
 
+    /**
+     * Converts a curve radius to an steering angle based on the stats
+     * of this car, i.e. wheelbase and tread.
+     *
+     * @param  radius the radius
+     * @return        the steering angle
+     */
     tFloat32 convertRadiusToAngle(tFloat32 radius);
 };
 /*! @} */ // end of group

@@ -78,6 +78,12 @@ protected: // overwrites cFilter
 
 // PROPERTIES which can be set in the configuration editor
 
+    /**
+     * Gets called when a filter property is changed via the GUI.
+     *
+     * @param  strName the property identifier
+     * @return         standard adtf error code
+     */
     tResult PropertyChanged(const tChar* strName);
 
     /*! the struct with all the properties*/
@@ -92,13 +98,16 @@ protected: // overwrites cFilter
     cMedian medianFilter;
 
 private:
-// Debug
 
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
 
-// Own Helper Functions
-
+    /**
+     * Gets called when a new input value has been received.
+     * Used to update the outputs.
+     *
+     * @return standard adtf error code
+     */
     tResult OnValueChanged(tFloat32 value);
 
 };
