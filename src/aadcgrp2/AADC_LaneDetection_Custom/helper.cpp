@@ -64,7 +64,7 @@ bool help::lineIsVertical(cv::Vec3f& line) {
 
 		//NOTE: We're dealing with the normal vector.
 
-		return fabs(angle) < 20.0f;
+		return fabs(angle) < 12.0f;
 }
 
 bool help::lineIsStopLine(cv::Vec3f& line) {

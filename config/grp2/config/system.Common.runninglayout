@@ -34,8 +34,8 @@
    <folder Floating="true" Height="432" Minimized="false" PosX="0" PosY="0" Visible="false" Width="960" name="Dbg_Canny_Video_Display" />
    <folder Floating="true" Height="432" Minimized="false" PosX="0" PosY="0" Visible="false" Width="960" name="Dbg_Binary_Video_Display" />
    <folder Height="366" Maximized="false" PosX="30" PosY="397" Visible="false" Width="725" name="Main-AADC_Sensor_Visualization" />
-   <folder Floating="true" Height="432" PosX="0" PosY="0" Visible="false" Width="960" name="Video_Display" />
-   <folder Floating="true" Height="544" PosX="359" PosY="535" Visible="true" Width="686" name="RGB_Display" />
+   <folder Floating="true" Height="362" PosX="184" PosY="323" Visible="true" Width="960" name="Video_Display" />
+   <folder Floating="true" Height="544" PosX="371" PosY="535" Visible="true" Width="686" name="RGB_Display" />
    <folder Floating="true" Height="432" PosX="0" PosY="0" Visible="false" Width="960" name="Dbg_Perps_Transform_Video_Display" />
   </folder>
  </folder>
