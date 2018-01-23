@@ -36,6 +36,7 @@ class cLinearFunction : public cStdFilter {
 
     /* the gain */
     cInputPin m_InputGain;
+
     /* the offset */
     cInputPin m_InputOffset;
 
@@ -82,6 +83,12 @@ protected: // overwrites cFilter
 
 // PROPERTIES which can be set in the configuration editor
 
+    /**
+     * Gets called when a filter property is changed via the GUI.
+     *
+     * @param  strName the property identifier
+     * @return         standard adtf error code
+     */
     tResult PropertyChanged(const tChar* strName);
 
     /*! the struct with all the properties*/
@@ -119,6 +126,12 @@ private:
 
 // Own Helper Functions
 
+    /**
+     * Gets called when a new input value has been received.
+     * Used to update the outputs.
+     *
+     * @return standard adtf error code
+     */
     tResult OnValueChanged();
 
 };

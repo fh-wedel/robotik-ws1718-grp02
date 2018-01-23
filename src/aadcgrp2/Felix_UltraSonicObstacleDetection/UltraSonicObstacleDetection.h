@@ -87,6 +87,12 @@ protected: // overwrites cFilter
 
 // PROPERTIES which can be set in the configuration editor
 
+    /**
+     * Gets called when a filter property is changed via the GUI.
+     *
+     * @param  strName the property identifier
+     * @return         standard adtf error code
+     */
     tResult PropertyChanged(const tChar* strName);
 
     /*! the struct with all the properties*/
@@ -119,27 +125,32 @@ protected: // overwrites cFilter
     cMedian sideLeftFilter;
 
 private:
-    /*! creates all the input Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
+
+    /**
+     * Creates the input pin for the ultrasonic struct.
+     * @param  __exception_ptr the exception pointer
+     * @return                 standard adtf error code
+     */
     tResult CreateUSSInputPin(ucom::IException** __exception_ptr = NULL);
 
-
+    /**
+     * Creates the float input pins.
+     * @param  __exception_ptr the exception pointer
+     * @return                 standard adtf error code
+     */
     tResult CreateFloatInputPins(ucom::IException** __exception_ptr = NULL);
 
-    /*! creates all the output Pins
-    * \param __exception_ptr the exception pointer
-    * \return standard adtf error code
-    */
+    /**
+     * Creates the boolean output pins.
+     * @param  __exception_ptr the exception pointer
+     * @return                 standard adtf error code
+     */
     tResult CreateOutputPins(ucom::IException** __exception_ptr = NULL);
 
 // For decoding input
 
     /*! mediadescription for ultrasonic data struct */
     cObjectPtr<IMediaTypeDescription> m_pDescriptionUsData;
-
-// Debug
 
     /*! if the debug mode is enabled */
     tBool m_bDebugModeEnabled;
@@ -151,9 +162,29 @@ private:
 
 // Own Helper Functions
 
+    /**
+     * Determine the amplification of the dynamic threshold
+     * for a given ultrasonic sensor.
+     *
+     * @param  mountingAngle the mounting angle of the sensor.
+     * @return               the amplification.
+     */
     tFloat32 getAmplificationForMountingAngle(tFloat32 mountingAngle);
+
+    /**
+     * Determine the dynamic detection threshold for a given ultrasonic sensor.
+     *
+     * @param  mountingAngle the mounting angle of the sensor.
+     * @return               the detection threshold for that sensor.
+     */
     tFloat32 getThreshholdForMountingAngle(tFloat32 mountingAngle);
 
+    /**
+     * Gets called when a new input value has been received.
+     * Used to update the outputs.
+     *
+     * @return standard adtf error code
+     */
     tResult OnValueChanged(tUltrasonicStruct* pSampleData);
 
 };
