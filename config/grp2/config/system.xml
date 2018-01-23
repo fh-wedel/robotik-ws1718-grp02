@@ -334,7 +334,7 @@
     <filter alias="Thorger_Collision_Detection" idref="adtf.aadc.thorger.CollisionDetection" priority="7">
      <settings>
       <property name="Debug Mode" type="Bool" value="true" />
-      <property name="CollisionDetection::DetectionThreshhold" type="Float" value="1,15.0" />
+      <property name="CollisionDetection::DetectionThreshhold" type="Float" value="3.0" />
       <property name="MedianFilter::WindowSize" type="Int" value="1" />
      </settings>
     </filter>

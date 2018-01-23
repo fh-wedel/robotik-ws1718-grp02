@@ -184,8 +184,8 @@
 % Author: Franz Wernicke
 
 	Um verschiedene Filter zu testen, die einen Wert als Eingang benötigten, wurde dieser Block erstellt.\\
-	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst wurden, definierten wir einen \texttt{WatchDog} als Input. 
-	So wird mit jedem Auslösen des WatchDog der Wert gesendet. 
+	Da neue Ausgaben nur durch die Methode \texttt{OnPinEvent} ausgelöst wurden, definierten wir einen \texttt{WatchDog} als Input.
+	So wird mit jedem Auslösen des WatchDog der Wert gesendet.
 	Der gesendete Wert kann in den Einstellungen des Filters während der Laufzeit verändert werden.
 
 
@@ -200,7 +200,7 @@
 	Dieses Kapitel befasst sich mit der Ansteuerung des Lenkservomotors und den dabei aufgetretenen Schwierigkeiten.
 	Dazu gab es bereits einen Filter von Audi vorgefertigt, welcher die Umrechnung von Kurvenradius zu Servowert vornahm, allerdings war dieser Code so obskur, dass der Zeitaufwand für das Einlesen in den bestehenden Code den für eine Reimplementierung des Filters nötigen Zeitaufwand aufwiegen würde.
 	Auch um das Framework genauer zu verstehen, entschieden wir uns für letzteres Vorgehen.
-	
+
 	Für	die Kommunikation mit den Arduinos existiert bereits eine vorgefertigte Filter-Implementation.
 	Standardmäßig erwartet dieser Arduino-Controller einen Wert zwischen $-100$ und $+100$, um den Servomotor für die Lenkung richtig zu instruieren.
 
@@ -389,11 +389,11 @@
 	Der erste Teil konnte einfach umgesetzt werden, so wurden beim Zurücksetzen des Reglers die Bremsleuchten eingeschaltet.
 	Das beschleunigungs-abhängige Einschalten war schwieriger, da durch Messungenauigkeiten und Schwingungen im Regler der Ausgabewert bei normaler Fahrt stärker schwankt als beim Bremsen.
 	Es wurden Schwankungen im Output bei normaler Fahrt von etwa $1$ beobachtet, während beim Bremsen der Output sehr kontrolliert verringert wird, etwa $0.1$ pro Berechnung.
-	Es kam zwischenzeitlich die Idee auf, einen Filter zu bauen der die Fahrzustände Verwaltet und dann Befehle an die anderen Filter sendet. 
-	Dieser Filter wüsste dann, ob abgebremst oder beschleunigt wird. 
-	Dann kann in dem entsprechenden Zustand reagiert werden. 
+	Es kam zwischenzeitlich die Idee auf, einen Filter zu bauen der die Fahrzustände Verwaltet und dann Befehle an die anderen Filter sendet.
+	Dieser Filter wüsste dann, ob abgebremst oder beschleunigt wird.
+	Dann kann in dem entsprechenden Zustand reagiert werden.
 	Dieses Konzept wurde dann mit dem \texttt{Main Controller} umgesetzt.
-	
+
 
 \section{Probleme mit dem ADTF}
 	Die Arbeit mit den vorimplementierten Filtern von ADTF stellte sich als schwierig heraus. \\
@@ -552,10 +552,10 @@
 
 	Letztendlich erhält man so den finalen Schwellenwert $s_{bounded}$.
 	Liegt der gemessene Sensorwert unterhalb dieser Schwelle, so wird dies als Hindernis gewertet.
-	
+
 	In unseren Test haben sich die Schwellenwerte $s_{dyn} = 30cm$, $s_{min} = 7cm$ und $s_{max} = 150cm$ als gut erwiesen.
 	\autoref{img-uss-function-parabola} zeigt die Auswirkungen von Änderungen der Geschwindigkeit und des Lenkwinkels.
-	
+
 	\begin{figure}[ht]
 		\centering
 		\begin{tikzpicture}
@@ -572,23 +572,23 @@
 		funcSpeed={label in legend={text=Geschwindigkeit $v \geq 2 \cdot v_{std}$}},
 		data/format=function
 		]
-		
+
 		data [set=func0] {
 			var x : interval [-90:90] samples 180;
 			func y = max(7, min(100 * (1 - (\value x / 180 * pi)^2), 150));
 		}
-		
+
 		data [set=func25] {
 			var x : interval [-90:90] samples 180;
 			func y = max(7, min(100 * (1 - ((\value x - 34) / 180 * pi)^2), 150);
 		}
-		
+
 		data [set=funcSpeed] {
 			var x : interval [-90:90] samples 180;
 			func y = max(7, min(100 * 2 * (1 - (\value x / 180 * pi)^2), 150));
 		};
 		\end{tikzpicture}
-		
+
 		\caption{Gewichtung der Schwellenwerte}
 		\label{img-uss-function-parabola}
 	\end{figure}
@@ -605,7 +605,7 @@
 		\label{pyth}
 	\end{align}
 	Überschreitet die Beschleunigung einen bestimmten Schwellenwert, wird als Ursache eine Kollision angenommen, wodurch wiederum ein Nothalt ausgelöst wird.
-	
+
 	Einerseits muss der Schwellenwert niedrig genug sein, damit der Motor nicht erst ausgeschaltet wird, falls man mit Maximalgeschwindigkeit gegen eine Wand fährt.
 	Andererseits muss die Schwelle hoch genug sein, damit bestimmte Ereignisse (beispielsweise Anfahren) nicht als Kollision interpretiert werden.
 	Dabei ist problematisch, dass nicht alle Kollisionen bei der gleichen Geschwindigkeit stattfinden.
@@ -767,14 +767,14 @@
 	In OpenCV haben die Normalenvektoren, die sich nach der Hough Line Transformation ergeben, einen Winkel von $0$ bis $180\degree$ zu der x-Achse.
 	Bei einem theoretisch größeren Winkel wird die Gerade durch eine negative Distanz dargestellt.
 	Da vertikale Linien einen horizontalen Normalenvektor haben, schwanken die Winkel oft zwischen $\sim0$ und $\sim180\degree$ bei vertikaler Ausrichtung.
-	
+
 	In dem Straßenbild sind oft vertikale Linien vorhanden.
 	Um die Erkennung dieser einfacher zu machen, werden die Winkel der gefundenen Linien so verändert, dass sie in einem Bereich von -90 bis +90 $\degree$ liegen.
 	Vertikale Linien haben folglich einen Winkel von ca. $0 \degree$.
 	Winkel außerhalb dieses Bereichs werden anhand einer negativen Distanz dargestellt.
 	Aufgrund der Tatsache, dass das Bild so verzerrt wurde, dass wir die Straße aus einer senkrechten Obersicht betrachten, entsprechen die Winkel der gefunden Geraden nun dem relativen Winkel der Fahrbahn zur Fahrtrichtung.
 	\autoref{img-Winkelnormalisierung} verdeutlich diese Überlegung.
-	
+
 	\begin{figure}
 		\centering
 		\includegraphics[height=0.5\textheight]{assets/Winkelnormalisierung.pdf}
@@ -885,13 +885,13 @@
 
 \section{Besonderheiten in der Kurve}
 % Author: Frauke Jörgens
-	
+
 	Ein generelles Problem der Bildverarbeitung ist, dass das aufgenommene Kamerabild ca. 20cm vor der Vorderkante des Modellfahrzeugs liegt und immer geradeaus schaut -- unabhängig von der Fahrtrichtung.
 	In geraden Fahrtabschnitten ist dies weitestgehend unproblematisch.
 	In Kurven allerdings entsteht das Problem, dass meistens nur ein kleiner Teil der äußeren Fahrbahnmarkierung im Kamerabild zu sehen ist.
 	Ideal wäre es also, wenn sich die Kamera entsprechend des Lenkwinkels des Fahrzeugs mitbewegen könnte.
 	Da uns dies ohne Weiteres nicht möglich war, mussten wir eine andere Variante finden, um diesem Problem mindestens ein wenig entgegenwirken zu können.
-	Wird eine gekrümmte Linie gefunden (der absolute Winkel ihres Stützvektors ist größer als ein Schwellenwert\footnote{Der Wert 12\degree\ hat für uns gut funktioniert.}), so wird ihr Winkel entsprechend ihrer Krümmung gestreckt, damit sie eine nicht so starke Auswirkung hat.	
+	Wird eine gekrümmte Linie gefunden (der absolute Winkel ihres Stützvektors ist größer als ein Schwellenwert\footnote{Der Wert 12\degree\ hat für uns gut funktioniert.}), so wird ihr Winkel entsprechend ihrer Krümmung gestreckt, damit sie eine nicht so starke Auswirkung hat.
 
 \section{Weitere Überlegungen}
 % Author: Jan Ottmüller
@@ -950,7 +950,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modifikationen am Fahrzeug}
 
-Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne am Modellauto mit einer 3D-gedruckten Halterung befestigt. 
+Damit die Kamera in einem besseren Winkel auf die Straße blickt, haben wir sie weiter vorne am Modellauto mit einer 3D-gedruckten Halterung befestigt.
 \begin{figure}[ht]
 	\centering
 	\begin{subfigure}[c]{.45\textwidth}
@@ -971,59 +971,59 @@ Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie o
 
 \chapter{Fazit}
 
-	Abschließend ist zu sagen, dass wir mit unserem Fortschritt im Rahmen des Projektes zufrieden sind. 
-	Bei der Umsetzung kamen viele neue Ideen, die jedoch deutlich mehr Zeit erfordern. 
-	Mit der Umsetzung von Features kamen immer neue Ideen, die das Projekt ergänzen würden. 
+	Abschließend ist zu sagen, dass wir mit unserem Fortschritt im Rahmen des Projektes zufrieden sind.
+	Bei der Umsetzung kamen viele neue Ideen, die jedoch deutlich mehr Zeit erfordern.
+	Mit der Umsetzung von Features kamen immer neue Ideen, die das Projekt ergänzen würden.
 	Auch gibt es viele theoretische Ansätze (z.B. den Kalman Filter) die noch nicht umgesetzt wurden.
-	
+
 	\paragraph{ADTF.}
-	Unterschätzt haben wir den zeitlichen Aufwand für die Einarbeitung in das ADTF. 
-	Durch die Funktionalität die das ADTF bietet, ist sehr viel Code in den vorgefertigten Klassen, die ein Einlesen sehr langwierig gestalten. 
-	Ein großer Vorteil des ADTF ist, dass man sich nicht um den Datenaustausch zwischen den Filtern kümmern muss. 
-	Auch das Verbinden ist durch die grafische Oberfläche sehr einfach. 
-	Die Umsetzung machte ein Verstehen des Codes jedoch schwierig. 
-	In den jeweiligen Filtern brauchte es sehr viel Code, um die Input/Output Pins zu registrieren und auch um Daten von Pins zu lesen oder zu schreiben. 
+	Unterschätzt haben wir den zeitlichen Aufwand für die Einarbeitung in das ADTF.
+	Durch die Funktionalität die das ADTF bietet, ist sehr viel Code in den vorgefertigten Klassen, die ein Einlesen sehr langwierig gestalten.
+	Ein großer Vorteil des ADTF ist, dass man sich nicht um den Datenaustausch zwischen den Filtern kümmern muss.
+	Auch das Verbinden ist durch die grafische Oberfläche sehr einfach.
+	Die Umsetzung machte ein Verstehen des Codes jedoch schwierig.
+	In den jeweiligen Filtern brauchte es sehr viel Code, um die Input/Output Pins zu registrieren und auch um Daten von Pins zu lesen oder zu schreiben.
 	Hätten wir den \texttt{StdFilter} zu einem frühen Zeitpunkt umgesetzt, wäre uns viel Aufwand bei der Erstellung neuer Filter erspart geblieben.
-	Eine weitere Schwierigkeit waren die fehlerhaften oder auch fehlenden Kommentare der ADTF-Entwickler. 
+	Eine weitere Schwierigkeit waren die fehlerhaften oder auch fehlenden Kommentare der ADTF-Entwickler.
 	An vielen Stellen war offensichtlich Code zusammen mit Kommentaren kopiert worden, wobei der Code angepasst wurde, die Kommentare jedoch nicht.
-	So kamen es zu vielen fehlerhaften Kommentaren, die oft verwirrten. 
-	
-	Das Arbeiten mit dem ADTF führte häufig zu Abstürzen, die wir anfangs nur schwierig nachvollziehen konnten, da die Ausgaben in ein Terminal geschrieben wurden, das sich bei einem Absturz schloss. 
-	Durch öffnen des ADTF über ein Terminal, blieben die Ausgaben erhalten. 
-	Hier fiel auf, das bei manchen Abstürzen kein eigener Code verantwortlich war. 
-	Bei einigen Abstürzen konnten wir Muster erkennen. 
-	Zum Beispiel stürzte das ADTF ab, wenn direkt auf den Play Button geklickt wurde. 
+	So kamen es zu vielen fehlerhaften Kommentaren, die oft verwirrten.
+
+	Das Arbeiten mit dem ADTF führte häufig zu Abstürzen, die wir anfangs nur schwierig nachvollziehen konnten, da die Ausgaben in ein Terminal geschrieben wurden, das sich bei einem Absturz schloss.
+	Durch öffnen des ADTF über ein Terminal, blieben die Ausgaben erhalten.
+	Hier fiel auf, das bei manchen Abstürzen kein eigener Code verantwortlich war.
+	Bei einigen Abstürzen konnten wir Muster erkennen.
+	Zum Beispiel stürzte das ADTF ab, wenn direkt auf den Play Button geklickt wurde.
 	Hier half es erst den Einschaltknopf und dann den Play Button anzuklicken.
-	Auch die Benutzeroberfläche benötigte an einigen Stellen eine besondere Bedienung. 
+	Auch die Benutzeroberfläche benötigte an einigen Stellen eine besondere Bedienung.
 	So konnte nur in dem Hauptfenster eine Konfiguration neu geladen werden, was nach Änderungen am Code notwendig war.
-	
+
 	\paragraph{Bildverarbeitung.}
 	Bezüglich der Bildverarbeitung fragen wir uns, ob eine Polynomfunktion für die Erkennung der Straßen besser geeignet wäre.
 	Diese Zweifel entstanden durch den Sachverhalt, dass die Fahrbahnmarkierungen nicht immer durch Geraden angenähert werden können.
 	In einem zukünftigen Projekt stellen wir uns vor, die Repräsentation der Straße auf einer 2D-Karte vorzunehmen und dabei eben diese Polynomfunktionen für eine bessere Darstellung der Kurven zu verwenden.
 	Dies ermöglicht auch eine Berechnung des Kurvenradius' unter der Voraussetzung, dass die Kamera ein ausreichend großes Sichtfeld bietet.
-	
+
 	Ein weiterer nächster Schritt wäre es, das Bild der Basler-Kamera zu entzerren und dann zusätzlich zur RealSense\texttrademark einzusetzen, um im Nahbereich eine genauere Analyse vornehmen zu können.
 	Ist dies gegeben, würden wir die RealSense\texttrademark Kamera wieder in ihre Ausgangsposition zurückversetzen und uns damit einen Überblick über die aktuelle Straßensituation und bevorstehende Gegebenheiten zu verschaffen.
-	
+
 	\paragraph{Regelung.}
-	Bei der Lenkregelung wurde deutlich, dass Theorie $\neq$ Praxis gilt. 
+	Bei der Lenkregelung wurde deutlich, dass Theorie $\neq$ Praxis gilt.
 	Wir hatten die Lenkwinkel der Reifen vermessen und daraus auf die möglichen Kurvenradien geschlossen.
-	Die Überlegungen stellten sich beim Messen der Kurvenradien als sehr ungenau heraus. 
+	Die Überlegungen stellten sich beim Messen der Kurvenradien als sehr ungenau heraus.
 	Hier stellte sich eine große Differenz zwischen Vorwärts- und Rückwärtsfahrt heraus, die durch Spiel in der Aufhängung entsteht.
-	
+
 	Die eigentliche Motorregelung ließ sich trotz der schwankenden Werte gut umsetzen, jedoch weiterführende Funktionen wurden schwierig, wie zum Beispiel die Erkennung eines Bremsvorgangs.
-	
+
 	\paragraph{Kollisionserkennung.}
-	In der Umsetzung der Kollisionserkennung kam es durch die stark variierenden Werte zu erheblichen Problemen. 
-	Durch die geringen Geschwindigkeiten sind die Beschleunigungen bei Zusammenstößen relativ gering. 
+	In der Umsetzung der Kollisionserkennung kam es durch die stark variierenden Werte zu erheblichen Problemen.
+	Durch die geringen Geschwindigkeiten sind die Beschleunigungen bei Zusammenstößen relativ gering.
 	Eine Unterscheidung zwischen Zusammenstoß mit einem weichen Objekt und stärkeren Vibrationen am Sensor war so schwierig umzusetzen.
-	
+
 	\paragraph{Hinderniserkennung.}
 	Hier gibt es ein grundsätzliches Problem bei der Sensorwahl. Da die Ultraschallsensoren alle auf derselben Frequenz senden, kommt es teilweise zu massiven Störungen der Signale und damit der Messwerte.
 	Zudem ist einer der Sensoren im Laufe des Praktikum beschädigt worden, sodass er nur noch einen Wert $\sim4cm$ lieferte.
 	Um das eigentliche Problem der Reflexionen zu umgehen, wären zusätzliche Infrarotsensoren zur Entfernungsmessung sinnvoll.
-	
+
 
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
@@ -1052,7 +1052,7 @@ Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie o
 	Letzte Bearbeitung: 8. September 2017 um 17:55 Uhr,
 	Letzter Zugriff am: 21. Januar 2018,
 	\url{https://de.wikipedia.org/wiki/HSV-Farbraum}
-	
+
 	\bibitem{opencv-doc}
 	OpenCV 3.4.0--Dokumentation\\
 	Generiert am 22. Dezember 2017 um 22:15:44,

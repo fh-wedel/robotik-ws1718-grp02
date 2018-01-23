@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
 <adtf:configuration xmlns:adtf="adtf">
  <ce_layouts>
-  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="198" zoomfactor="1,000000">
+  <configuration horizontal_scrollbar_value="1" name="Playback" show="true" tab_pos="0" vertical_scrollbar_value="192" zoomfactor="1,000000">
    <component height="98" name="Realsense_RGB_Proc_Display2" width="189" x="616" y="526">
     <input_pin name="input" />
     <input_pin name="gcl_input" />
@@ -43,7 +43,7 @@
     <property name="emulate_external_clocks" type="bool" value="true" />
     <property name="enable_loop_mode" type="bool" value="false" />
     <property name="enable_perf_log" type="bool" value="false" />
-    <property name="filename" timestamp="212379820849000000" type="file" value="../../../../Desktop/Aufnahmen/Beschleunigen_split_001.dat" />
+    <property name="filename" type="file" value="../../../../Desktop/Aufnahmen/Beschleunigen_split_001.dat" />
     <property name="Identifier" type="string" value="adtf.stg.harddisk_player" />
     <property name="idref" type="string" value="adtf.stg.harddisk_player" />
     <property name="ignore_unkown_classes" type="bool" value="false" />
@@ -280,7 +280,7 @@
    <connection dest="" dest_pin="UltrasonicStruct" reldiff="0" shape_type="3" source="Base_Config" source_pin="UltrasonicStruct" x_p2="882" x_p3="882" x_p4="1102" x_p5="1102" y_p2="0" y_p3="536" y_p4="536" y_p5="0" />
    <connection dest="Base_Config" dest_pin="WatchdogAlive" reldiff="0" shape_type="4" source="AADC_Watchdog_Trigger" source_pin="WatchdogAliveSignal" x_p2="278" x_p3="278" x_p4="442" x_p5="442" y_p2="0" y_p3="489" y_p4="489" y_p5="0" />
   </configuration>
-  <configuration horizontal_scrollbar_value="20" name="Live" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="0,694444">
+  <configuration horizontal_scrollbar_value="12" name="Live" show="true" tab_pos="4" vertical_scrollbar_value="1" zoomfactor="0,694444">
    <component height="266" name="Main" width="263" x="1346" y="303" />
    <component height="218" name="Lane_Detection" width="208" x="23" y="273" />
    <component height="314" name="Felix_MainController" width="244" x="604" y="880">
@@ -359,7 +359,7 @@
    <connection dest="Main" dest_pin="BrakeLightsEnabled" reldiff="0" shape_type="4" source="Felix_MainController" source_pin="BrakeLights" x_p2="884" x_p3="884" x_p4="1314" x_p5="1314" y_p2="0" y_p3="465" y_p4="465" y_p5="0" />
    <connection dest="Main" dest_pin="HeadLightsEnabled" reldiff="0" shape_type="4" source="Felix_MainController" source_pin="HeadLights" x_p2="880" x_p3="880" x_p4="1322" x_p5="1322" y_p2="0" y_p3="417" y_p4="417" y_p5="0" />
    <connection dest="Franz_Wheel_Speed_Controller" dest_pin="emergencystop" reldiff="0" shape_type="4" source="Felix_MainController" source_pin="EmergencyStop" x_p2="900" x_p3="900" x_p4="1010" x_p5="1010" y_p2="0" y_p3="660" y_p4="660" y_p5="0" />
-   <connection dest="Felix_MainController" dest_pin="targetSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="543" x_p3="543" x_p4="588" x_p5="588" y_p2="0" y_p3="959" y_p4="959" y_p5="0" />
+   <connection dest="Felix_MainController" dest_pin="targetSpeed" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="speed" x_p2="399" x_p3="399" x_p4="588" x_p5="588" y_p2="0" y_p3="959" y_p4="959" y_p5="0" />
    <connection dest="Main" dest_pin="SteeringAngle" reldiff="0" shape_type="4" source="Felix_MainController" source_pin="steeringAngle" x_p2="864" x_p3="864" x_p4="1270" x_p5="1270" y_p2="0" y_p3="369" y_p4="369" y_p5="0" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSteeringAngle" reldiff="0" shape_type="2" source="Felix_MainController" source_pin="steeringAngle" x_p2="864" x_p3="864" x_p4="464" x_p5="464" y_p2="946" y_p3="841" y_p4="841" y_p5="689" />
    <connection dest="Felix_MainController" dest_pin="targetSteeringAngle" reldiff="0" shape_type="3" source="Felix_MedianFilter" source_pin="output" x_p2="334" x_p3="334" x_p4="522" x_p5="522" y_p2="0" y_p3="922" y_p4="922" y_p5="0" />
@@ -367,15 +367,15 @@
    <connection dest="Felix_MainController" dest_pin="obstacleDetected" reldiff="0" shape_type="1" source="Felix_Ultrasonic_Obstacle_Detection" source_pin="obstacleInDrivingDirection" x_p2="828" x_p3="828" x_p4="503" x_p5="503" y_p2="737" y_p3="840" y_p4="840" y_p5="996" />
    <connection dest="Felix_MainController" dest_pin="collisionDetected" reldiff="0" shape_type="4" source="Thorger_Collision_Detection" source_pin="Collision Detected" x_p2="537" x_p3="537" x_p4="559" x_p5="559" y_p2="0" y_p3="1033" y_p4="1033" y_p5="0" />
    <connection dest="Thorger_Collision_Detection" dest_pin="InerMeasUnit_Struct" reldiff="0" shape_type="1" source="Main" source_pin="InerMeasUnitStruct" x_p2="1629" x_p3="1629" x_p4="266" x_p5="266" y_p2="489" y_p3="777" y_p4="777" y_p5="1069" />
-   <connection dest="Dbg_Canny_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="canny_video" x_p2="407" x_p3="407" x_p4="599" x_p5="599" y_p2="0" y_p3="427" y_p4="427" y_p5="0" />
-   <connection dest="Dbg_Binary_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="binary_video" x_p2="403" x_p3="403" x_p4="597" x_p5="597" y_p2="0" y_p3="288" y_p4="288" y_p5="0" />
+   <connection dest="Dbg_Canny_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="canny_video" x_p2="263" x_p3="263" x_p4="599" x_p5="599" y_p2="0" y_p3="427" y_p4="427" y_p5="0" />
+   <connection dest="Dbg_Binary_Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="binary_video" x_p2="259" x_p3="259" x_p4="597" x_p5="597" y_p2="0" y_p3="288" y_p4="288" y_p5="0" />
    <connection dest="Video_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="video_lanes" x_p2="243" x_p3="243" x_p4="312" x_p5="312" y_p2="0" y_p3="71" y_p4="71" y_p5="0" />
    <connection dest="Dbg_Perps_Transform_Video_Display" dest_pin="input" reldiff="0" shape_type="3" source="Lane_Detection" source_pin="persp_transform_video" x_p2="267" x_p3="267" x_p4="306" x_p5="306" y_p2="0" y_p3="517" y_p4="517" y_p5="0" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="UltrasonicStruct" reldiff="0" shape_type="1" source="Main" source_pin="UltrasonicStruct" x_p2="1625" x_p3="1625" x_p4="499" x_p5="499" y_p2="417" y_p3="587" y_p4="587" y_p5="737" />
    <connection dest="Felix_Ultrasonic_Obstacle_Detection" dest_pin="currentSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1623" x_p3="1623" x_p4="503" x_p5="503" y_p2="345" y_p3="513" y_p4="513" y_p5="713" />
    <connection dest="Main" dest_pin="SpeedController" reldiff="0" shape_type="4" source="Franz_Wheel_Speed_Controller" source_pin="actuator_output" x_p2="1295" x_p3="1295" x_p4="1296" x_p5="1296" y_p2="0" y_p3="345" y_p4="345" y_p5="0" />
    <connection dest="Franz_Wheel_Speed_Controller" dest_pin="measured_wheelSpeed" reldiff="0" shape_type="1" source="Main" source_pin="measured_speed" x_p2="1623" x_p3="1623" x_p4="817" x_p5="817" y_p2="345" y_p3="515" y_p4="515" y_p5="612" />
-   <connection dest="Felix_MedianFilter" dest_pin="input" reldiff="0" shape_type="1" source="Lane_Detection" source_pin="steeringAngle" x_p2="431" x_p3="431" x_p4="138" x_p5="138" y_p2="363" y_p3="922" y_p4="922" y_p5="919" />
+   <connection dest="Felix_MedianFilter" dest_pin="input" reldiff="0" shape_type="1" source="Lane_Detection" source_pin="steeringAngle" x_p2="647" x_p3="647" x_p4="138" x_p5="138" y_p2="363" y_p3="922" y_p4="922" y_p5="919" />
    <connection dest="RGB_Display" dest_pin="input" reldiff="0" shape_type="4" source="Lane_Detection" source_pin="video_rgb" x_p2="283" x_p3="283" x_p4="310" x_p5="310" y_p2="0" y_p3="208" y_p4="208" y_p5="0" />
   </configuration>
   <configuration horizontal_scrollbar_value="1" name="Marker_Detection" show="false" tab_pos="5" vertical_scrollbar_value="1" zoomfactor="1,000000">
