@@ -989,6 +989,7 @@ Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie o
 	Mit der Umsetzung von Features kamen immer neue Ideen, die das Projekt ergänzen würden. 
 	Auch gibt es viele theoretische Ansätze (z.B. den Kalman Filter) die noch nicht umgesetzt wurden.
 	
+	\paragraph{ADTF.}
 	Unterschätzt haben wir den zeitlichen Aufwand für die Einarbeitung in das ADTF. 
 	Durch die Funktionalität die das ADTF bietet, ist sehr viel Code in den vorgefertigten Klassen, die ein Einlesen sehr langwierig gestalten. 
 	Ein großer Vorteil des ADTF ist, dass man sich nicht um den Datenaustausch zwischen den Filtern kümmern muss. 
@@ -1009,16 +1010,33 @@ Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie o
 	Auch die Benutzeroberfläche benötigte an einigen Stellen eine besondere Bedienung. 
 	So konnte nur in dem Hauptfenster eine Konfiguration neu geladen werden, was nach Änderungen am Code notwendig war.
 	
-	Bezüglich der Bildverarbeitung fragen wir uns, ob eine %TODO
+	\paragraph{Bildverarbeitung.}
+	Bezüglich der Bildverarbeitung fragen wir uns, ob eine Polynomfunktion für die Erkennung der Straßen besser geeignet wäre.
+	Diese Zweifel entstanden durch den Sachverhalt, dass die Fahrbahnmarkierungen nicht immer durch Geraden angenähert werden können.
+	In einem zukünftigen Projekt stellen wir uns vor, die Repräsentation der Straße auf einer 2D-Karte vorzunehmen und dabei eben diese Polynomfunktionen für eine bessere Darstellung der Kurven zu verwenden.
+	Dies ermöglicht auch eine Berechnung des Kurvenradius' unter der Voraussetzung, dass die Kamera ein ausreichend großes Sichtfeld bietet.
 	
+	Ein weiterer nächster Schritt wäre es, das Bild der Basler-Kamera zu entzerren und dann zusätzlich zur RealSense\texttrademark einzusetzen, um im Nahbereich eine genauere Analyse vornehmen zu können.
+	Ist dies gegeben, würden wir die RealSense\texttrademark Kamera wieder in ihre Ausgangsposition zurückversetzen und uns damit einen Überblick über die aktuelle Straßensituation und bevorstehende Gegebenheiten zu verschaffen.
+	
+	\paragraph{Regelung.}
 	Bei der Lenkregelung wurde deutlich, dass Theorie $\neq$ Praxis gilt. 
 	Wir hatten die Lenkwinkel der Reifen vermessen und daraus auf die möglichen Kurvenradien geschlossen.
 	Die Überlegungen stellten sich beim Messen der Kurvenradien als sehr ungenau heraus. 
+	
 	Hier stellte sich eine große Differenz zwischen Vorwärts- und Rückwärtsfahrt heraus, die durch Spiel in der Aufhängung entsteht.
-	Die eigentliche Motorregelung ließ sich trotz der schwankenden Werte gut umsetzen, jedoch weiterführende Funktionen wurden schwierig, z.B. die Bremslichter.
-	In der Umsetzung der Kollisionserkennung kam es durch die stark variierenden Werten zu erheblichen Problemen. 
+	Die eigentliche Motorregelung ließ sich trotz der schwankenden Werte gut umsetzen, jedoch weiterführende Funktionen wurden schwierig, wie zum Beispiel die Erkennung eines Bremsvorgangs.
+	
+	\paragraph{Kollisionserkennung.}
+	In der Umsetzung der Kollisionserkennung kam es durch die stark variierenden Werte zu erheblichen Problemen. 
 	Durch die geringen Geschwindigkeiten sind die Beschleunigungen bei Zusammenstößen relativ gering. 
 	Eine Unterscheidung zwischen Zusammenstoß mit einem weichen Objekt und stärkeren Vibrationen am Sensor war so schwierig umzusetzen.
+	
+	\paragraph{Hinderniserkennung.}
+	Hier gibt es ein grundsätzliches Problem bei der Sensorwahl. Da die Ultraschallsensoren alle auf derselben Frequenz senden, kommt es teilweise zu massiven Störungen der Signale und damit der Messwerte.
+	Zudem ist einer der Sensoren im Laufe des Praktikum beschädigt worden, sodass er nur noch einen Wert $\sim4cm$ lieferte.
+	Um das eigentliche Problem der Reflexionen zu umgehen, wären zusätzliche Infrarotsensoren zur Entfernungsmessung sinnvoll.
+	
 
 %%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%
 
