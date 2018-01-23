@@ -32,8 +32,6 @@
 
 \usepackage{titlepic} % mit Bild auf der Titelseite
 
-%TODO: Fazit
-
 \begin{document}
 
 %%%%%%%%%%%%%%%%%%%%% HEADER %%%%%%%%%%%%%%%%%%%%%
@@ -113,10 +111,12 @@
 	\end{figure}
 
 	Jedes Modul ist dabei eine \texttt{C++}-Klasse, die die Initialisierung des Blocks und dessen In- und Output-Pins übernimmt.
-	Das Modul benachrichtigt, wenn neue Daten an einem Pin anliegen, also zur Verarbeitung zur Verfügung stehen.
+	Das Modul wird benachrichtigt, wenn neue Daten an einem Pin anliegen, also zur Verarbeitung zur Verfügung stehen.
 	Sodann wird die Logik auf die eingelesenen Daten angewandt und die Ergebnisse über die Outputs wieder nach ``draußen'' gegeben.
 
-	%TODO: Erklärung der FilterProperties?
+	Jeder Filter verfügt über selbst konfigurierbare Filterparameter, die optional während der Laufzeit über die GUI anpassbar sind.
+	Diese können zum Beispiel im Code definierte Konstanten ersetzen und die Module damit flexibler machen.
+	Eine Art dieses Parameters ist zum Beispiel der boolesche Wert \emph{Debug Mode}, welcher Debug-Ausgaben des jeweiligen Filters in der Konsole aktiviert.
 
 \subsection{Konzept der Konfigurationen}
 % Author: Felix Maaß
@@ -157,7 +157,7 @@
 \section{Standard-Filter}
 % Author: Felix Maaß
 
-	Um einen ADTF-Filter zu implementieren, muss viel Code geschrieben werden, bevor man überhaupt mit der wirklichen Logik anfangen kann. %NOTE: bessere formulierung finden --felix
+	Um einen ADTF-Filter zu implementieren, muss viel Code geschrieben werden, bevor überhaupt mit der wirklichen Logik angefangen werden kann.
 	Um uns diesen Schritt zu vereinfachen, wurde eine abstrakte Klasse \texttt{cStdFilter} erstellt, die von der vorgegebenen Klasse \texttt{cFilter} erbte.
 	Sie bot uns Standard-Implementationen sowie Hilfsroutinen und vermied somit Redundanzen über die ganze Code-Basis.
 	Dadurch ließen sich im Durchschnitt etwa 170 Zeilen Code pro Filter sparen.
@@ -165,8 +165,6 @@
 
 \section{Lineare Funktion}
 % Author: Felix Maaß
-
-% TODO: Diese Sektion muss irgendwo einsortiert werden oder braucht eine eigene Einleitung "es gibt im system viele messwerte, die als einfache Fließkommazahlen…" --hoe
 
 	Für manche Werte war es nötig eine Modulation hinzufügen zu können.
 
@@ -200,7 +198,10 @@
 % Autor: Felix Maaß
 
 	Dieses Kapitel befasst sich mit der Ansteuerung des Lenkservomotors und den dabei aufgetretenen Schwierigkeiten.
-	Es existiert bereits eine vorgefertigte Implementation eines Filters, welcher sich um die Kommunikation mit den Arduinos kümmert.
+	Dazu gab es bereits einen Filter von Audi vorgefertigt, welcher die Umrechnung von Kurvenradius zu Servowert vornahm, allerdings war dieser Code so obskur, dass der Zeitaufwand für das Einlesen in den bestehenden Code den für eine Reimplementierung des Filters nötigen Zeitaufwand aufwiegen würde.
+	Auch um das Framework genauer zu verstehen, entschieden wir uns für letzteres Vorgehen.
+	
+	Für	die Kommunikation mit den Arduinos existiert bereits eine vorgefertigte Filter-Implementation.
 	Standardmäßig erwartet dieser Arduino-Controller einen Wert zwischen $-100$ und $+100$, um den Servomotor für die Lenkung richtig zu instruieren.
 
 	Es wurde eine Modularisierung eingeführt, die das Vorhaben der Ansteuerung in die im folgenden beschriebenen Bereiche aufteilt.
@@ -238,8 +239,7 @@
 	\\
 	Hierbei stellt $d$ die Spurweite und $l$ den Radstand dar.
 
-	Aufgrund des Schlupfes erwiesen sich theoretische Werte für den minimalen Innenradius $x_{min}$ nicht als akkurat, weshalb dieser sodann durch  Praxistests % NOTE: Falls noch vorhanden, Rohdaten gerne als Anhang beilegen (eingescannter Zettel reicht mir schon) --hoe
-	empirisch ermittelt wurde:
+	Aufgrund des Schlupfes erwiesen sich theoretische Werte für den minimalen Innenradius $x_{min}$ nicht als akkurat, weshalb dieser sodann durch  Praxistests	empirisch ermittelt wurde:
 		\[x_{min} = 400mm.\]
 
 	\paragraph{Resultat.}
@@ -263,8 +263,6 @@
 
 	\paragraph{Resultat.}
 	Soll nun ein bestimmter Kurvenradius eingestellt werden, wird der dazugehörige Winkel berechnet und daraufhin zum Servowert umgerechnet.
-
-% TODO: Bemerken, dass sowas in ADTF schon drin ist und begründen, warum deren Filter nicht verwendet wurde. --hoe
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Motorregelung}
@@ -315,7 +313,6 @@
 		\label{img-accelleration1}
 	\end{figure}
 
-	%DONE: Display units on axis values like  m/s : https://tex.stackexchange.com/questions/126188/how-do-i-set-units-in-pgfplots-without-square-brackets#126189
 	\begin{figure}[ht]
 		\centering
 		\begin{tikzpicture}
@@ -973,16 +970,6 @@ Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie o
 
 
 \chapter{Fazit}
-%- lange noch nicht fertig
-%- viele interessante theoretische Ansätze, die noch nicht umgesetzt wurden
-%- Einarbeitung in ADTF unterschätzt
-%- ADTF generell "schickes" Konzept/Design -> Umsetzung eher zu Lasten der Usability + manchmal fragwürdige Entscheidungen der Entwickler (void * statt Generics, viele Fehler in dem Code von Audi)
-%- Dokumentation im Code teilweise falsch (noch schlimmer als keine)
-%- vllt Abstürze erwähnen
-%- Vllt wäre in der BVA der Ansatz mit den Polynomfunktionen besser gewesen
-%- Zu Lenkng \& Motorregelung: Theorie != Praxis, Schlupf der Räder, Rauschen in Messwerten erschwerten den Umgang (ließen theoretische Überlegungen vollkommen von der Praxis abweichen)
-%- Bei Beschleunigungssensor schwer zu unterscheiden, ob absichtliches Bremsen oder gegen weiches Objekt fahren, oder Erschütterungen im Boden
-% TODO Fazit hier!
 
 	Abschließend ist zu sagen, dass wir mit unserem Fortschritt im Rahmen des Projektes zufrieden sind. 
 	Bei der Umsetzung kamen viele neue Ideen, die jedoch deutlich mehr Zeit erfordern. 
@@ -1023,8 +1010,8 @@ Um die Kamera wieder an ihrer ursprünglichen Position zu befestigen, muss sie o
 	Bei der Lenkregelung wurde deutlich, dass Theorie $\neq$ Praxis gilt. 
 	Wir hatten die Lenkwinkel der Reifen vermessen und daraus auf die möglichen Kurvenradien geschlossen.
 	Die Überlegungen stellten sich beim Messen der Kurvenradien als sehr ungenau heraus. 
-	
 	Hier stellte sich eine große Differenz zwischen Vorwärts- und Rückwärtsfahrt heraus, die durch Spiel in der Aufhängung entsteht.
+	
 	Die eigentliche Motorregelung ließ sich trotz der schwankenden Werte gut umsetzen, jedoch weiterführende Funktionen wurden schwierig, wie zum Beispiel die Erkennung eines Bremsvorgangs.
 	
 	\paragraph{Kollisionserkennung.}
